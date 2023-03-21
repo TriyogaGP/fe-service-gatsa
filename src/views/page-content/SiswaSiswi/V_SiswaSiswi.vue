@@ -30,6 +30,7 @@
             dense
             depressed
             class="ma-2 white--text text--darken-2"
+            @click="exportExcel()"
           >
             <v-icon small>fa-solid fa-file-export</v-icon>&nbsp;Export Data
           </v-btn>
@@ -74,17 +75,30 @@
           :headers="headers"
           :loading="isLoading"
           :items="DataSiswaSiswi"
+          :item-class= "row_classes"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
           show-expand
           item-key="idUser"
+          hide-default-header
           hide-default-footer
           class="elevation-1"
           :items-per-page="itemsPerPage"
           @page-count="pageCount = $event"
         >
+          <!-- header -->
+          <template v-slot:header="{ props }">
+            <thead class="v-data-table-header">
+              <tr>
+                <th v-for="header in props.headers" :key="header.text" style="font-weight: bold;">{{ header.text.toUpperCase() }}</th>
+              </tr>
+            </thead>
+          </template>
           <template #[`item.number`]="{ item }">
             {{ page > 1 ? ((page - 1)*limit) + DataSiswaSiswi.indexOf(item) + 1 : DataSiswaSiswi.indexOf(item) + 1 }}
+          </template>
+          <template #[`item.nama`]="{ item }">
+            <span v-html="uppercaseLetterFirst(item.nama)" /> 
           </template>
           <template #[`item.statusAktif`]="{ item }">
             <v-icon small v-if="item.statusAktif == true" color="green">check</v-icon>
@@ -1644,7 +1658,7 @@
       v-model="dialogImport"
       transition="dialog-bottom-transition"
 			persistent
-			width="800px"
+			width="600px"
     >
       <v-card>
         <v-toolbar
@@ -1709,7 +1723,7 @@
 			<v-progress-linear
 				class="pa-3"
 				indeterminate
-				color="light-black darken-3"
+				color="black darken-3"
 			/>
 			<h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses export data, harap menunggu ...</h4>
 		</v-dialog>
@@ -1751,6 +1765,7 @@ export default {
     isLoadingbtnPDF6: false,
     isLoadingExport: false,
 		DataSiswaSiswi: [],
+		kelasOptions: [],
     expanded: [],
     singleExpand: true,
 		searchData: '',
@@ -1775,7 +1790,7 @@ export default {
 			totalPages: ''
 		},
 		headers: [
-      { text: "No", value: "number", sortable: false, width: "7%" },
+      { text: "No", value: "number", sortable: false, width: "5%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
       { text: "Nomor Induk", value: "nomorInduk", sortable: false },
       { text: "Nama", value: "nama", sortable: false },
@@ -1903,6 +1918,7 @@ export default {
     this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
     this.roleID = localStorage.getItem('roleID')
 		this.getSiswaSiswi(this.page, this.limit, this.searchData);
+    this.optionKelas()
 	},
 	methods: {
 		...mapActions({
@@ -1956,6 +1972,21 @@ export default {
         this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
+    optionKelas(){
+      let payload = {
+        method: "get",
+				url: `settings/optionsKelas`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        let data = res.data.result
+        this.kelasOptions = data.map(str => str.kelas).join(', ')
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
     HapusRecord(item) {
       let bodyData = {
         user: {
@@ -2106,6 +2137,21 @@ export default {
 				this.isLoadingExport = false
 				let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 				this.downloadBlob(blob,`Template Data Siswa.xlsx`)
+				this.notifikasi("success", 'Sukses Export Excel', "1")
+			})
+		},
+    exportExcel() {
+			this.isLoadingExport = true
+			fetch(`${this.BASEURL}user/exportexcel?kelas=${this.kelasOptions}`, {
+				method: 'GET',
+				dataType: "xml",
+			})
+			.then(response => response.arrayBuffer())
+			.then(async response => {
+				// console.log(response)
+				this.isLoadingExport = false
+				let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+				this.downloadBlob(blob,`Data Siswa Siswi.xlsx`)
 				this.notifikasi("success", 'Sukses Export Excel', "1")
 			})
 		},
@@ -2350,6 +2396,11 @@ export default {
         this.notifikasi("warning", "Ulangi lagi Import Data Siswa Siswi", "1")
       }  
     },
+    row_classes(item) {
+      if (item.condition) {
+        return "style-1";
+      } 
+    },
     endecryptData(d) {
       this[d] = !this[d]
       let url = this[d] ? 'decryptPass' : 'encryptPass' 
@@ -2376,7 +2427,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .scrollText{
   max-height: 450px !important;
   overflow-y: auto !important;
@@ -2406,5 +2457,9 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   cursor: pointer;
+}
+.style-1 {
+  background-color: #b6b2b2;
+  font-weight: bold;
 }
 </style>

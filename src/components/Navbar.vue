@@ -204,7 +204,38 @@
 					</v-list-item>
 				</v-list>
 			</v-menu>
+			<v-app-bar-nav-icon v-if="roleID === '1' || roleID === '2'" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 		</v-app-bar>
+		<v-navigation-drawer
+      v-model="drawer"
+      absolute
+      bottom
+      temporary
+			right
+    >
+      <v-list
+        nav
+        dense
+      >
+        <v-list-item-group
+          v-model="group"
+          active-class="deep-purple--text text--accent-4"
+        >
+          <v-list-item>
+            <v-list-item-title>Foo</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>Bar</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>Fizz</v-list-item-title>
+          </v-list-item>
+          <v-list-item>
+            <v-list-item-title>Buzz</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
 		<v-dialog
 			v-model="dialogNotifikasi"
 			transition="dialog-bottom-transition"
@@ -230,6 +261,8 @@ export default {
     PopUpNotifikasiVue
   },
 	data: () => ({
+		drawer: false,
+		group: null,
 		fotoProfil: '',
 		roleID: '',
 		nama: '',
@@ -244,6 +277,11 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	watch: {
+		group () {
+			this.drawer = false
+		},
+	},
 	mounted() {
 		if(!localStorage.getItem('user_token')) return this.$router.push({name: 'Login'});
 		this.fotoProfil = localStorage.getItem('fotoProfil')

@@ -332,28 +332,6 @@
                     {{ previewData.email }}
                   </v-col>
                 </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Kata Sandi
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.password }}&nbsp;
-                    <v-icon
-                      color="light-black darken-3"
-                      tabindex="-1"
-                      @click="endecryptData('endecryptType')"
-                      >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
-                    >
-                  </v-col>
-                </v-row>
                 <h2 class="subheading black--text"><u>>>Data Alamat</u></h2>
                 <v-row no-gutters>
                   <v-col
@@ -548,70 +526,6 @@
                     {{ previewData.pendidikanGuru }}
                   </v-col>
                 </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Jabatan Struktural
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.jabatanGuru }}
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Mangajar Bidang
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.mengajarBidang }}
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Mangajar Kelas
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.mengajarKelas }}
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Wali Kelas
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.waliKelas ? previewData.waliKelas : '-' }}
-                  </v-col>
-                </v-row>
               </div>
               <div v-if="roleID === '4'">
                 <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
@@ -677,28 +591,6 @@
                     class="pt-3"
                   >
                     {{ previewData.email }}
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    md="4"
-                    class="pt-2 d-flex align-center font-weight-bold"
-                  >
-                    Kata Sandi
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    md="8"
-                    class="pt-3"
-                  >
-                    {{ previewData.password }}&nbsp;
-                    <v-icon
-                      color="light-black darken-3"
-                      tabindex="-1"
-                      @click="endecryptData('endecryptType')"
-                      >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
-                    >
                   </v-col>
                 </v-row>
                 <h2 class="subheading black--text"><u>>>Data Siswa Siswi</u></h2>
@@ -1823,6 +1715,45 @@
               </v-col>
             </v-row>
           </div>
+          <div v-if="roleID === '3'">
+            <h4 class="white--text text-center ma-4">******&nbsp;Data Kelengkapan&nbsp;******</h4>
+            <v-row no-gutters class="mb-2">
+              <v-col cols="12" md="12">
+                <div class="white--text text-left" style="font-weight: bold;">*Jabatan Struktural</div>
+                <div class="white--text text-left" style="font-size: 13px;">
+                  <ul v-for="jabatan in arrayData.jabatanGuru" :key="jabatan">
+                    <li>{{ jabatan }}</li>
+                  </ul>  
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mb-2">
+              <v-col cols="12" md="12">
+                <div class="white--text text-left" style="font-weight: bold;">*Mangajar Bidang</div>
+                <div class="white--text text-left" style="font-size: 13px;">
+                  <ul v-for="bidang in arrayData.mengajarBidang" :key="bidang">
+                    <li>{{ bidang }}</li>
+                  </ul>  
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mb-2">
+              <v-col cols="12" md="12">
+                <div class="white--text text-left" style="font-weight: bold;">*Mangajar Kelas</div>
+                <div class="white--text text-left" style="font-size: 13px;">
+                  <ul v-for="kelas in arrayData.mengajarKelas" :key="kelas">
+                    <li>{{ kelas }}</li>
+                  </ul>  
+                </div>
+              </v-col>
+            </v-row>
+            <v-row no-gutters class="mb-2">
+              <v-col cols="12" md="12">
+                <div class="white--text text-left" style="font-weight: bold;">*Wali Kelas</div>
+                <div class="white--text text-left" style="font-size: 13px;">{{ previewData.waliKelas ? previewData.waliKelas : '-' }}</div>
+              </v-col>
+            </v-row>
+          </div>
         </v-col>
       </v-row>
     </v-card>
@@ -2039,6 +1970,11 @@ export default {
       fcAktaLahir: '',
       fcSKL: '',
     },
+    arrayData: {
+      jabatanGuru: '',
+      mengajarBidang: '',
+      mengajarKelas: '',
+    },
     authData: {
       passwordLama: '',
       passwordBaru: '',
@@ -2079,6 +2015,13 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
   }),
+  metaInfo: {
+		title: "Profile - MTsS SIROJUL ATHFAL",
+		htmlAttrs: {
+			lang: "id",
+			amp: true,
+		},
+	},
   watch:{
 		tab:{
 			handler(value){
@@ -2204,6 +2147,11 @@ export default {
           fcAktaLahir: this.roleID === '4' ? data.berkas.fcAktaLahir : null,
           fcSKL: this.roleID === '4' ? data.berkas.fcSKl : null,
         }
+        this.arrayData = {
+          jabatanGuru: this.roleID === '3' ? data.jabatanGuru.map(str => { return str.label; }).sort() : null,
+          mengajarBidang: this.roleID === '3' ? data.mengajarBidang.map(str => { return str.label; }).sort() : null,
+          mengajarKelas: this.roleID === '3' ? data.mengajarKelas.split(', ') : null,
+        }
         localStorage.setItem('fotoProfil', this.previewData.fotoProfil)
 			})
 			.catch((err) => {
@@ -2249,7 +2197,7 @@ export default {
         : jenis === 'ktp' ? this.isLoadingbtnPDF4 = false
         : jenis === 'aktalahir' ? this.isLoadingbtnPDF5 = false
         : this.isLoadingbtnPDF6 = false
-        return this.notifikasi("warning", 'Gagal view berkas !', "1")
+        return this.notifikasi("warning", 'Berkas tidak ditemukan !', "1")
       }
       this.urlSk = berkas
       setTimeout(() => {
@@ -2370,13 +2318,6 @@ export default {
       this.notifikasiButton = proses
     },
   },
-  metaInfo: {
-		title: "Profile - DNM Mobile",
-		htmlAttrs: {
-			lang: "id",
-			amp: true,
-		},
-	},
 }
 </script>
 <style scoped>

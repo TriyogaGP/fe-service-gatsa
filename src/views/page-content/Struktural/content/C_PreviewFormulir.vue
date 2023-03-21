@@ -426,7 +426,6 @@ export default {
     },
 	},
 	mounted() {
-		console.log(this.dataStepTwo);
     this.kondisi = this.$route.params.kondisi
 		this.kelasText = this.dataStepThree.mengajarKelas.sort().join(', ')
     this.optionAgama()

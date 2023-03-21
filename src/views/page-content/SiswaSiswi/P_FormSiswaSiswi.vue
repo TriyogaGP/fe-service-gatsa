@@ -1,6 +1,11 @@
 <template>
   <div>
     <h1 class="subheading grey--text">Formulir SiswaSiswi</h1>
+    <div class="text-right wadah">
+      <span @click="gotolist()" class="link">Data Siswa Siswi</span>
+      <v-icon small class="iconstyle">fa-solid fa-chevron-right</v-icon>
+      <span>Formulir SiswaSiswi</span>
+    </div>
     <v-stepper v-model="stepperVal">
     <v-stepper-header>
       <v-stepper-step :complete="stepperVal > 1" step="1">
@@ -161,5 +166,24 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.wadah {
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.iconstyle {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+.link {
+  color: #000;
+  cursor: pointer;
+  text-decoration: none;
+}
+.link:hover {
+  color: #6fe484;
+  cursor: pointer;
+  text-decoration: underline;
+}
 </style>

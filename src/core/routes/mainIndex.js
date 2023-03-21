@@ -68,7 +68,7 @@ export default [
         component: () => import('@/views/page-content/content-view/V_JadwalMengajar.vue')
       },
       {
-        path: '/dataDetailKelasSiswa/:kelas',
+        path: '/dataDetailKelasSiswa/:kondisi/:kelas',
         name: 'DataDetailKelasSiswa',
         component: () => import('@/views/page-content/content-view/V_DetailKelasSiswa.vue')
       },

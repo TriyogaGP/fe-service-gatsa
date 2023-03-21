@@ -98,7 +98,7 @@ export default {
 			});
 		},
     gotoDetail(kelas) {
-      this.$router.push({name: "DataDetailKelasSiswa", params: { kelas: kelas }});
+      this.$router.push({name: "DataDetailKelasSiswa", params: { kondisi: 'view', kelas: kelas }});
     },
     notifikasi(kode, text, proses){
       this.dialogNotifikasi = true
@@ -110,7 +110,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .scrollText{
   max-height: 450px !important;
   overflow-y: auto !important;

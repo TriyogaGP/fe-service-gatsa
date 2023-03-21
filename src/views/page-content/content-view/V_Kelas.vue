@@ -59,11 +59,20 @@
           :expanded.sync="expanded"
           show-expand
           item-key="idKelas"
+          hide-default-header
           hide-default-footer
           class="elevation-1"
           :items-per-page="itemsPerPage"
           @page-count="pageCount = $event"
         >
+          <!-- header -->
+          <template v-slot:header="{ props }">
+            <thead class="v-data-table-header">
+              <tr>
+                <th v-for="header in props.headers" :key="header.text">{{ header.text.toUpperCase() }}</th>
+              </tr>
+            </thead>
+          </template>
           <template #[`item.number`]="{ item }">
             {{ page > 1 ? ((page - 1)*limit) + DataKelas.indexOf(item) + 1 : DataKelas.indexOf(item) + 1 }}
           </template>
@@ -328,7 +337,7 @@ export default {
 			totalPages: ''
 		},
 		headers: [
-      { text: "No", value: "number", sortable: false, width: "7%" },
+      { text: "No", value: "number", sortable: false, width: "5%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
       { text: "Kelas", value: "kelas", sortable: false },
       { text: "Status", value: "status", sortable: false },
