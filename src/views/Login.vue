@@ -146,7 +146,7 @@ export default {
           localStorage.setItem('jabatan_guru', data.result.jabatanGuru);
           localStorage.setItem('mengajar_bidang', data.result.mengajarBidang);
           localStorage.setItem('mengajar_kelas', data.result.mengajarKelas);
-          localStorage.setItem('wali_kelas', data.result.waliKelas);
+          localStorage.setItem('wali_kelas', data.result.waliKelas ? data.result.waliKelas : '');
         }else if(data.result.consumerType === 4){
           localStorage.setItem('kelas', data.result.kelas);
         }

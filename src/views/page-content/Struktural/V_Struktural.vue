@@ -76,6 +76,9 @@
           <template #[`item.number`]="{ item }">
             {{ page > 1 ? ((page - 1)*limit) + DataStruktural.indexOf(item) + 1 : DataStruktural.indexOf(item) + 1 }}
           </template>
+          <template #[`item.nama`]="{ item }">
+            <span v-html="uppercaseLetterFirst(item.nama)" /> 
+          </template>
           <template #[`item.jabatan`]="{ item }">
             <ul><li v-for="v in item.jabatanGuru" :key="v.kode">{{ v.label }}</li></ul>
           </template>
@@ -179,6 +182,7 @@
     </v-card>
     <v-dialog
       v-model="DialogStruktural"
+      scrollable
       max-width="800px"
       persistent
       transition="dialog-bottom-transition"
@@ -200,365 +204,360 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-              <div class="text-center">
-                <v-avatar size="150" style="border: solid 2px #000;">
-                  <v-img :src="previewData.fotoProfil"></v-img>
-                </v-avatar>
-              </div>
-              <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Consumer Type
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaRole }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Lengkap
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nama }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Username
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.username }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Email
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.email }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kata Sandi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.password }}&nbsp;
-                  <v-icon
-                    color="light-blue darken-3"
-                    tabindex="-1"
-                    @click="endecryptData('endecryptType')"
-                    >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
-                  >
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Alamat</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Tempat, Tanggal Lahir
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jenis Kelamin
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jenisKelamin }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Agama
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.agama }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Telepon
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.telp }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Alamat
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.alamat }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Provinsi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.provinsi }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kabupaten / Kota
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kabKota }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                cols="12"
-                md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                Kecamatan
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kecamatan }}				
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kelurahan
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kelurahan }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kode Pos
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kodePos }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Kelengkapan</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nomor Induk
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nomorInduk }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pendidikan Struktural
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pendidikanGuru }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jabatan Struktural
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jabatanGuru }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Mangajar Bidang
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.mengajarBidang }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Mangajar Kelas
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.mengajarKelas }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Wali Kelas
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.waliKelas ? previewData.waliKelas : '-' }}
-                </v-col>
-              </v-row>
-            </v-card-text>
+        <v-card-text class="pt-4">
+          <div class="text-center">
+            <v-avatar size="150" style="border: solid 2px #000;">
+              <v-img :src="previewData.fotoProfil"></v-img>
+            </v-avatar>
           </div>
-        </v-card>
+          <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Consumer Type
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaRole }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Lengkap
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nama }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Username
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.username }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Email
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.email }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kata Sandi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.password }}&nbsp;
+              <v-icon
+                color="light-blue darken-3"
+                tabindex="-1"
+                @click="endecryptData('endecryptType')"
+                >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
+              >
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Alamat</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tempat, Tanggal Lahir
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jenis Kelamin
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jenisKelamin }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Agama
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.agama }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.telp }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Alamat
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.alamat }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Provinsi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.provinsi }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kabupaten / Kota
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kabKota }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+            cols="12"
+            md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+            Kecamatan
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kecamatan }}				
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kelurahan
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kelurahan }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kode Pos
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kodePos }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Kelengkapan</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nomor Induk
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nomorInduk }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pendidikan Struktural
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pendidikanGuru }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jabatan Struktural
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jabatanGuru }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Mangajar Bidang
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.mengajarBidang }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Mangajar Kelas
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.mengajarKelas }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Wali Kelas
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.waliKelas ? previewData.waliKelas : '-' }}
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
       </v-card>
     </v-dialog>
     <v-dialog
@@ -881,14 +880,7 @@ export default {
 }
 </script>
 
-<style>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
+<style scoped>
 .v-input .v-label {
   font-size: 11pt !important;
 }

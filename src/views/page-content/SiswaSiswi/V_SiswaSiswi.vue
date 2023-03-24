@@ -255,6 +255,7 @@
     </v-card>
     <v-dialog
       v-model="DialogSiswaSiswi"
+      scrollable
       max-width="800px"
       persistent
       transition="dialog-bottom-transition"
@@ -276,1126 +277,1122 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-              <div class="text-center">
-                <v-avatar size="150" style="border: solid 2px #000;">
-                  <v-img :src="previewData.fotoProfil"></v-img>
-                </v-avatar>
-              </div>
-              <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Consumer Type
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaRole }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Lengkap
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nama }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Username
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.username }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Email
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.email }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kata Sandi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.password }}&nbsp;
-                  <v-icon
-                    color="light-black darken-3"
-                    tabindex="-1"
-                    @click="endecryptData('endecryptType')"
-                    >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
-                  >
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Siswa Siswi</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  NIK Siswa/i
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nikSiswa }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nomor Induk
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nomorInduk }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Tempat, Tanggal Lahir
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jenis Kelamin
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jenisKelamin }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Agama
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.agama }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Anak Ke
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.anakKe }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jumlah Saudara
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jumlahSaudara }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Hobi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.hobi }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Cita - Cita
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.citaCita }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kelas
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kelas }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Sekolah Sebelumnya</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jenjang Sekolah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jenjang }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Status Sekolah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.statusSekolah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Sekolah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaSekolah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  NPSN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.npsn }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Alamat Sekolah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.alamatSekolah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kabupaten / Kota Sekolah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kabkotSekolah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  No Peserta UN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.noPesertaUN }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  No SKHUN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.noSKHUN }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  No Ijazah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.noIjazah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nilai UN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nilaiUN }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Detail Orangtua</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  No Kartu Keluarga
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.noKK }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Kepala Keluarga
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaKK }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Telepon
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.telp }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Alamat
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.alamat }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Provinsi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.provinsi }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kabupaten / Kota
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kabKota }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                cols="12"
-                md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                Kecamatan
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kecamatan }}				
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kelurahan
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kelurahan }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kode Pos
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.kodePos }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Ayah</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  NIK Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nikAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Tahun Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.tahunAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Status Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.statusAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pendidikan Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pendidikanAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pekerjaan Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pekerjaanAyah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Telepon Ayah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.telpAyah }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Ibu</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  NIK Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nikIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Tahun Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.tahunIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Status Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.statusIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pendidikan Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pendidikanIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pekerjaan Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pekerjaanIbu }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Telepon Ibu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.telpIbu }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Wali</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  NIK Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.nikWali }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Nama Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.namaWali }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Tahun Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.tahunWali }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pendidikan Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pendidikanWali }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Pekerjaan Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.pekerjaanWali }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Telepon Wali
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.telpWali }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Data Lainnya</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Penghasilan
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.penghasilan }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Status Tempat Tinggal
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.statusTempatTinggal }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Jarak Rumah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.jarakRumah }}
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Transportasi
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  {{ previewData.transportasi }}
-                </v-col>
-              </v-row>
-              <h2 class="subheading black--text"><u>>>Berkas</u></h2>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Ijazah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF1"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcIjazah, 'ijazah', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC SKHUN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF2"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcSKHUN, 'skhun', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Kartu Keluarga
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF3"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcKK, 'kk', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC KTP Orangtua
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF4"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcKTPOrtu, 'ktp', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Akta Lahir
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF5"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcAktaLahir, 'aktalahir', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC SKL
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    :loading="isLoadingbtnPDF6"
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="ma-2 white--text text--darken-2"
-                    @click="pdfCreate(previewData.idUser, previewData.fcSKL, 'skl', 'berkas')"
-                  >
-                    <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card-text>
+        <v-card-text class="pt-4">
+          <div class="text-center">
+            <v-avatar size="150" style="border: solid 2px #000;">
+              <v-img :src="previewData.fotoProfil"></v-img>
+            </v-avatar>
           </div>
-        </v-card>
+          <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Consumer Type
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaRole }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Lengkap
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nama }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Username
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.username }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Email
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.email }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kata Sandi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.password }}&nbsp;
+              <v-icon
+                color="light-black darken-3"
+                tabindex="-1"
+                @click="endecryptData('endecryptType')"
+                >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
+              >
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Siswa Siswi</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              NIK Siswa/i
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nikSiswa }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nomor Induk
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nomorInduk }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tempat, Tanggal Lahir
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jenis Kelamin
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jenisKelamin }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Agama
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.agama }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Anak Ke
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.anakKe }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jumlah Saudara
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jumlahSaudara }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Hobi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.hobi }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Cita - Cita
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.citaCita }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kelas
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kelas }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Sekolah Sebelumnya</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jenjang Sekolah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jenjang }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Status Sekolah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.statusSekolah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Sekolah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaSekolah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              NPSN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.npsn }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Alamat Sekolah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.alamatSekolah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kabupaten / Kota Sekolah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kabkotSekolah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              No Peserta UN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.noPesertaUN }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              No SKHUN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.noSKHUN }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              No Ijazah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.noIjazah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nilai UN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nilaiUN }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Detail Orangtua</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              No Kartu Keluarga
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.noKK }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Kepala Keluarga
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaKK }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.telp }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Alamat
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.alamat }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Provinsi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.provinsi }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kabupaten / Kota
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kabKota }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+            cols="12"
+            md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+            Kecamatan
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kecamatan }}				
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kelurahan
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kelurahan }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Kode Pos
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.kodePos }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Ayah</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              NIK Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nikAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tahun Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.tahunAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Status Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.statusAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pendidikan Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pendidikanAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pekerjaan Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pekerjaanAyah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon Ayah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.telpAyah }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Ibu</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              NIK Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nikIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tahun Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.tahunIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Status Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.statusIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pendidikan Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pendidikanIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pekerjaan Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pekerjaanIbu }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon Ibu
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.telpIbu }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Wali</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              NIK Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nikWali }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.namaWali }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tahun Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.tahunWali }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pendidikan Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pendidikanWali }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Pekerjaan Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.pekerjaanWali }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon Wali
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.telpWali }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Data Lainnya</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Penghasilan
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.penghasilan }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Status Tempat Tinggal
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.statusTempatTinggal }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Jarak Rumah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.jarakRumah }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Transportasi
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.transportasi }}
+            </v-col>
+          </v-row>
+          <h2 class="subheading black--text"><u>>>Berkas</u></h2>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Ijazah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF1"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcIjazah, 'ijazah', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC SKHUN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF2"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcSKHUN, 'skhun', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Kartu Keluarga
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF3"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcKK, 'kk', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC KTP Orangtua
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF4"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcKTPOrtu, 'ktp', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Akta Lahir
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF5"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcAktaLahir, 'aktalahir', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC SKL
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                :loading="isLoadingbtnPDF6"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                @click="pdfCreate(previewData.idUser, previewData.fcSKL, 'skl', 'berkas')"
+              >
+                <v-icon small>visibility</v-icon>&nbsp;Lihat Berkas
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
       </v-card>
     </v-dialog>
     <v-dialog
       v-model="dialogPDF"
-      transition="dialog-bottom-transition"
-			persistent
+      scrollable
 			width="1000px"
+			persistent
+      transition="dialog-bottom-transition"
     >
       <v-card>
         <v-toolbar
@@ -1414,19 +1411,22 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
+        <v-card-text class="pt-4">
           <PdfCetakan
             :dialog-pdf.sync="dialogPDF"
             :url-sk.sync="urlSk"
           />
-        </v-card>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
       </v-card>
     </v-dialog>
     <v-dialog
       v-model="dialogUploadBerkas"
-      transition="dialog-bottom-transition"
-			persistent
+      scrollable
 			width="800px"
+			persistent
+      transition="dialog-bottom-transition"
     >
       <v-card>
         <v-toolbar
@@ -1445,220 +1445,216 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Ijazah
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('ijazah')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputIjazah"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'ijazah')"
-                  >
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC SKHUN
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('skhun')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputSKHUN"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'skhun')"
-                  >
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Kartu Keluarga
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('kk')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputKK"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'kk')"
-                  >
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC KTP
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('ktp')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputKTP"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'ktp')"
-                  >
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC Akta Lahir
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('aktalahir')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputAktaLahir"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'aktalahir')"
-                  >
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  FC SKL
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-btn
-                    color="#0bd369"
-                    small
-                    dense
-                    depressed
-                    class="white--text text--darken-2"
-                    @click="pilihFile('skl')"
-                  >
-                    <v-icon small>upload</v-icon>&nbsp;Upload Berkas
-                  </v-btn>
-                  <input 
-                    ref="inputSKL"
-                    :key="componentKey"
-                    type="file"
-                    accept=".pdf"
-                    style="display: none"
-                    @change="uploadBerkas($event, 'skl')"
-                  >
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </div>
-        </v-card>
+        <v-card-text class="pt-4">
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Ijazah
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('ijazah')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputIjazah"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'ijazah')"
+              >
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC SKHUN
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('skhun')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputSKHUN"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'skhun')"
+              >
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Kartu Keluarga
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('kk')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputKK"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'kk')"
+              >
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC KTP
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('ktp')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputKTP"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'ktp')"
+              >
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC Akta Lahir
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('aktalahir')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputAktaLahir"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'aktalahir')"
+              >
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              FC SKL
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-btn
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="white--text text--darken-2"
+                @click="pilihFile('skl')"
+              >
+                <v-icon small>upload</v-icon>&nbsp;Upload Berkas
+              </v-btn>
+              <input 
+                ref="inputSKL"
+                :key="componentKey"
+                type="file"
+                accept=".pdf"
+                style="display: none"
+                @change="uploadBerkas($event, 'skl')"
+              >
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
       </v-card>
     </v-dialog>
     <v-dialog
       v-model="dialogImport"
-      transition="dialog-bottom-transition"
-			persistent
+      scrollable
 			width="600px"
+			persistent
+      transition="dialog-bottom-transition"
     >
       <v-card>
         <v-toolbar
@@ -1689,29 +1685,24 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
+        <v-card-text class="pt-4">
+          <v-card class="pa-2 d-flex justify-center align-center" elevation="1" outlined>
+            <div class="kotak" @click="pilihFile('excel')">
+              <v-icon middle color="black">fa-solid fa-file-excel</v-icon>
+              <div style="font-weight: bold;">Tambah File</div>
             </div>
-            <v-card-text>
-              <v-card class="pa-2 d-flex justify-center align-center" elevation="1" outlined>
-                <div class="kotak" @click="pilihFile('excel')">
-                  <v-icon middle color="black">fa-solid fa-file-excel</v-icon>
-                  <div style="font-weight: bold;">Tambah File</div>
-                </div>
-                <input 
-                  ref="inputExcel"
-                  :key="componentKey"
-                  type="file"
-                  accept=".xlsx,.xls"
-                  style="display: none"
-                  @change="importExcel($event)"
-                >
-              </v-card>
-            </v-card-text>
-          </div>
-        </v-card>
+            <input 
+              ref="inputExcel"
+              :key="componentKey"
+              type="file"
+              accept=".xlsx,.xls"
+              style="display: none"
+              @change="importExcel($event)"
+            >
+          </v-card>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
       </v-card>
     </v-dialog>
     <v-dialog
@@ -2371,6 +2362,7 @@ export default {
       }
     },
     async importExcel(e) {
+      this.isLoadingExport = true
       let files = e.target.files[0];
       if(files){
 				const bodyData = {
@@ -2380,16 +2372,19 @@ export default {
 				try {
 					await this.uploadFiles(bodyData);
           files = ''
+          this.isLoadingExport = false
           this.$refs.inputExcel.value = null
           this.getSiswaSiswi(this.page, this.limit, this.searchData)
 					this.notifikasi("success", "Berhasil Import Data Siswa Siswi", "1")
 				} catch (err) {
+          this.isLoadingExport = false
           this.componentKey++;
           files = ''
           this.$refs.inputExcel.value = null
           this.notifikasi("error", "Gagal Import Data Siswa Siswi", "1")
 				}
 			}else{
+        this.isLoadingExport = false
         this.componentKey++;
         files = ''
         this.$refs.inputExcel.value = null
@@ -2428,13 +2423,6 @@ export default {
 </script>
 
 <style scoped>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
 .v-input .v-label {
   font-size: 11pt !important;
 }
@@ -2457,9 +2445,5 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   cursor: pointer;
-}
-.style-1 {
-  background-color: #b6b2b2;
-  font-weight: bold;
 }
 </style>

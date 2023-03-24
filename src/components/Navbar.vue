@@ -43,7 +43,20 @@
 							</v-list-item-title>
 						</v-list-item>
 						<v-list-item
-							v-if="data.menuText === 'Wali Kelas'"
+							v-if="data.menuText === 'Wali Kelas' && (roleID === '1' || roleID === '2')"
+							router :to="data.menuRoute"
+							class="SelectedMenu"
+							active-class="SelectedMenu-active"
+							v-bind="attrs"
+							v-on="on"
+						>
+							<v-icon left middle>{{ data.menuIcon }}</v-icon>
+							<v-list-item-title>
+								<span>{{ data.menuText }}</span>
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
+							v-if="data.menuText === 'Wali Kelas' && wali_kelas !== '' && roleID === '3'"
 							router :to="data.menuRoute"
 							class="SelectedMenu"
 							active-class="SelectedMenu-active"
@@ -163,7 +176,7 @@
 						v-bind="attrs"
 						v-on="on"
 					>
-						{{ nama }}
+						{{ inisialuppercaseLetterFirst(nama) }}
 						<v-avatar size="35">
 							<v-img :src="fotoProfil"></v-img>
 						</v-avatar>
@@ -213,6 +226,7 @@
       temporary
 			right
     >
+			<h4 class="text-center">----- Menu Lainnya -----</h4>
       <v-list
         nav
         dense

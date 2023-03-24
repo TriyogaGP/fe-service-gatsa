@@ -9,7 +9,7 @@
           sm6 xs12 md4 lg4
           class="pa-1"
         >
-          <v-card @click="gotoDetail(data.kelas)">
+          <v-card @click="data.jumlah > 0 ? gotoDetail(data.kelas) : warningNotif()">
             <v-list-item>
               <v-list-item-avatar tile class="mt-n7">
 								<v-sheet color="green" width="40" height="40" elevation="6">
@@ -99,6 +99,9 @@ export default {
 		},
     gotoDetail(kelas) {
       this.$router.push({name: "DataDetailKelasSiswa", params: { kondisi: 'view', kelas: kelas }});
+    },
+    warningNotif(){
+      this.notifikasi("warning", "Tidak ada siswa/i dikelas ini", "1")
     },
     notifikasi(kode, text, proses){
       this.dialogNotifikasi = true

@@ -116,7 +116,7 @@
                         NILAI
                       </th>
                       <th class="text-left">
-                        HURUF
+                        KETERANGAN
                       </th>
                     </tr>
                   </thead>

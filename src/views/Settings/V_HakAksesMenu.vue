@@ -117,6 +117,7 @@
 		</v-row>
 		<v-dialog
       v-model="DialogRoleMenu"
+			scrollable
       max-width="800px"
       persistent
       transition="dialog-bottom-transition"
@@ -138,159 +139,154 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-							<v-card
-								class="pa-2 mb-2"
-								elevation="1"
-								v-for="(v, i) in inputRoleMenu.kumpulanMenu"
-								:key="v.idMenu"
+				<v-card-text class="pt-4">
+					<v-card
+						class="pa-2 mb-2"
+						elevation="1"
+						v-for="(v, i) in inputRoleMenu.kumpulanMenu"
+						:key="v.idMenu"
+					>
+						<div class="text-right">
+							<v-btn  
+								v-if="i !== (inputRoleMenu.kumpulanMenu.length - 1)"
+								icon
+								@click="() => { inputRoleMenu.kumpulanMenu.splice(i, 1) }"
 							>
-								<div class="text-right">
-									<v-btn  
-										v-if="i !== (inputRoleMenu.kumpulanMenu.length - 1)"
-										icon
-										@click="() => { inputRoleMenu.kumpulanMenu.splice(i, 1) }"
-									>
-										<v-icon color="red" small>close</v-icon>
-									</v-btn>
-								</div>
-								<v-row no-gutters>
-									<v-col
-										cols="12"
-										md="4"
-										class="pt-2 d-flex align-center font-weight-bold"
-									>
-										Menu
-									</v-col>
-									<v-col
-										cols="12"
-										md="8"
-										class="pt-3"
-									>
-										<v-autocomplete
-											:value="v.idMenu"
-											:items="menuOptions"
-											placeholder="Pilih Menu"
-											label="Pilih Menu"
-											item-text="menuText"
-											item-value="idMenu"
+								<v-icon color="red" small>close</v-icon>
+							</v-btn>
+						</div>
+						<v-row no-gutters>
+							<v-col
+								cols="12"
+								md="4"
+								class="pt-2 d-flex align-center font-weight-bold"
+							>
+								Menu
+							</v-col>
+							<v-col
+								cols="12"
+								md="8"
+								class="pt-3"
+							>
+								<v-autocomplete
+									:value="v.idMenu"
+									:items="menuOptions"
+									placeholder="Pilih Menu"
+									label="Pilih Menu"
+									item-text="menuText"
+									item-value="idMenu"
+									outlined
+									hide-details
+									dense
+									color="light-black darken-3"
+									@change="changeData($event, i, 'menu')"
+								/>
+							</v-col>
+						</v-row>
+						<v-row no-gutters>
+							<v-col
+								cols="12"
+								md="4"
+								class="pt-2 d-flex align-center font-weight-bold"
+							>
+								Sub Menu
+							</v-col>
+							<v-col
+								cols="12"
+								md="8"
+								class="pt-3"
+							>
+								<v-autocomplete
+									:value="v.submenu"
+									:items="submenuOptions"
+									placeholder="Pilih Menu"
+									label="Pilih Menu"
+									item-text="menuText"
+									item-value="idMenu"
+									multiple
+									outlined
+									hide-details
+									dense
+									color="light-black darken-3"
+									clearable
+									@change="addDataSubMenu($event, v.idMenu)"
+								>
+									<template #selection="data">
+										<v-chip
+											v-bind="data.attrs"
+											:input-value="data.selected"
+											close
+											small
 											outlined
-											hide-details
-											dense
+											class="ma-1"
 											color="light-black darken-3"
-											@change="changeData($event, i, 'menu')"
-										/>
-									</v-col>
-								</v-row>
-								<v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Sub Menu
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-									<v-autocomplete
-										:value="v.submenu"
-										:items="submenuOptions"
-										placeholder="Pilih Menu"
-										label="Pilih Menu"
-										item-text="menuText"
-										item-value="idMenu"
-										multiple
-										outlined
-										hide-details
-										dense
-										color="light-black darken-3"
-										clearable
-										@change="addDataSubMenu($event, v.idMenu)"
-									>
-										<template #selection="data">
-											<v-chip
-												v-bind="data.attrs"
-												:input-value="data.selected"
-												close
-												small
-												outlined
-												class="ma-1"
-												color="light-black darken-3"
-												@click="data.select"
-												@click:close="removeDataSubMenu(data.item, v.idMenu)"
-											>
-												{{ data.item.menuText }}
-											</v-chip>
-										</template>
-									</v-autocomplete>
-                </v-col>
-              </v-row>
-								<v-row no-gutters>
-									<v-col
-										cols="12"
-										md="4"
-										class="pt-2 d-flex align-center font-weight-bold"
-									>
-										Kondisi
-									</v-col>
-									<v-col
-										cols="12"
-										md="8"
-										class="pt-3"
-									>
-										<v-autocomplete
-											:value="v.kondisi"
-											:items="kondisiOptions"
-											placeholder="Kondisi"
-											label="Kondisi"
-											item-text="value"
-											item-value="value"
-											outlined
-											hide-details
-											dense
-											color="light-black darken-3"
-											@change="changeData($event, i, 'kondisi')"
-										/>
-									</v-col>
-								</v-row>
-							</v-card>
-            </v-card-text>
-          </div>
-          <v-card-actions>
-            <v-row 
-              no-gutters
-              class="mt-1 mr-3"
-            >
-              <v-col
-                class="text-end"
-                cols="12"
-              >
-                <v-btn
-                  color="light-blue darken-3"
-                  class="white--text text--darken-2"
-                  small
-                  dense
-                  depressed
-                  @click="SimpanForm()"
-                >
-                  Ubah Data
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+											@click="data.select"
+											@click:close="removeDataSubMenu(data.item, v.idMenu)"
+										>
+											{{ data.item.menuText }}
+										</v-chip>
+									</template>
+								</v-autocomplete>
+							</v-col>
+						</v-row>
+						<v-row no-gutters>
+							<v-col
+								cols="12"
+								md="4"
+								class="pt-2 d-flex align-center font-weight-bold"
+							>
+								Kondisi
+							</v-col>
+							<v-col
+								cols="12"
+								md="8"
+								class="pt-3"
+							>
+								<v-autocomplete
+									:value="v.kondisi"
+									:items="kondisiOptions"
+									placeholder="Kondisi"
+									label="Kondisi"
+									item-text="value"
+									item-value="value"
+									outlined
+									hide-details
+									dense
+									color="light-black darken-3"
+									@change="changeData($event, i, 'kondisi')"
+								/>
+							</v-col>
+						</v-row>
+					</v-card>
+				</v-card-text>
+				<v-divider />
+				<v-card-actions>
+					<v-row 
+						no-gutters
+						class="mt-1 mr-3"
+					>
+						<v-col
+							class="text-end"
+							cols="12"
+						>
+							<v-btn
+								color="light-blue darken-3"
+								class="white--text text--darken-2"
+								small
+								dense
+								depressed
+								@click="SimpanForm()"
+							>
+								Ubah Data
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-card-actions>
       </v-card>
     </v-dialog>
 		<v-bottom-sheet
       v-model="DetailMenu"
+			scrollable
       persistent
     >
       <v-sheet style="font-size: 14px;">
@@ -302,25 +298,22 @@
             <v-icon large>close</v-icon>
           </v-btn>
         </div>
-        <v-card class="mx-2" elavation="1">
-          <div class="scrollText">
-						<div v-if="menu.length">
-							<ul>
-								<li v-for="val in menu" :key="val.idMenu">
-									{{ `${val.menuText} (${val.kondisi})` }}
-									<ul>
-										<li v-for="v in val.subMenu" :key="v.idMenu">
-											{{ v.menuText }}
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<strong>*NB: jika true submenu dari luar dan jika false submenu dari dalam</strong>
-						</div>
-						<span v-else>Tidak ada Menu</span>
+        <v-card class="ma-4 pa-2">
+					<div v-if="menu.length">
+						<ul>
+							<li v-for="val in menu" :key="val.idMenu">
+								{{ `${val.menuText} (${val.kondisi})` }}
+								<ul>
+									<li v-for="v in val.subMenu" :key="v.idMenu">
+										{{ v.menuText }}
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<strong>*NB: jika true submenu dari luar dan jika false submenu dari dalam</strong>
 					</div>
+					<span v-else>Tidak ada Menu</span>
 				</v-card>
-        <br>
       </v-sheet>
     </v-bottom-sheet>
 		<v-dialog
@@ -490,7 +483,7 @@ export default {
 			let menuid = []
 			let kondisi = []
 			if(!item.menu.length){
-				this.inputRoleMenu.kumpulanMenu.push({ 
+				this.inputRoleMenu.kumpulanMenu.push({
 					idMenu: '',
 					menuText: '',
 					kondisi: false,
@@ -644,18 +637,5 @@ export default {
 }
 </script>
 
-<style>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
-.v-input .v-label {
-  font-size: 11pt !important;
-}
-.v-text-field.v-input--dense {
-  font-size: 13px !important;
-}
+<style scoped>
 </style>

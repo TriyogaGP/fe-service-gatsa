@@ -272,6 +272,16 @@ const Helper = {
           var finalText = stringArray.join("");
           return finalText;
         },
+        inisialuppercaseLetterFirst(textInput) {
+          textInput = textInput.toLowerCase();
+          var stringArray = textInput.split(/\b(\s)/);
+          for (var i = 0; i < stringArray.length; i++) {
+            stringArray[i] =
+              stringArray[i].charAt(0).toUpperCase()
+          }
+          var finalText = stringArray.join("");
+          return finalText;
+        },
         uppercaseLetter(textInput) {
           let result = textInput.toUpperCase();
           return result;

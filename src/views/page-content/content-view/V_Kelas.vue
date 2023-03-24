@@ -59,20 +59,19 @@
           :expanded.sync="expanded"
           show-expand
           item-key="idKelas"
-          hide-default-header
           hide-default-footer
           class="elevation-1"
           :items-per-page="itemsPerPage"
           @page-count="pageCount = $event"
         >
           <!-- header -->
-          <template v-slot:header="{ props }">
+          <!-- <template v-slot:header="{ props }">
             <thead class="v-data-table-header">
               <tr>
                 <th v-for="header in props.headers" :key="header.text">{{ header.text.toUpperCase() }}</th>
               </tr>
             </thead>
-          </template>
+          </template> -->
           <template #[`item.number`]="{ item }">
             {{ page > 1 ? ((page - 1)*limit) + DataKelas.indexOf(item) + 1 : DataKelas.indexOf(item) + 1 }}
           </template>
@@ -191,6 +190,7 @@
     </v-card>
     <v-dialog
       v-model="DialogKelas"
+      scrollable
       max-width="800px"
       persistent
       transition="dialog-bottom-transition"
@@ -212,78 +212,71 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Kelas
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-text-field
-                    v-model="inputDataKelas.kelas"
-                    placeholder="Kelas"
-                    outlined
-                    dense
-                    label="Kelas"
-                    color="light-black darken-3"
-                    hide-details
-                    :clearable="editedIndex != 2"
-                    :readonly="editedIndex == 2"
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </div>
-          <v-divider />
-          <v-card-actions>
-            <v-row 
-              no-gutters
-              class="mr-3"
+        <v-card-text class="pt-4">
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
             >
-              <v-col
-                class="text-end"
-                cols="12"
+              Kelas
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-text-field
+                v-model="inputDataKelas.kelas"
+                placeholder="Kelas"
+                outlined
+                dense
+                label="Kelas"
+                color="light-black darken-3"
+                hide-details
+                :clearable="editedIndex != 2"
+                :readonly="editedIndex == 2"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-row 
+            no-gutters
+            class="mr-3"
+          >
+            <v-col
+              class="text-end"
+              cols="12"
+            >
+              <v-btn
+                v-if="editedIndex == 0"
+                color="light-blue darken-3"
+                class="white--text text--darken-2"
+                small
+                dense
+                depressed
+                :disabled="kondisiTombol"
+                @click="SimpanForm(0)"
               >
-                <v-btn
-                  v-if="editedIndex == 0"
-                  color="light-blue darken-3"
-                  class="white--text text--darken-2"
-                  small
-                  dense
-                  depressed
-                  :disabled="kondisiTombol"
-                  @click="SimpanForm(0)"
-                >
-                  Simpan Data
-                </v-btn> 
-                <v-btn
-                  v-else-if="editedIndex == 1"
-                  color="light-blue darken-3"
-                  class="white--text text--darken-2"
-                  small
-                  dense
-                  depressed
-                  :disabled="kondisiTombol"
-                  @click="SimpanForm(1)"
-                >
-                  Ubah Data
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+                Simpan Data
+              </v-btn> 
+              <v-btn
+                v-else-if="editedIndex == 1"
+                color="light-blue darken-3"
+                class="white--text text--darken-2"
+                small
+                dense
+                depressed
+                :disabled="kondisiTombol"
+                @click="SimpanForm(1)"
+              >
+                Ubah Data
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog
@@ -337,10 +330,10 @@ export default {
 			totalPages: ''
 		},
 		headers: [
-      { text: "No", value: "number", sortable: false, width: "5%" },
-      { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
-      { text: "Kelas", value: "kelas", sortable: false },
-      { text: "Status", value: "status", sortable: false },
+      { text: "NO", value: "number", sortable: false, width: "3%" },
+      { text: "#", value: "data-table-expand", sortable: false, width: "3%" },
+      { text: "KELAS", value: "kelas", sortable: false, width: "25%" },
+      { text: "STATUS", value: "status", sortable: false, width: "25%" },
     ],
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
@@ -536,14 +529,7 @@ export default {
 }
 </script>
 
-<style>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
+<style scoped>
 .v-input .v-label {
   font-size: 11pt !important;
 }

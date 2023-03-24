@@ -82,6 +82,11 @@ export default [
         name: 'DataDetailAkademis',
         component: () => import('@/views/page-content/content-view/V_DetailAkademis.vue')
       },
+      {
+        path: '/dataWaliKelas',
+        name: 'DataWaliKelas',
+        component: () => import('@/views/page-content/content-view/V_WaliKelasSiswa.vue'),
+      },
 
 
     ]

@@ -153,6 +153,7 @@
 		</v-row>
 		<v-dialog
       v-model="DialogRole"
+			scrollable
       max-width="800px"
       persistent
       transition="dialog-bottom-transition"
@@ -174,76 +175,70 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card>
-          <div class="scrollText">
-            <div class="px-5">
-              <v-divider />
-            </div>
-            <v-card-text>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center font-weight-bold"
-                >
-                  Role Name
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-text-field
-                    v-model="inputRole.nama_role"
-                    placeholder="Role Name"
-                    outlined
-                    dense
-                    label="Role Name"
-                    color="light-black darken-3"
-                    hide-details
-                    clearable
-                  />
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </div>
-          <v-card-actions>
-            <v-row 
-              no-gutters
-              class="mt-1 mr-3"
-            >
-              <v-col
-                class="text-end"
-                cols="12"
-              >
-                <v-btn
-                  v-if="editedIndex == 0"
-                  color="light-blue darken-3"
-                  class="white--text text--darken-2"
-                  small
-                  dense
-                  depressed
-                  :disabled="kondisiTombol"
-                  @click="SimpanForm(0)"
-                >
-                  Simpan Data
-                </v-btn> 
-                <v-btn
-                  v-else-if="editedIndex == 1"
-                  color="light-blue darken-3"
-                  class="white--text text--darken-2"
-                  small
-                  dense
-                  depressed
-                  :disabled="kondisiTombol"
-                  @click="SimpanForm(1)"
-                >
-                  Ubah Data
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-actions>
-        </v-card>
+				<v-card-text class="pt-4">
+					<v-row no-gutters>
+						<v-col
+							cols="12"
+							md="4"
+							class="pt-2 d-flex align-center font-weight-bold"
+						>
+							Role Name
+						</v-col>
+						<v-col
+							cols="12"
+							md="8"
+							class="pt-3"
+						>
+							<v-text-field
+								v-model="inputRole.nama_role"
+								placeholder="Role Name"
+								outlined
+								dense
+								label="Role Name"
+								color="light-black darken-3"
+								hide-details
+								clearable
+							/>
+						</v-col>
+					</v-row>
+				</v-card-text>
+				<v-divider />
+				<v-card-actions>
+					<v-row 
+						no-gutters
+						class="mt-1 mr-3"
+					>
+						<v-col
+							class="text-end"
+							cols="12"
+						>
+							<v-btn
+								v-if="editedIndex == 0"
+								color="light-blue darken-3"
+								class="white--text text--darken-2"
+								small
+								dense
+								depressed
+								:disabled="kondisiTombol"
+								@click="SimpanForm(0)"
+							>
+								Simpan Data
+							</v-btn> 
+							<v-btn
+								v-else-if="editedIndex == 1"
+								color="light-blue darken-3"
+								class="white--text text--darken-2"
+								small
+								dense
+								depressed
+								:disabled="kondisiTombol"
+								@click="SimpanForm(1)"
+							>
+								Ubah Data
+							</v-btn>
+						</v-col>
+					</v-row>
+				</v-card-actions>
       </v-card>
     </v-dialog>
 		<v-dialog
@@ -474,14 +469,5 @@ export default {
 }
 </script>
 
-<style>
-.v-pagination {
-  justify-content: flex-end !important;
-}
-.v-input .v-label {
-  font-size: 11pt !important;
-}
-.v-text-field.v-input--dense {
-  font-size: 13px !important;
-}
+<style scoped>
 </style>
