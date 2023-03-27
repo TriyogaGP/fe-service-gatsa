@@ -114,18 +114,11 @@ export default {
 </script>
 
 <style scoped>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
 .v-input .v-label {
   font-size: 11pt !important;
 }
 .v-text-field.v-input--dense {
-  font-size: 13pt !important;
+  font-size: 13px !important;
 }
 .judul {
   font-size: 10pt !important;

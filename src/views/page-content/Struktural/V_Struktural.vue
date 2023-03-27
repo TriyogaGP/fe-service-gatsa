@@ -59,28 +59,26 @@
           :expanded.sync="expanded"
           show-expand
           item-key="idUser"
-          hide-default-header
           hide-default-footer
           class="elevation-1"
           :items-per-page="itemsPerPage"
           @page-count="pageCount = $event"
         >
-          <!-- header -->
-          <template v-slot:header="{ props }">
-            <thead class="v-data-table-header">
-              <tr>
-                <th v-for="header in props.headers" :key="header.text" style="font-weight: bold;">{{ header.text.toUpperCase() }}</th>
-              </tr>
-            </thead>
-          </template>
           <template #[`item.number`]="{ item }">
             {{ page > 1 ? ((page - 1)*limit) + DataStruktural.indexOf(item) + 1 : DataStruktural.indexOf(item) + 1 }}
           </template>
           <template #[`item.nama`]="{ item }">
-            <span v-html="uppercaseLetterFirst(item.nama)" /> 
+            <span v-html="uppercaseLetterFirst(item.nama)" /><br>
+            <span v-html="item.email" /> 
           </template>
           <template #[`item.jabatan`]="{ item }">
-            <ul><li v-for="v in item.jabatanGuru" :key="v.kode">{{ v.label }}</li></ul>
+            <ul><li v-for="v in item.jabatanGuru" :key="v.kode">{{ v.label === 'Wali Kelas' ? `${v.label} (${item.waliKelas})` : v.label }}</li></ul>
+          </template>
+          <template #[`item.mapel`]="{ item }">
+            <ul><li v-for="v in item.mengajarBidang" :key="v.kode">{{ v.label }}</li></ul>
+          </template>
+          <template #[`item.kelas`]="{ item }">
+            <span v-html="item.mengajarKelas"></span>
           </template>
           <template #[`item.statusAktif`]="{ item }">
             <v-icon small v-if="item.statusAktif == true" color="green">check</v-icon>
@@ -613,11 +611,12 @@ export default {
 		headers: [
       { text: "No", value: "number", sortable: false, width: "5%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
-      { text: "Nomor Induk", value: "nomorInduk", sortable: false },
-      { text: "Nama", value: "nama", sortable: false },
-      { text: "Email", value: "email", sortable: false },
-      { text: "Jabatan", value: "jabatan", sortable: false },
-      { text: "Status", value: "statusAktif", sortable: false },
+      { text: "NOMOR INDUK", value: "nomorInduk", sortable: false },
+      { text: "NAMA / EMAIl", value: "nama", sortable: false },
+      { text: "JABATAN", value: "jabatan", sortable: false },
+      { text: "MATA PELAJARAN", value: "mapel", sortable: false },
+      { text: "KELAS", value: "kelas", sortable: false, width: "15%" },
+      { text: "STATUS", value: "statusAktif", sortable: false },
     ],
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,

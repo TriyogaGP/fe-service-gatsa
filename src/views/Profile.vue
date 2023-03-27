@@ -1790,48 +1790,60 @@
     </v-dialog>
     <v-dialog
       v-model="dialogCrop"
+      scrollable
       width="700px"
       height="500px"
       persistent
       transition="dialog-bottom-transition"
     >
-      <v-card tile>
-        <div class="scrollText">
-          <v-card-text>
-            <cropper
-              ref="cropper"
-              class="cropper"
-              :auto-zoom="true"
-              :src="image.src"
-              stencil-component="circle-stencil"
-            />
-              <!-- :stencil-size="{
-                width: 300,
-                height: 300
-              }"
-              :stencil-props="{
-                handlers: {},
-                movable: false,
-                resizable: false,
-                aspectRatio: 1,
-              }"
-              image-restriction="stencil" -->
-          </v-card-text>
-        </div>
-        <v-btn
-          color="#e6e7e8"
-          class="elevation-0 tombol-tutup ma-3"
-          @click="tutupDialogCrop()"
-        >
-          Tutup
-        </v-btn>
-        <v-btn
-          color="#e6e7e8"
-          class="elevation-0 tombol-tutup ma-3"
-          @click="crop"
-        >
-          Crop Lampiran
-        </v-btn>
+      <v-card>
+        <v-card-text class="pt-4">
+          <cropper
+            ref="cropper"
+            class="cropper"
+            :auto-zoom="true"
+            :src="image.src"
+            stencil-component="circle-stencil"
+          />
+            <!-- :stencil-size="{
+              width: 300,
+              height: 300
+            }"
+            :stencil-props="{
+              handlers: {},
+              movable: false,
+              resizable: false,
+              aspectRatio: 1,
+            }"
+            image-restriction="stencil" -->
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-row 
+            no-gutters
+            class="mr-3"
+          >
+            <v-col
+              class="text-end"
+              cols="12"
+            >
+              <v-btn
+                color="#e6e7e8"
+                class="elevation-0 tombol-tutup mr-3"
+                @click="tutupDialogCrop()"
+              >
+                Tutup
+              </v-btn>
+              <v-btn
+                color="#e6e7e8"
+                class="elevation-0 tombol-tutup"
+                @click="crop"
+              >
+                Crop Lampiran
+              </v-btn>
+            </v-col>
+          </v-row>  
+        </v-card-actions>
       </v-card>
 		</v-dialog>
     <v-dialog
@@ -2341,12 +2353,6 @@ export default {
 	margin: 5px;
   padding: 5px;
   font-size: 9pt;
-}
-.scrollText{
-  width: 700px;
-  height: 500px;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
 }
 .v-tab {
 	font-size: 8pt !important;

@@ -2393,6 +2393,12 @@ export default {
 </script>
 
 <style scoped>
+.v-input .v-label {
+  font-size: 11pt !important;
+}
+.v-text-field.v-input--dense {
+  font-size: 13px !important;
+}
 .wadah {
   font-size: 15px;
   font-weight: bold;

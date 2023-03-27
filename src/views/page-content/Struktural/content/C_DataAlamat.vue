@@ -187,6 +187,7 @@
 						color="light-black darken-3"
 						hide-details
 						clearable
+						@change="wilayah('provinsi', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -216,6 +217,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataAlamat.provinsi ? false : true"
+						@change="wilayah('kabkota', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -245,6 +247,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataAlamat.kabkota ? false : true"
+						@change="wilayah('kecamatan', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -274,6 +277,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataAlamat.kecamatan ? false : true"
+						@change="wilayah('kelurahan', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -391,39 +395,6 @@ export default {
 		inputDataAlamat:{
 			deep: true,
 			handler(value) {
-				if(value.provinsi){
-					this.optionWilayah('kabkota', value.provinsi)
-				}else{
-					value.kabkota = ''
-					value.kecamatan = ''
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kabkota){
-					this.optionWilayah('kecamatan', value.kabkota)
-				}else{
-					value.kecamatan = ''
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kecamatan){
-					this.optionWilayah('kelurahan', value.kecamatan)
-				}else{
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kelurahan){
-					let data = this.KelurahanOptions.filter(str => str.value === value.kelurahan)
-					if(this.$route.params.kondisi === 'ADD'){
-						this.inputDataAlamat.kode_pos = data[0].kodePos
-					}
-				}else{
-					value.kode_pos = ''
-				}
-
 				if(value.tempat != '' && value.tanggal_lahir != '' && value.jenis_kelamin != '' && value.agama != '' && value.telp != '' && value.alamat != '' && value.provinsi != '' &&
 					value.kabkota != '' && value.kecamatan != '' && value.kelurahan != ''){
 					this.kondisiTombol = false
@@ -467,6 +438,9 @@ export default {
 					kelurahan: resdata.kelurahan ? resdata.kelurahan.kode : null,
 					kode_pos: resdata.kodePos ? resdata.kodePos : null,
 				}
+				this.optionWilayah('kabkota', this.inputDataAlamat.provinsi)
+				this.optionWilayah('kecamatan', this.inputDataAlamat.kabkota)
+				this.optionWilayah('kelurahan', this.inputDataAlamat.kecamatan)
 				// console.log(resdata);
 			})
 			.catch((err) => {
@@ -489,6 +463,50 @@ export default {
 			}
       this.$emit("DataStepTwo", inputFormTwo)
     },
+		wilayah(kondisi, e){
+			if(kondisi === 'provinsi'){
+				if(e){
+					this.optionWilayah('kabkota', e)
+					this.inputDataAlamat.kabkota = ''
+					this.inputDataAlamat.kecamatan = ''
+					this.inputDataAlamat.kelurahan = ''
+					this.inputDataAlamat.kode_pos = ''
+				}
+			}else if(kondisi === 'kabkota'){
+				if(e){
+					this.optionWilayah('kecamatan', e)
+					if(e !== this.inputDataAlamat.kecamatan) {
+						this.inputDataAlamat.kelurahan = ''
+						this.inputDataAlamat.kode_pos = ''	
+					}
+				}else{
+					this.inputDataAlamat.kecamatan = ''
+					this.inputDataAlamat.kelurahan = ''
+					this.inputDataAlamat.kode_pos = ''
+				}
+			}else if(kondisi === 'kecamatan'){
+				if(e){
+					this.optionWilayah('kelurahan', e)
+					if(e !== this.inputDataAlamat.kelurahan) {
+						this.inputDataAlamat.kode_pos = ''	
+					}
+				}else{
+					this.inputDataAlamat.kelurahan = ''
+					this.inputDataAlamat.kode_pos = ''
+				}
+			}else if(kondisi === 'kelurahan'){
+				if(e){
+					let data = this.KelurahanOptions.filter(str => str.value === e)
+					if(this.$route.params.kondisi === 'ADD'){
+						this.inputDataAlamat.kode_pos = data[0].kodePos
+					}else if(this.$route.params.kondisi === 'EDIT'){
+						this.inputDataAlamat.kode_pos = this.inputDataAlamat.kode_pos ? data.length ? data[0].kodePos : this.inputDataAlamat.kode_pos : data[0].kodePos
+					}
+				}else{
+					this.inputDataAlamat.kode_pos = ''
+				}
+			}
+		},
 		optionAgama(){
       let payload = {
         method: "get",

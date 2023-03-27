@@ -7,30 +7,35 @@
       <span>Data Akademis ({{ mapelText }})</span>
     </div>
     <v-card class="mt-2 mb-2" outlined elevation="0">
-      <v-layout v-if="DataKelas.length" class="ma-1" row wrap>
-        <v-flex
-          v-for="data in DataKelas"
-          :key="data.kelas"
-          sm6 xs12 md4 lg4
-          class="pa-1"
-        >
-          <v-card @click="data.jumlah > 0 ? gotoDetail(data.kelas, mapelText) : warningNotif()">
-            <v-list-item>
-              <v-list-item-avatar tile class="mt-n7">
-								<v-sheet color="green" width="40" height="40" elevation="6">
-									<v-icon dark large>fa-duotone fa-user-secret</v-icon>
-								</v-sheet>
-							</v-list-item-avatar>
-              <v-list-item-content>
-                <div class="judul text-center">Kelas {{ data.kelas }}</div>
-                <v-list-item-title class="mb-2 text-center">{{ data.jumlah }} Orang</v-list-item-title>
-                <v-divider />
-              </v-list-item-content>
-            </v-list-item>
-          </v-card>
-        </v-flex>
-      </v-layout>
-      <h2 v-else style="font-weight: bold;">Data Kelas Siswa Tidak Tersedia</h2>
+      <div
+        v-for="data in DataKelas"
+        :key="data.kategori"
+      >
+        <h3 v-if="data.dataKelas.length" class="subheading black--text ml-3"><u>Kelas ({{ data.kategori }})</u></h3>
+        <v-layout v-if="data.dataKelas.length" class="ma-1" row wrap>  
+          <v-flex
+            v-for="hasil in data.dataKelas"
+            :key="hasil.kelas"
+            sm6 xs12 md4 lg4
+            class="pa-1"
+          >
+            <v-card @click="hasil.jumlah > 0 ? gotoDetail(hasil.kelas, mapelText) : warningNotif()">
+              <v-list-item>
+                <v-list-item-avatar tile class="mt-n7">
+                  <v-sheet color="green" width="40" height="40" elevation="6">
+                    <v-icon dark large>fa-duotone fa-user-secret</v-icon>
+                  </v-sheet>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <div class="judul text-center">Kelas {{ hasil.kelas }}</div>
+                  <v-list-item-title class="mb-2 text-center">{{ hasil.jumlah }} Orang</v-list-item-title>
+                  <v-divider />
+                </v-list-item-content>
+              </v-list-item>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </div>
     </v-card>
     <v-dialog
       v-model="dialogNotifikasi"
@@ -98,7 +103,31 @@ export default {
 			};
 			this.fetchData(payload)
 			.then((res) => {
-        this.DataKelas = res.data.result
+        let resdata = res.data.result
+        let result = [
+          { kategori: '7'},
+          { kategori: '8'},
+          { kategori: '9'},
+        ]
+
+        result.map(async val => {
+          let hasil = []
+          await resdata.map(str => {
+            let split = str.kelas.split('-')
+            if(split[0] === val.kategori){
+              hasil.push({
+                kelas: str.kelas,
+                jumlah: str.jumlah,
+              })
+            }
+            return hasil
+          })
+          this.DataKelas.push({
+            kategori: val.kategori,
+            dataKelas: hasil,
+          })
+        })
+        // console.log(this.DataKelas);
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -124,13 +153,6 @@ export default {
 </script>
 
 <style scoped>
-.scrollText{
-  max-height: 450px !important;
-  overflow-y: auto !important;
-}
-.v-pagination {
-  justify-content: flex-end !important;
-}
 .v-input .v-label {
   font-size: 11pt !important;
 }

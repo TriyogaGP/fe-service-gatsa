@@ -199,8 +199,8 @@
 								<v-autocomplete
 									:value="v.submenu"
 									:items="submenuOptions"
-									placeholder="Pilih Menu"
-									label="Pilih Menu"
+									placeholder="Pilih Sub Menu"
+									label="Pilih Sub Menu"
 									item-text="menuText"
 									item-value="idMenu"
 									multiple

@@ -130,6 +130,7 @@
 						color="light-black darken-3"
 						hide-details
 						clearable
+						@change="wilayah('provinsi', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -159,6 +160,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataDetailOrangtua.provinsi ? false : true"
+						@change="wilayah('kabkota', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -188,6 +190,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataDetailOrangtua.kabkota ? false : true"
+						@change="wilayah('kecamatan', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -217,6 +220,7 @@
 						hide-details
 						clearable
 						:disabled="inputDataDetailOrangtua.kecamatan ? false : true"
+						@change="wilayah('kelurahan', $event)"
 					/>
 				</v-col>
 			</v-row>
@@ -436,7 +440,7 @@
                 label="Status Ayah"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -455,7 +459,7 @@
                 label="Tahun Ayah"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -491,7 +495,7 @@
                 label="Pendidikan Ayah"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -510,7 +514,7 @@
                 label="Pekerjaan Ayah"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -623,7 +627,7 @@
                 label="Status Ibu"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -642,7 +646,7 @@
                 label="Tahun Ibu"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -678,7 +682,7 @@
                 label="Pendidikan Ibu"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -697,7 +701,7 @@
                 label="Pekerjaan Ibu"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -827,7 +831,7 @@
                 label="Tahun Wali"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -863,7 +867,7 @@
                 label="Pendidikan Wali"
                 outlined
                 dense
-				color="light-black darken-3"
+								color="light-black darken-3"
                 hide-details
                 clearable
               />
@@ -1005,39 +1009,6 @@ export default {
 		inputDataDetailOrangtua:{
 			deep: true,
 			handler(value) {
-				if(value.provinsi){
-					this.optionWilayah('kabkota', value.provinsi)
-				}else{
-					value.kabkota = ''
-					value.kecamatan = ''
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kabkota){
-					this.optionWilayah('kecamatan', value.kabkota)
-				}else{
-					value.kecamatan = ''
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kecamatan){
-					this.optionWilayah('kelurahan', value.kecamatan)
-				}else{
-					value.kelurahan = ''
-					value.kode_pos = ''
-				}
-
-				if(value.kelurahan){
-					let data = this.KelurahanOptions.filter(str => str.value === value.kelurahan)
-					if(this.$route.params.kondisi === 'ADD'){
-						this.inputDataDetailOrangtua.kode_pos = data[0].kodePos
-					}
-				}else{
-					value.kode_pos = ''
-				}
-
 				if(value.no_kk != '' && value.nama_kk != '' && value.telp != '' && value.alamat != '' && value.provinsi != '' && value.kabkota != '' && value.kecamatan != '' && value.kelurahan != '' &&
           value.nik_ayah != '' && value.nama_ayah != '' && value.status_ayah != '' && value.tahun_ayah != '' && value.pendidikan_ayah != '' && value.pekerjaan_ayah != '' &&
           value.nik_ibu != '' && value.nama_ibu != '' && value.status_ibu != '' && value.tahun_ibu != '' && value.pendidikan_ibu != '' && value.pekerjaan_ibu != '' &&
@@ -1115,6 +1086,9 @@ export default {
 					kelurahan: resdata.dataAlamatOrangtua.kelurahan ? resdata.dataAlamatOrangtua.kelurahan.kode : null,
 					kode_pos: resdata.dataAlamatOrangtua.kodePos ? resdata.dataAlamatOrangtua.kodePos : null,
 				}
+				this.optionWilayah('kabkota', this.inputDataDetailOrangtua.provinsi)
+				this.optionWilayah('kecamatan', this.inputDataDetailOrangtua.kabkota)
+				this.optionWilayah('kelurahan', this.inputDataDetailOrangtua.kecamatan)
 				// console.log(resdata);
 			})
 			.catch((err) => {
@@ -1159,6 +1133,50 @@ export default {
 			}
       this.$emit("DataStepFour", inputFormFour)
     },
+		wilayah(kondisi, e){
+			if(kondisi === 'provinsi'){
+				if(e){
+					this.optionWilayah('kabkota', e)
+					this.inputDataDetailOrangtua.kabkota = ''
+					this.inputDataDetailOrangtua.kecamatan = ''
+					this.inputDataDetailOrangtua.kelurahan = ''
+					this.inputDataDetailOrangtua.kode_pos = ''
+				}
+			}else if(kondisi === 'kabkota'){
+				if(e){
+					this.optionWilayah('kecamatan', e)
+					if(e !== this.inputDataDetailOrangtua.kecamatan) {
+						this.inputDataDetailOrangtua.kelurahan = ''
+						this.inputDataDetailOrangtua.kode_pos = ''	
+					}
+				}else{
+					this.inputDataDetailOrangtua.kecamatan = ''
+					this.inputDataDetailOrangtua.kelurahan = ''
+					this.inputDataDetailOrangtua.kode_pos = ''
+				}
+			}else if(kondisi === 'kecamatan'){
+				if(e){
+					this.optionWilayah('kelurahan', e)
+					if(e !== this.inputDataDetailOrangtua.kelurahan) {
+						this.inputDataDetailOrangtua.kode_pos = ''	
+					}
+				}else{
+					this.inputDataDetailOrangtua.kelurahan = ''
+					this.inputDataDetailOrangtua.kode_pos = ''
+				}
+			}else if(kondisi === 'kelurahan'){
+				if(e){
+					let data = this.KelurahanOptions.filter(str => str.value === e)
+					if(this.$route.params.kondisi === 'ADD'){
+						this.inputDataDetailOrangtua.kode_pos = data[0].kodePos
+					}else if(this.$route.params.kondisi === 'EDIT'){
+						this.inputDataDetailOrangtua.kode_pos = this.inputDataDetailOrangtua.kode_pos ? data.length ? data[0].kodePos : this.inputDataDetailOrangtua.kode_pos : data[0].kodePos
+					}
+				}else{
+					this.inputDataDetailOrangtua.kode_pos = ''
+				}
+			}
+		},
 		optionPendidikan(){
       let payload = {
         method: "get",
