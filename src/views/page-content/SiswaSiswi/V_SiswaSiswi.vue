@@ -2182,9 +2182,9 @@ export default {
         this.urlSk = ''
         fetch(`${this.BASEURL}user/pdfcreate/${idUser}`, {
           method: 'GET',
-          // headers: {
-          //   'user_key': process.env.NODE_ENV == 'development' ? process.env.USER_KEY : process.env.USER_KEY_PROD
-          // }
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('user_token')}`
+          }
         })
         .then(response => response.arrayBuffer())
         .then(async response => {
