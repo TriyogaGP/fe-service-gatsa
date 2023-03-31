@@ -1009,6 +1009,13 @@ export default {
 		inputDataDetailOrangtua:{
 			deep: true,
 			handler(value) {
+				if(!value.provinsi){
+					this.inputDataDetailOrangtua.kabkota = ''
+					this.inputDataDetailOrangtua.kecamatan = ''
+					this.inputDataDetailOrangtua.kelurahan = ''
+					this.inputDataDetailOrangtua.kode_pos = ''
+				}
+
 				if(value.no_kk != '' && value.nama_kk != '' && value.telp != '' && value.alamat != '' && value.provinsi != '' && value.kabkota != '' && value.kecamatan != '' && value.kelurahan != '' &&
           value.nik_ayah != '' && value.nama_ayah != '' && value.status_ayah != '' && value.tahun_ayah != '' && value.pendidikan_ayah != '' && value.pekerjaan_ayah != '' &&
           value.nik_ibu != '' && value.nama_ibu != '' && value.status_ibu != '' && value.tahun_ibu != '' && value.pendidikan_ibu != '' && value.pekerjaan_ibu != '' &&

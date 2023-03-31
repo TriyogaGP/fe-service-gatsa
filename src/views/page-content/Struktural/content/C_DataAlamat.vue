@@ -395,6 +395,13 @@ export default {
 		inputDataAlamat:{
 			deep: true,
 			handler(value) {
+				if(!value.provinsi){
+					this.inputDataAlamat.kabkota = ''
+					this.inputDataAlamat.kecamatan = ''
+					this.inputDataAlamat.kelurahan = ''
+					this.inputDataAlamat.kode_pos = ''
+				}
+
 				if(value.tempat != '' && value.tanggal_lahir != '' && value.jenis_kelamin != '' && value.agama != '' && value.telp != '' && value.alamat != '' && value.provinsi != '' &&
 					value.kabkota != '' && value.kecamatan != '' && value.kelurahan != ''){
 					this.kondisiTombol = false

@@ -11,7 +11,8 @@
 					single-line
 					hide-details
 					solo
-					color="light-blue darken-3"
+					dense
+					color="light-black darken-3"
 					clearable
 					@keyup.enter="getHakAksesMenu(1, limit, searchData)"
 				/>

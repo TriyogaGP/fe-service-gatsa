@@ -12,7 +12,7 @@
             class="ma-2 white--text text--darken-2"
             @click="openDialog(null, 0)"
           >
-            <v-icon small>add</v-icon>	Tambah
+            <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
         </v-col>
         <v-col cols="12" md="6">
@@ -25,6 +25,7 @@
                 single-line
                 hide-details
                 solo
+                dense
                 color="light-black darken-3"
                 clearable
                 @keyup.enter="getKelas(1, limit, searchData)"
@@ -96,7 +97,7 @@
                 :disabled="item.status == false"
                 @click="openDialog(item, 1)"
               >
-                <v-icon small>edit</v-icon>	Ubah
+                <v-icon small>edit</v-icon>&nbsp;Ubah
               </v-btn> 
               <v-btn
                 v-if="item.status == false"
@@ -108,7 +109,7 @@
                 class="ma-2 white--text text--darken-2"
                 @click="StatusRecord(item, 1)"
               >
-                <v-icon small>visibility</v-icon>	Active
+                <v-icon small>visibility</v-icon>&nbsp;Active
               </v-btn> 
               <v-btn
                 v-else-if="item.status == true"
@@ -120,7 +121,7 @@
                 class="ma-2 white--text text--darken-2"
                 @click="StatusRecord(item, 0)"
               >
-                <v-icon small>visibility_off</v-icon>	Non Active
+                <v-icon small>visibility_off</v-icon>&nbsp;Non Active
               </v-btn> 
               <v-btn
                 :value="item.idKelas"
@@ -132,7 +133,7 @@
                 :disabled="item.status == false"
                 @click="HapusRecord(item)"
               >
-                <v-icon small>delete</v-icon>	Hapus
+                <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn> 
               <v-btn
                 :value="item.idKelas"
@@ -143,7 +144,7 @@
                 class="ma-2 white--text text--darken-2"
                 @click="openDialog(item, 2)"
               >
-                <v-icon small>info</v-icon>	Detail
+                <v-icon small>info</v-icon>&nbsp;Detail
               </v-btn> 
               <v-divider />
             </td>

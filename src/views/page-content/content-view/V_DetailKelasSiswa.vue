@@ -39,6 +39,7 @@
                 single-line
                 hide-details
                 solo
+                dense
                 color="light-black darken-3"
                 clearable
                 @keyup.enter="getSiswaSiswi(1, limit, searchData, kelas)"
@@ -100,6 +101,7 @@
                   <v-icon v-if="task.condition_UAS && DataSiswaSiswi.length" @click="formNilai(DataSiswaSiswi, false, 'uas')" style="cursor: pointer;" small>check</v-icon>
                   <v-icon v-if="!task.condition_UAS && DataSiswaSiswi.length" @click="formNilai(DataSiswaSiswi, true, 'uas')" style="cursor: pointer;" small>edit</v-icon>
                 </th>
+                <th class="tulisan-td" style="font-weight: bold;">KEHADIRAN</th>
                 <th class="tulisan-td" style="font-weight: bold;">RATA RATA NILAI</th>
                 <th class="tulisan-td" style="font-weight: bold;">NILAI HURUF</th>
               </tr>
@@ -189,6 +191,9 @@
             </v-edit-dialog>
             <span v-else class="tulisan-td" v-html="item.dataNilai.uas ? item.dataNilai.uas : 0" />
           </template>
+          <template #[`item.kehadiran`]="{ item }">
+            <strong>S</strong>:&nbsp;{{ item.dataKehadiran.sakit }}, <strong>A</strong>:&nbsp;{{ item.dataKehadiran.alfa }}, <strong>I</strong>:&nbsp;{{ item.dataKehadiran.ijin }}
+          </template>
           <template #[`item.statusAktif`]="{ item }">
             <v-icon small v-if="item.statusAktif == true" color="green">check</v-icon>
             <v-icon small v-else-if="item.statusAktif == false" color="red">clear</v-icon>
@@ -208,7 +213,7 @@
               >
                 <v-icon small>info</v-icon>&nbsp;Detail
               </v-btn>
-              <!-- <v-btn
+              <v-btn
                 v-if="kondisi === 'penilaian'"
                 :value="item.idUser"
                 color="#0bd369"
@@ -216,9 +221,10 @@
                 dense
                 depressed
                 class="ma-2 white--text text--darken-2"
+                @click="bukaDialog(item)"
               >
-                <v-icon small>fa-solid fa-list-check</v-icon>&nbsp;Nilai Tugas
-              </v-btn> -->
+                <v-icon small>fa-solid fa-person-chalkboard</v-icon>&nbsp;Kehadiran
+              </v-btn>
               <v-divider />
             </td>
           </template>
@@ -262,6 +268,132 @@
 			</v-col>
       </v-row>
     </v-card>
+    <v-dialog
+      v-model="DialogKehadiran"
+      scrollable
+      max-width="800px"
+      persistent
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar
+          dark
+          color="light-black darken-3"
+        >
+          <v-toolbar-title>Data Ubah Kehadiran</v-toolbar-title>
+          <v-spacer />
+          <v-toolbar-items>
+            <v-btn
+              icon
+              dark
+              @click="() => { DialogKehadiran = false; }"
+            >
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text class="pt-4">
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Sakit
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-text-field
+                v-model="inputKehadiran.sakit"
+                placeholder="Sakit"
+                outlined
+                dense
+                label="Sakit"
+                color="light-black darken-3"
+                hide-details
+                @keypress.native="onlyNumber($event, 3, inputKehadiran.sakit)"                          
+              />
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tanpa Keterangan (Alfa)
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-text-field
+                v-model="inputKehadiran.alfa"
+                placeholder="Tanpa Keterangan (Alfa)"
+                outlined
+                dense
+                label="Tanpa Keterangan (Alfa)"
+                color="light-black darken-3"
+                hide-details
+                @keypress.native="onlyNumber($event, 3, inputKehadiran.alfa)"                          
+              />
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Ijin
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              <v-text-field
+                v-model="inputKehadiran.ijin"
+                placeholder="Ijin"
+                outlined
+                dense
+                label="Ijin"
+                color="light-black darken-3"
+                hide-details
+                @keypress.native="onlyNumber($event, 3, inputKehadiran.ijin)"                          
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions>
+          <v-row 
+            no-gutters
+            class="mr-3"
+          >
+            <v-col
+              class="text-end"
+              cols="12"
+            >
+              <v-btn
+                color="light-blue darken-3"
+                class="white--text text--darken-2"
+                small
+                dense
+                depressed
+                @click="simpanKehadiran()"
+              >
+                Ubah Kehadiran
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog
       v-model="DialogSiswaSiswi"
       scrollable
@@ -1700,6 +1832,7 @@
                 label="Jumlah Tugas"
                 color="light-black darken-3"
                 hide-details
+                @keypress.native="onlyNumber($event, 2, jumlahTugas)"                          
               />
             </v-col>
           </v-row>
@@ -1724,6 +1857,7 @@
                 label="KKM"
                 color="light-black darken-3"
                 hide-details
+                @keypress.native="onlyNumber($event, 3, kkm)"                          
               />
             </v-col>
           </v-row>
@@ -1890,11 +2024,19 @@ export default {
       transportasi: '',
     },
     DialogSiswaSiswi: false,
+    DialogKehadiran: false,
     DialogTask: false,
     DialogJumlahTugas: false,
     endecryptType: '',
     jumlahTugas: '',
     kkm: '',
+    inputKehadiran: {
+      idUser: '',
+      mapel: '',
+      sakit: 0,
+      alfa: 0,
+      ijin: 0,
+    },
     inputTemp: [],
     task: {
       tugas1: [],
@@ -2006,17 +2148,19 @@ export default {
           this.kkm = this.DataNilai.kkm
           await kumpul.map(str => {
             let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].nilai
+            let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].kehadiran
             let totalNilaiTugas = Number(nilai.tugas1) + Number(nilai.tugas2) + Number(nilai.tugas3) + Number(nilai.tugas4) + Number(nilai.tugas5) + Number(nilai.tugas6) + Number(nilai.tugas7) + Number(nilai.tugas8) + Number(nilai.tugas9) + Number(nilai.tugas10)
             let rataRataTugas = totalNilaiTugas === 0 ? 0 : totalNilaiTugas / Number(this.jumlahTugas)
             let rataRataNilai = (Number(rataRataTugas) + Number(nilai.uts) + Number(nilai.uas)) / 3
             this.DataSiswaSiswi.push({
               ...str,
               dataNilai: nilai,
+              dataKehadiran: kehadiran,
               totalNilaiTugas: rataRataTugas != 0 ? Math.ceil(rataRataTugas) : 0,
               rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
               hurufNilai: rataRataNilai <= 50 ? 'E' : rataRataNilai <= 65 ? 'D' : rataRataNilai <= 75 ? 'C' : rataRataNilai <= 85 ? 'B' : 'A',
             })
-            console.log(totalNilaiTugas, rataRataTugas, this.jumlahTugas);
+            // console.log(totalNilaiTugas, rataRataTugas, this.jumlahTugas);
           })
         }else if(this.kondisi == 'view'){
           this.DataSiswaSiswi = resdata.records
@@ -2083,6 +2227,7 @@ export default {
           { text: "Nilai Akhir Tugas", value: "tugas", sortable: false },
           { text: "Nilai UTS", value: "uts", sortable: false },
           { text: "Nilai UAS", value: "uas", sortable: false },
+          { text: "Kehadiran", value: "kehadiran", sortable: false },
           { text: "Rata - Rata Nilai", value: "rataRataNilai", sortable: false },
           { text: "Nilai Huruf", value: "hurufNilai", sortable: false },
         )
@@ -2356,6 +2501,49 @@ export default {
         }
       })
     },
+    bukaDialog(item){
+      this.inputKehadiran = {
+        idUser: item.idUser,
+        mapel: this.mapel,
+        sakit: item.dataKehadiran.sakit,
+        alfa: item.dataKehadiran.alfa,
+        ijin: item.dataKehadiran.ijin,
+      }
+      this.DialogKehadiran = true
+    },
+    simpanKehadiran(){
+      let bodyData = {
+        jenis: 'kehadiran',
+        idUser: this.inputKehadiran.idUser,
+        mapel: this.inputKehadiran.mapel,
+        dataKehadiran: [
+          { 
+            kehadiran: {
+              sakit: Number(this.inputKehadiran.sakit),
+              alfa: Number(this.inputKehadiran.alfa),
+              ijin: Number(this.inputKehadiran.ijin),
+            }
+          }
+        ]
+      }
+      let payload = {
+				method: "post",
+				url: `user/nilai`,
+        body: bodyData,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        if(this.kondisi == 'penilaian'){
+          this.getNilai(this.kelas, this.mapel)
+        }
+        this.getSiswaSiswi(1, 20, this.searchData, this.kelas)
+        this.notifikasi("success", res.data.message, "1")
+			})
+			.catch((err) => {
+				this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
     gotolist(kondisi, param = null) {
       if(kondisi === 'view'){
         this.$router.push({name: "DataKelasSiswa", params: { kelas: param }});
@@ -2420,5 +2608,8 @@ export default {
 }
 .tulisan-td {
   font-size: 12px !important;
+}
+.titik2 {
+  text-indent: 5em;
 }
 </style>

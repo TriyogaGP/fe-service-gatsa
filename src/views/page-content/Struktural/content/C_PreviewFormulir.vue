@@ -176,7 +176,7 @@
 					md="8"
 					class="pt-3"
 				>
-					{{ uppercaseLetterFirst(provinsiText) }}
+					{{ uppercaseLetterFirst2(provinsiText) }}
 				</v-col>
 			</v-row>
 			<v-row no-gutters>
@@ -192,7 +192,7 @@
 					md="8"
 					class="pt-3"
 				>
-          {{ uppercaseLetterFirst(kabkotaText) }}
+          {{ uppercaseLetterFirst2(kabkotaText) }}
 				</v-col>
 			</v-row>
 			<v-row no-gutters>
@@ -208,7 +208,7 @@
 					md="8"
 					class="pt-3"
 				>
-          {{ uppercaseLetterFirst(kecamatanText) }}				
+          {{ uppercaseLetterFirst2(kecamatanText) }}				
 				</v-col>
 			</v-row>
 			<v-row no-gutters>
@@ -224,7 +224,7 @@
 					md="8"
 					class="pt-3"
 				>
-					{{ uppercaseLetterFirst(kelurahanText) }}
+					{{ uppercaseLetterFirst2(kelurahanText) }}
 				</v-col>
 			</v-row>
 			<v-row no-gutters>

@@ -2,6 +2,17 @@
   <div>
     <h1 class="subheading grey--text">{{ roleID === '1' || roleID === '2' ? 'Data Kelas Siswa' : `Kelas ${kelas}` }}</h1>
     <v-card v-if="roleID === '1' || roleID === '2'" class="mt-2 mb-2" outlined elevation="0">
+      <v-btn
+        v-if="DataKelas.length"
+        color="light-blue darken-3"
+        small
+        dense
+        depressed
+        class="ma-2 white--text text--darken-2"
+        @click="updatePeringkat(kelasJoin)"
+      >
+        <v-icon small>edit</v-icon>&nbsp;Update Peringkat
+      </v-btn>
       <div
         v-for="data in DataKelas"
         :key="data.kategori"
@@ -18,7 +29,7 @@
               <v-list-item>
                 <v-list-item-avatar tile class="mt-n7">
                   <v-sheet color="green" width="40" height="40" elevation="6">
-                    <v-icon dark large>fa-duotone fa-user-secret</v-icon>
+                    <v-icon dark middle>fa-duotone fa-user-secret</v-icon>
                   </v-sheet>
                 </v-list-item-avatar>
                 <v-list-item-content>
@@ -32,11 +43,18 @@
         </v-layout>
       </div>
     </v-card>
+    <v-btn
+      v-if="roleID === '3'"
+      color="light-blue darken-3"
+      small
+      dense
+      depressed
+      class="ma-2 white--text text--darken-2"
+      @click="updatePeringkat(kelas)"
+    >
+      <v-icon small>edit</v-icon>&nbsp;Update Peringkat
+    </v-btn>
     <v-card v-if="roleID === '3'" class="mt-2 mb-2 pa-4" outlined elevation="0">
-      <v-row no-gutters class="pa-2">
-        <v-col cols="12" md="3" />
-        <v-col cols="12" md="9" />
-      </v-row>
       <h1 class="subheading black--text text-center"><u>----- Rapot Siswa Siswi -----</u></h1>
       <v-row no-gutters>
         <v-col
@@ -89,7 +107,24 @@
       <v-row no-gutters>
         <v-col
           cols="12"
-          md="12"
+          md="6"
+          class="pt-2 text-left font-weight-bold"
+        >
+        <v-btn
+          color="light-blue darken-3"
+          small
+          dense
+          depressed
+          class="ma-2 white--text text--darken-2"
+          :loading="isLoadingbtnPDF"
+          @click="PDFOpen(dataSiswaSiswi.length ? dataSiswaSiswi[0].idUser : '-')"
+        >
+          <v-icon small>fa-solid fa-file-export</v-icon>&nbsp;Konversi -> PDF File
+        </v-btn>
+        </v-col>
+        <v-col
+          cols="12"
+          md="6"
           class="pt-2 text-right font-weight-bold"
         >
         <v-icon
@@ -111,7 +146,7 @@
         </v-icon>
         </v-col>
       </v-row>
-      <v-simple-table dark>
+      <v-simple-table dark class="mb-2">
         <template v-slot:default>
           <thead>
             <tr>
@@ -130,6 +165,9 @@
               <th class="text-left">
                 KETERANGAN
               </th>
+              <th class="text-left">
+                KOMPETEN / TIDAK KOMPETEN
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -139,21 +177,88 @@
               <td>{{ v.nilai }}</td>
               <td>{{ v.hurufNilai }}</td>
               <td>{{ v.nilai === 0 ? 'Nol' : pembilang(v.nilai) }}</td>
+              <td :style="v.nilai > v.kkm ? 'color: green' : 'color: red'">{{ v.nilai > v.kkm ? 'KOMPETEN' : 'TIDAK KOMPETEN' }}</td>
             </tr>
             <tr>
               <td colspan="2" class="text-right">RATA - RATA NILAI</td>
-              <td>{{ penilaian.rataRataNilai }}</td>
+              <td>{{ NilaiAkhir }}</td>
               <td>{{ penilaian.nilaiHuruf }}</td>
-              <td>{{ penilaian.rataRataNilai === 0 ? 'Nol' : pembilang(penilaian.rataRataNilai) }}</td>
+              <td colspan="2">{{ NilaiAkhir === 0 ? 'Nol' : pembilang(NilaiAkhir) }}</td>
+            </tr>
+            <tr>
+              <td colspan="2" class="text-right">PERINGKAT</td>
+              <td colspan="4">{{ `${dataSiswaSiswi.length ? dataSiswaSiswi[0].peringkat : '-'} dari total ${dataSiswaSiswi.length ? dataSiswaSiswi[0].jumlahSiswa : '-'} Siswa/i` }} </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
+      <v-simple-table dark class="mt-2">
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left">
+                KEHADIRAN
+              </th>
+              <th class="text-left">
+                TOTAL
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Sakit</td>
+              <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.sakit : 0 }}</td>
+            </tr>
+            <tr>
+              <td>Ijin</td>
+              <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.ijin : 0 }}</td>
+            </tr>
+            <tr>
+              <td>Tanpa Keterangan</td>
+              <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.alfa : 0 }}</td>
             </tr>
           </tbody>
         </template>
       </v-simple-table>
     </v-card>
     <v-dialog
+      v-model="dialogPDF"
+      scrollable
+			width="1000px"
+			persistent
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar
+          dark
+          color="light-black darken-3"
+        >
+          <v-toolbar-title>Data Raport PDF Siswa Siswi</v-toolbar-title>
+          <v-spacer />
+          <v-toolbar-items>
+            <v-btn
+              icon
+              dark
+              @click="dialogPDF = false;"
+            >
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text class="pt-4">
+          <PdfCetakan
+            :dialog-pdf.sync="dialogPDF"
+            :url-sk.sync="urlSk"
+          />
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
+      </v-card>
+    </v-dialog>
+    <v-dialog
       v-model="DialogDetail"
       scrollable
-      max-width="1000px"
+      max-width="800px"
       persistent
       transition="dialog-bottom-transition"
     >
@@ -231,29 +336,46 @@
           <v-row no-gutters>
             <v-col
               cols="12"
-              md="12"
+              md="6"
+              class="pt-2 text-left font-weight-bold"
+            >
+              <v-btn
+                color="light-blue darken-3"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+                :loading="isLoadingbtnPDF"
+                @click="PDFOpen(dataSiswaSiswi.length ? dataSiswaSiswi[0].idUser : '-')"
+              >
+                <v-icon small>fa-solid fa-file-export</v-icon>&nbsp;Konversi -> PDF File
+              </v-btn>
+            </v-col>
+            <v-col
+              cols="12"
+              md="6"
               class="pt-2 text-right font-weight-bold"
             >
-            <v-icon
-              style="cursor: pointer;"
-              large
-              :disabled="dataSiswaSiswi.length ? pageSummary.page != 1 ? false : true : true"
-              @click="() => { page = pageSummary.page - 1 }"
-            >
-              keyboard_arrow_left
-            </v-icon>
-            <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}</span>
-            <v-icon
-              style="cursor: pointer;"
-              large
-              :disabled="dataSiswaSiswi.length ? pageSummary.page != pageSummary.totalPages ? false : true : true"
-              @click="() => { page = pageSummary.page + 1 }"
-            >
-              keyboard_arrow_right
-            </v-icon>
+              <v-icon
+                style="cursor: pointer;"
+                large
+                :disabled="dataSiswaSiswi.length ? pageSummary.page != 1 ? false : true : true"
+                @click="() => { page = pageSummary.page - 1 }"
+              >
+                keyboard_arrow_left
+              </v-icon>
+              <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}</span>
+              <v-icon
+                style="cursor: pointer;"
+                large
+                :disabled="dataSiswaSiswi.length ? pageSummary.page != pageSummary.totalPages ? false : true : true"
+                @click="() => { page = pageSummary.page + 1 }"
+              >
+                keyboard_arrow_right
+              </v-icon>
             </v-col>
           </v-row>
-          <v-simple-table dark>
+          <v-simple-table dark class="mb-2">
             <template v-slot:default>
               <thead>
                 <tr>
@@ -272,6 +394,9 @@
                   <th class="text-left">
                     KETERANGAN
                   </th>
+                  <th class="text-left">
+                    KOMPETEN / TIDAK KOMPETEN
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -281,12 +406,45 @@
                   <td>{{ v.nilai }}</td>
                   <td>{{ v.hurufNilai }}</td>
                   <td>{{ v.nilai === 0 ? 'Nol' : pembilang(v.nilai) }}</td>
+                  <td :style="v.nilai > v.kkm ? 'color: green' : 'color: red'">{{ v.nilai > v.kkm ? 'KOMPETEN' : 'TIDAK KOMPETEN' }}</td>
                 </tr>
                 <tr>
                   <td colspan="2" class="text-right">RATA - RATA NILAI</td>
-                  <td>{{ penilaian.rataRataNilai }}</td>
+                  <td>{{ NilaiAkhir }}</td>
                   <td>{{ penilaian.nilaiHuruf }}</td>
-                  <td>{{ penilaian.rataRataNilai === 0 ? 'Nol' : pembilang(penilaian.rataRataNilai) }}</td>
+                  <td colspan="2">{{ NilaiAkhir === 0 ? 'Nol' : pembilang(NilaiAkhir) }}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" class="text-right">PERINGKAT</td>
+                  <td colspan="4">{{ `${dataSiswaSiswi.length ? dataSiswaSiswi[0].peringkat : '-'} dari total ${dataSiswaSiswi.length ? dataSiswaSiswi[0].jumlahSiswa : '-'} Siswa/i` }} </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <v-simple-table dark class="mt-2">
+            <template v-slot:default>
+              <thead>
+                <tr>
+                  <th class="text-left">
+                    KEHADIRAN
+                  </th>
+                  <th class="text-left">
+                    TOTAL
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sakit</td>
+                  <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.sakit : 0 }}</td>
+                </tr>
+                <tr>
+                  <td>Ijin</td>
+                  <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.ijin : 0 }}</td>
+                </tr>
+                <tr>
+                  <td>Tanpa Keterangan</td>
+                  <td>{{ dataSiswaSiswi.length ? dataSiswaSiswi[0].kehadiran.alfa : 0 }}</td>
                 </tr>
               </tbody>
             </template>
@@ -296,6 +454,19 @@
         <v-card-actions />
       </v-card>
     </v-dialog>
+    <v-dialog
+			v-model="isLoadingProses"
+			transition="dialog-bottom-transition"
+			persistent
+			width="500px"
+		>
+			<v-progress-linear
+				class="pa-3"
+				indeterminate
+				color="black darken-3"
+			/>
+			<h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses update data, harap menunggu ...</h4>
+		</v-dialog>
     <v-dialog
       v-model="dialogNotifikasi"
       transition="dialog-bottom-transition"
@@ -315,19 +486,25 @@
 <script>
 import { mapActions } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
+import PdfCetakan from '../../Layout/PdfCetakan.vue';
+
 export default {
   name: 'DataKelasSiswa',
   components: {
-    PopUpNotifikasiVue
+    PopUpNotifikasiVue,
+    PdfCetakan,
   },
   data: () => ({
     roleID: '',
     kelas: '',
     mapel: '',
+    kelasJoin: '',
     DataKelas: [],
     DialogDetail: false,
+    isLoadingProses: false,
     dataSiswaSiswi: [],
     dataNilai: [],
+    NilaiAkhir: '',
     page: 1,
     pageSummary: {
 			page: '',
@@ -339,6 +516,10 @@ export default {
       rataRataNilai: 0,
       nilaiHuruf: '',
     },
+    dialogPDF: false,
+    isLoadingbtnPDF: false,
+    urlSk: window.location.href,
+    BASE_URL: '',
 
     //notifikasi
     dialogNotifikasi: false,
@@ -364,6 +545,7 @@ export default {
 		},
   },
   mounted() {
+    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
     this.roleID = localStorage.getItem('roleID')
     if(this.roleID === '1' || this.roleID === '2') {
       this.getKelasSiswa()
@@ -390,6 +572,8 @@ export default {
           { kategori: '9'},
         ]
 
+        this.kelasJoin = resdata.filter(str => str.jumlah > 0).map(str => str.kelas).join(', ')
+
         result.map(async val => {
           let hasil = []
           await resdata.map(str => {
@@ -407,7 +591,7 @@ export default {
             dataKelas: hasil,
           })
         })
-        // console.log(this.DataKelas);
+        // console.log(this.kelasJoin);
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -431,11 +615,12 @@ export default {
         let resdata = res.data.result
         this.dataSiswaSiswi = resdata.records
         this.dataNilai = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].dataNilai : []
+        this.NilaiAkhir = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].hasilAkhir : 0
         let ratarata = 0
         this.dataNilai.map(str => {
           ratarata += str.nilai
         })
-        this.penilaian.rataRataNilai = Math.ceil(ratarata / 15)
+        this.penilaian.rataRataNilai = Math.ceil(ratarata / 16)
         this.penilaian.nilaiHuruf = this.penilaian.rataRataNilai <= 50 ? 'E' : this.penilaian.rataRataNilai <= 65 ? 'D' : this.penilaian.rataRataNilai <= 75 ? 'C' : this.penilaian.rataRataNilai <= 85 ? 'B' : 'A'
         this.pageSummary = {
 					page: this.dataSiswaSiswi.length ? resdata.pageSummary.page : 0,
@@ -455,6 +640,48 @@ export default {
         this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
+    updatePeringkat(item) {
+      this.isLoadingProses = true
+      let payload = {
+        method: "get",
+				url: `user/update-peringkat?kelas=${item}`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        this.isLoadingProses = false
+        if(this.roleID === '1' || this.roleID === '2') {
+          this.getKelasSiswa()
+        }else if(this.roleID === '3'){
+          this.getWaliKelas(1, this.kelas)
+        }
+        this.notifikasi("success", "Sukses update peringkat", "1")
+			})
+			.catch((err) => {
+        this.isLoadingProses = false
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
+    PDFOpen(idUser) {
+      this.dialogPDF = false
+      this.isLoadingbtnPDF = true
+      this.urlSk = ''
+      fetch(`${this.BASEURL}user/pdfcreate-raport/${idUser}`, {
+        method: 'GET',
+        // headers: {
+        //   'user_key': process.env.NODE_ENV == 'development' ? process.env.USER_KEY : process.env.USER_KEY_PROD
+        // }
+      })
+      .then(response => response.arrayBuffer())
+      .then(async response => {
+        let blob = new Blob([response], { type: 'application/pdf' })
+        this.urlSk = window.URL.createObjectURL(blob)
+      })
+      setTimeout(() => {
+        this.isLoadingbtnPDF = false
+        this.dialogPDF = true;
+      }, 3000);
+    },
     openDialog(kelas){
       this.kelas = kelas
       this.getWaliKelas(1, this.kelas)

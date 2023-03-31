@@ -13,7 +13,7 @@
             <v-list-item>
               <v-list-item-avatar tile class="mt-n7">
 								<v-sheet color="green" width="40" height="40" elevation="6">
-									<v-icon dark large>fa-duotone fa-user-secret</v-icon>
+									<v-icon dark middle>fa-duotone fa-user-secret</v-icon>
 								</v-sheet>
 							</v-list-item-avatar>
               <v-list-item-content>

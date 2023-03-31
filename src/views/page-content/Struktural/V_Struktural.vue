@@ -25,7 +25,8 @@
                 single-line
                 hide-details
                 solo
-                color="light-blue darken-3"
+                dense
+                color="light-black darken-3"
                 clearable
                 @keyup.enter="getStruktural(1, limit, searchData)"
               />
@@ -810,10 +811,10 @@ export default {
         agama: item.agama.label,
         telp: item.telp,
         alamat: item.alamat,
-        provinsi: this.uppercaseLetterFirst(item.provinsi.nama),
-        kabKota: this.uppercaseLetterFirst(item.kabKota.nama),
-        kecamatan: this.uppercaseLetterFirst(item.kecamatan.nama),
-        kelurahan: this.uppercaseLetterFirst(item.kelurahan.nama),
+        provinsi: this.uppercaseLetterFirst2(item.provinsi.nama),
+        kabKota: this.uppercaseLetterFirst2(item.kabKota.nama),
+        kecamatan: this.uppercaseLetterFirst2(item.kecamatan.nama),
+        kelurahan: this.uppercaseLetterFirst2(item.kelurahan.nama),
         kodePos: item.kodePos,
         nomorInduk: item.nomorInduk,
         pendidikanGuru: item.pendidikanGuru.label,

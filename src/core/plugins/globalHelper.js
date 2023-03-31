@@ -272,6 +272,24 @@ const Helper = {
           var finalText = stringArray.join("");
           return finalText;
         },
+        uppercaseLetterFirst2(textInput) {
+          let regex = /[\!\@\#\$\%\^\&\*\)\(\+\=\.\<\>\{\}\[\]\:\;\'\"\|\~\`\_\-]/g
+          let cek = regex.test(textInput)
+          textInput = textInput.toLowerCase();
+          var stringArray = ''
+          if(cek){
+            stringArray = textInput.split(". ");
+          }else{
+            stringArray = textInput.split(/\b(\s)/);
+          }
+          for (var i = 0; i < stringArray.length; i++) {
+            stringArray[i] =
+              stringArray[i].charAt(0).toUpperCase() +
+              stringArray[i].substring(1);
+          }
+          var finalText = cek ? stringArray.join(". ") : stringArray.join("");
+          return finalText;
+        },
         inisialuppercaseLetterFirst(textInput) {
           textInput = textInput.toLowerCase();
           var stringArray = textInput.split(/\b(\s)/);

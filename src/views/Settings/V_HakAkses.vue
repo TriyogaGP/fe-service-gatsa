@@ -22,6 +22,7 @@
 					single-line
 					hide-details
 					solo
+					dense
 					color="light-black darken-3"
 					clearable
 					@keyup.enter="getHakAkses(1, limit, searchData)"

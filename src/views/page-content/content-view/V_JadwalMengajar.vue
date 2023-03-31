@@ -14,7 +14,8 @@
                 single-line
                 hide-details
                 solo
-                color="light-blue darken-3"
+                dense
+                color="light-black darken-3"
                 clearable
                 @keyup.enter="getJadwalMengajar(1, limit, searchData)"
               />

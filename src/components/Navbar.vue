@@ -4,7 +4,7 @@
 			<v-avatar size="35">
 				<v-img src="../../public/gatsa.png"></v-img>
 			</v-avatar>
-			<div class="ml-2 mr-2">MTsS SIROJUL ATHFAL</div>
+			<div class="ml-2 mr-2">{{ namaSekolah }}</div>
 			<v-divider vertical />
 			<v-divider vertical />
 			<v-list dense style="padding: 0px; margin-left: 3px;" v-if="roleID === '1'">
@@ -273,6 +273,12 @@ import PopUpNotifikasiVue from "../views/Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
     PopUpNotifikasiVue
+  },
+	props: {
+    namaSekolah: {
+      type: String,
+      default: null
+    },
   },
 	data: () => ({
 		drawer: false,

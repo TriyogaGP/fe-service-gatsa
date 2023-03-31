@@ -45,6 +45,7 @@
                 single-line
                 hide-details
                 solo
+                dense
                 color="light-black darken-3"
                 clearable
                 @keyup.enter="getSiswaSiswi(1, limit, searchData)"
@@ -98,7 +99,7 @@
             {{ page > 1 ? ((page - 1)*limit) + DataSiswaSiswi.indexOf(item) + 1 : DataSiswaSiswi.indexOf(item) + 1 }}
           </template>
           <template #[`item.nama`]="{ item }">
-            <span v-html="uppercaseLetterFirst(item.nama)" /> 
+            <span v-html="uppercaseLetterFirst2(item.nama)" /> 
           </template>
           <template #[`item.statusAktif`]="{ item }">
             <v-icon small v-if="item.statusAktif == true" color="green">check</v-icon>
@@ -2067,7 +2068,7 @@ export default {
         namaSekolah: item.dataSekolahSebelumnya.namaSekolah,
         npsn: item.dataSekolahSebelumnya.npsn ? item.dataSekolahSebelumnya.npsn : '-',
         alamatSekolah: item.dataSekolahSebelumnya.alamatSekolah,
-        kabkotSekolah: this.uppercaseLetterFirst(item.dataSekolahSebelumnya.kabkotSekolah.nama),
+        kabkotSekolah: this.uppercaseLetterFirst2(item.dataSekolahSebelumnya.kabkotSekolah.nama),
         noPesertaUN: item.dataSekolahSebelumnya.noPesertaUN ? item.dataSekolahSebelumnya.noPesertaUN : '-',
         noSKHUN: item.dataSekolahSebelumnya.noSKHUN ? item.dataSekolahSebelumnya.noSKHUN : '-',
         noIjazah: item.dataSekolahSebelumnya.noIjazah ? item.dataSekolahSebelumnya.noSKHUN : '-',
@@ -2076,10 +2077,10 @@ export default {
         namaKK: item.namaKK,
         telp: item.dataAlamatOrangtua.telp,
         alamat: item.dataAlamatOrangtua.alamat,
-        provinsi: this.uppercaseLetterFirst(item.dataAlamatOrangtua.provinsi.nama),
-        kabKota: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kabKota.nama),
-        kecamatan: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kecamatan.nama),
-        kelurahan: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kelurahan.nama),
+        provinsi: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.provinsi.nama),
+        kabKota: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kabKota.nama),
+        kecamatan: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kecamatan.nama),
+        kelurahan: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kelurahan.nama),
         kodePos: item.dataAlamatOrangtua.kodePos,
         nikAyah: item.dataOrangtua.dataAyah.nikAyah,
         namaAyah: item.dataOrangtua.dataAyah.namaAyah,

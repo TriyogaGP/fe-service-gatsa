@@ -6,7 +6,7 @@
           <v-avatar size="35">
             <v-img src="../../public/gatsa.png"></v-img>
           </v-avatar>
-          <div class="ml-2 mr-2">MTsS SIROJUL ATHFAL</div>
+          <div class="ml-2 mr-2">{{ namasekolah }}</div>
           <v-divider vertical />
           <v-divider vertical />
           <v-spacer />
@@ -19,7 +19,7 @@
             <v-row>
               <v-col cols="12" md="12">
                 <v-card-text>
-                  <h6 class="text-center display-1 light-black--text"><strong>MTsS SIROJUL ATHFAL</strong></h6>
+                  <h6 class="text-center display-1 light-black--text"><strong>{{ namasekolah }}</strong></h6>
                   <h6 class="text-center display-1 light-black--text mb-3"><div class="pembungkus"><h4>Masuk Panel</h4></div></h6>
                   <v-form>
                     <v-col cols="12" class="py-0 px-0 mb-3">
@@ -72,7 +72,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <Footer />
+      <Footer :nama-sekolah="namasekolah"/>
     </v-container>
     <v-dialog
       v-model="dialogNotifikasi"
@@ -105,6 +105,7 @@ export default {
     passType: '',
     username: '',
     katasandi: '',
+    namasekolah: '',
 
     //notifikasi
     dialogNotifikasi: false,
@@ -121,12 +122,29 @@ export default {
 	},
   mounted() {
     if(localStorage.getItem('user_token')) return this.$router.push({name: "Dashboard"});
+    this.getGeneralCMS()
   },
   methods: {
     ...mapActions({
       fetchData: "fetchData",
       AuthLogin: "auth/AuthLogin",
     }),
+    getGeneralCMS(){
+      let payload = {
+        method: "get",
+				url: `settings/cmssetting`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        let resdata = res.data.result
+				this.namasekolah = resdata.namasekolah ? resdata.namasekolah : null
+				// console.log(resdata);
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
     async AutentificationLogin(){
       const payload = {
         username: this.username,
