@@ -78,6 +78,38 @@
 					/>
 				</v-col>
       </v-row>
+      <v-row no-gutters>
+        <v-col cols="12" md="6" class="pa-4">
+          <v-autocomplete
+						v-model="inputData.jenisraport"
+						:items="jenisRaportOptions"
+						item-text="label"
+						item-value="value"
+						placeholder="Jenis Raport"
+						label="Jenis Raport"
+						outlined
+						dense
+						color="light-black darken-3"
+						hide-details
+						clearable
+					/>
+        </v-col>
+        <v-col cols="12" md="6" class="pa-4">
+					<v-autocomplete
+						v-model="inputData.semester"
+						:items="semesterOptions"
+						item-text="label"
+						item-value="value"
+						placeholder="Semester"
+						label="Semester"
+						outlined
+						dense
+						color="light-black darken-3"
+						hide-details
+						clearable
+					/>
+				</v-col>
+      </v-row>
     </v-card>
     <v-card class="mt-2 mb-2 pa-2 ma-1">
       <h2><u>Address Settings</u></h2>
@@ -264,6 +296,15 @@ export default {
 			{ label: 'False', value: 0 },
 			{ label: 'True', value: 1 },
 		],
+    semesterOptions: [
+			{ label: 'Genap', value: 0 },
+			{ label: 'Ganjil', value: 1 },
+		],
+    jenisRaportOptions: [
+			{ label: 'PENILAIAN AKHIR TAHUN (PAT)', value: 'PAT' },
+			{ label: 'PENILAIAN AKHIR SEMESTER (PAS)', value: 'PAS' },
+			{ label: 'PENILAIAN TENGAH SEMESTER (PTS)', value: 'PTS' },
+		],
     inputData: {
       namasekolah: '',
       statussekolah: '',
@@ -279,6 +320,8 @@ export default {
       longitude: '',
       tahunpelajaran: '',
       pdfraport: '',
+      jenisraport: '',
+      semester: '',
     },
     ProvinsiOptions: [],
     KabKotaOptions: [],
@@ -347,6 +390,8 @@ export default {
 					longitude: resdata.longitude ? resdata.longitude : null,
 					tahunpelajaran: resdata.tahunpelajaran ? resdata.tahunpelajaran.value : null,
 					pdfraport: resdata.pdfraport ? resdata.pdfraport.value : null,
+					jenisraport: resdata.jenisraport ? resdata.jenisraport.value : null,
+					semester: resdata.semester ? resdata.semester.value : null,
 				}
         this.optionWilayah('kabkota', this.inputData.provinsi)
 				this.optionWilayah('kecamatan', this.inputData.kabupatenkota)
@@ -430,6 +475,8 @@ export default {
       this.optionWilayah('kecamatan', this.inputData.kabupatenkota)
       this.optionWilayah('kelurahan', this.inputData.kecamatan)
       let tp = this.tahunOptions.filter(str => str.value === this.inputData.tahunpelajaran)[0]
+      let semester = this.semesterOptions.filter(str => str.value === this.inputData.semester)[0]
+      let jenisraport = this.jenisRaportOptions.filter(str => str.value === this.inputData.jenisraport)[0]
       let raport = this.raportOptions.filter(str => str.value === this.inputData.pdfraport)[0]
       let status = this.statusSekolahOptions.filter(str => str.kode === this.inputData.statussekolah)[0]
       let provinsi = this.ProvinsiOptions.filter(str => str.value === this.inputData.provinsi)[0]
@@ -469,6 +516,14 @@ export default {
         pdfraport: {
           label: raport.label,
           value: raport.value,
+        },
+        jenisraport: {
+          label: jenisraport.label,
+          value: jenisraport.value,
+        },
+        semester: {
+          label: semester.label,
+          value: semester.value,
         },
         telepon: this.inputData.telepon
       }

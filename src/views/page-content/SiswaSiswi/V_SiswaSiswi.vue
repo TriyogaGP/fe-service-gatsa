@@ -2137,6 +2137,9 @@ export default {
 			fetch(`${this.BASEURL}user/exportexcel?kelas=${this.kelasOptions}`, {
 				method: 'GET',
 				dataType: "xml",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('user_token')}`
+        }
 			})
 			.then(response => response.arrayBuffer())
 			.then(async response => {

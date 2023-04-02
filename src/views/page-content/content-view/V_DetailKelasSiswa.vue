@@ -135,7 +135,7 @@
               :return-value.sync="item.dataNilai.uts"
               persistent
               @open="() => { inputTemp[item.idUser] = item.dataNilai.uts; }"
-              @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'uts', 'luar')"
+              @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'uts', 'luar')"
               @cancel="() => { inputTemp[item.idUser] = ''; }"
             >
               <span class="tulisan-td" v-html="item.dataNilai.uts ? item.dataNilai.uts : 0" /> <v-icon small>edit</v-icon>
@@ -166,7 +166,7 @@
               :return-value.sync="item.dataNilai.uas"
               persistent
               @open="() => { inputTemp[item.idUser] = item.dataNilai.uas; }"
-              @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'uas', 'luar')"
+              @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'uas', 'luar')"
               @cancel="() => { inputTemp[item.idUser] = ''; }"
             >
               <span class="tulisan-td" v-html="item.dataNilai.uas ? item.dataNilai.uas : 0" /> <v-icon small>edit</v-icon>
@@ -1478,7 +1478,7 @@
                   :return-value.sync="item.dataNilai.tugas1"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas1; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas1', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas1', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas1 ? item.dataNilai.tugas1 : 0" /> <v-icon small>edit</v-icon>
@@ -1509,7 +1509,7 @@
                   :return-value.sync="item.dataNilai.tugas2"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas2; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas2', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas2', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas2 ? item.dataNilai.tugas2 : 0" /> <v-icon small>edit</v-icon>
@@ -1540,7 +1540,7 @@
                   :return-value.sync="item.dataNilai.tugas3"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas3; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas3', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas3', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas3 ? item.dataNilai.tugas3 : 0" /> <v-icon small>edit</v-icon>
@@ -1571,7 +1571,7 @@
                   :return-value.sync="item.dataNilai.tugas4"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas4; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas4', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas4', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas4 ? item.dataNilai.tugas4 : 0" /> <v-icon small>edit</v-icon>
@@ -1602,7 +1602,7 @@
                   :return-value.sync="item.dataNilai.tugas5"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas5; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas5', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas5', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas5 ? item.dataNilai.tugas5 : 0" /> <v-icon small>edit</v-icon>
@@ -1633,7 +1633,7 @@
                   :return-value.sync="item.dataNilai.tugas6"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas6; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas6', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas6', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas6 ? item.dataNilai.tugas6 : 0" /> <v-icon small>edit</v-icon>
@@ -1664,7 +1664,7 @@
                   :return-value.sync="item.dataNilai.tugas7"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas7; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas7', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas7', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas7 ? item.dataNilai.tugas7 : 0" /> <v-icon small>edit</v-icon>
@@ -1695,7 +1695,7 @@
                   :return-value.sync="item.dataNilai.tugas8"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas8; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas8', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas8', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas8 ? item.dataNilai.tugas8 : 0" /> <v-icon small>edit</v-icon>
@@ -1726,7 +1726,7 @@
                   :return-value.sync="item.dataNilai.tugas9"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas9; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas9', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas9', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas9 ? item.dataNilai.tugas9 : 0" /> <v-icon small>edit</v-icon>
@@ -1757,7 +1757,7 @@
                   :return-value.sync="item.dataNilai.tugas10"
                   persistent
                   @open="() => { inputTemp[item.idUser] = item.dataNilai.tugas10; }"
-                  @save="simpanPerubahan(inputTemp[item.idUser], item.dataNilai, item.idUser, mapel, 'tugas10', 'dalam')"
+                  @save="simpanPerubahan(inputTemp[item.idUser], item, mapel, 'tugas10', 'dalam')"
                   @cancel="() => { inputTemp[item.idUser] = ''; }"
                 >
                   <span class="tulisan-td" v-html="item.dataNilai.tugas10 ? item.dataNilai.tugas10 : 0" /> <v-icon small>edit</v-icon>
@@ -2033,6 +2033,7 @@ export default {
     inputKehadiran: {
       idUser: '',
       mapel: '',
+      semester: '',
       sakit: 0,
       alfa: 0,
       ijin: 0,
@@ -2148,6 +2149,7 @@ export default {
           this.kkm = this.DataNilai.kkm
           await kumpul.map(str => {
             let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].nilai
+            let semester = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].semester
             let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].kehadiran
             let totalNilaiTugas = Number(nilai.tugas1) + Number(nilai.tugas2) + Number(nilai.tugas3) + Number(nilai.tugas4) + Number(nilai.tugas5) + Number(nilai.tugas6) + Number(nilai.tugas7) + Number(nilai.tugas8) + Number(nilai.tugas9) + Number(nilai.tugas10)
             let rataRataTugas = totalNilaiTugas === 0 ? 0 : totalNilaiTugas / Number(this.jumlahTugas)
@@ -2155,6 +2157,7 @@ export default {
             this.DataSiswaSiswi.push({
               ...str,
               dataNilai: nilai,
+              semester: semester,
               dataKehadiran: kehadiran,
               totalNilaiTugas: rataRataTugas != 0 ? Math.ceil(rataRataTugas) : 0,
               rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
@@ -2233,9 +2236,9 @@ export default {
         )
       }
     },
-    simpanPerubahan(nilai, item, idUser, mapel, task, posisi) {
-      let key = Object.keys(item)
-      let value = Object.values(item)
+    simpanPerubahan(nilai, item, mapel, task, posisi) {
+      let key = Object.keys(item.dataNilai)
+      let value = Object.values(item.dataNilai)
       let obj = {
         tugas1: key[0] == task ? Number(nilai) : value[0],
         tugas2: key[1] == task ? Number(nilai) : value[1],
@@ -2252,12 +2255,17 @@ export default {
       }
       let bodyData = {
         jenis: 'nilai',
-        idUser: idUser,
+        idUser: item.idUser,
         mapel: mapel,
+        semester: item.semester,
         dataNilai: [
-          { nilai: obj }
+          {
+            semester: item.semester, 
+            nilai: obj
+          }
         ]
       }
+      // return console.log(bodyData);
       let payload = {
 				method: "post",
 				url: `user/nilai`,
@@ -2505,6 +2513,7 @@ export default {
       this.inputKehadiran = {
         idUser: item.idUser,
         mapel: this.mapel,
+        semester: item.semester,
         sakit: item.dataKehadiran.sakit,
         alfa: item.dataKehadiran.alfa,
         ijin: item.dataKehadiran.ijin,
@@ -2516,8 +2525,10 @@ export default {
         jenis: 'kehadiran',
         idUser: this.inputKehadiran.idUser,
         mapel: this.inputKehadiran.mapel,
+        semester: this.inputKehadiran.semester,
         dataKehadiran: [
           { 
+            semester: this.inputKehadiran.semester,
             kehadiran: {
               sakit: Number(this.inputKehadiran.sakit),
               alfa: Number(this.inputKehadiran.alfa),
