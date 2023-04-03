@@ -122,7 +122,7 @@ export default {
     }
     let payload = {
       method: "post",
-      url: `auth/forgotPass`,
+      url: `auth/forgotpass`,
       body: bodyData,
       authToken: localStorage.getItem('user_token')
     };

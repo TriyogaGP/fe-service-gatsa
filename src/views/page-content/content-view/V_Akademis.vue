@@ -66,7 +66,7 @@
               md="8"
               class="pt-2 font-weight-bold"
             >
-              : {{ dataSiswaSiswi ? dataSiswaSiswi.dataPenilaian.namaGuru : '' }}
+              : {{ dataSiswaSiswi ? uppercaseLetterFirst2(dataSiswaSiswi.dataPenilaian.namaGuru) : '' }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -83,6 +83,38 @@
               class="pt-2 font-weight-bold"
             >
               : {{ mapel }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Semester
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-2 font-weight-bold"
+            >
+              : {{ dataSiswaSiswi ? uppercaseLetterFirst2(dataSiswaSiswi.semester) : '' }}
+            </v-col>
+          </v-row>
+          <v-row no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Tahun Pelajaran
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-2 font-weight-bold"
+            >
+              : {{ tahunpelajaran }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -223,6 +255,7 @@ export default {
     dataSiswaSiswi: '',
     DataNilai: [],
     mengajarOptions: [],
+    tahunpelajaran: '',
 
     //notifikasi
     dialogNotifikasi: false,
@@ -247,6 +280,21 @@ export default {
 	},
 	methods: {
 		...mapActions(["fetchData"]),
+    getGeneralCMS(){
+      let payload = {
+        method: "get",
+				url: `settings/cmssetting`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        let resdata = res.data.result
+        this.tahunpelajaran = resdata.tahunpelajaran ? resdata.tahunpelajaran.value : null
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
     getSiswaSiswi(idUser, mapel) {
       this.dataSiswaSiswi = ''
 			let payload = {
@@ -259,12 +307,16 @@ export default {
         let resdata = res.data.result
         let jumlahTugas = this.DataNilai.jumlahTugas
         let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].nilai
+        let semester = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].semester
+        let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].kehadiran
         let totalNilaiTugas = Number(nilai.tugas1) + Number(nilai.tugas2) + Number(nilai.tugas3) + Number(nilai.tugas4) + Number(nilai.tugas5) + Number(nilai.tugas6) + Number(nilai.tugas7) + Number(nilai.tugas8) + Number(nilai.tugas9) + Number(nilai.tugas10)
         let rataRataTugas = totalNilaiTugas === 0 ? 0 : totalNilaiTugas / Number(jumlahTugas)
         let rataRataNilai = (Number(rataRataTugas) + Number(nilai.uts) + Number(nilai.uas)) / 3
         this.dataSiswaSiswi = {
           ...resdata,
           dataNilai: nilai,
+          semester: semester,
+          dataKehadiran: kehadiran,
           totalNilaiTugas: rataRataTugas != 0 ? Math.ceil(rataRataTugas) : 0,
           rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
           hurufNilai: rataRataNilai <= 50 ? 'E' : rataRataNilai <= 65 ? 'D' : rataRataNilai <= 75 ? 'C' : rataRataNilai <= 85 ? 'B' : 'A',
@@ -307,6 +359,7 @@ export default {
     },
     openDetail(mapel) {
       this.mapel = mapel.replace('-', ' ')
+      this.getGeneralCMS()
       this.getNilai(this.idLogin, this.kelas, this.mapel)
       this.getSiswaSiswi(this.idLogin, this.mapel)
       this.DialogSiswaSiswi = true

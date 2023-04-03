@@ -5,6 +5,7 @@
       <v-row no-gutters class="pa-2">
         <v-col cols="12" md="6">
           <v-btn
+            v-if="roleID === '1' || roleID === '2'"
             color="light-blue darken-3"
             small
             dense
@@ -69,7 +70,7 @@
             {{ page > 1 ? ((page - 1)*limit) + DataStruktural.indexOf(item) + 1 : DataStruktural.indexOf(item) + 1 }}
           </template>
           <template #[`item.nama`]="{ item }">
-            <span v-html="uppercaseLetterFirst(item.nama)" /><br>
+            <span v-html="uppercaseLetterFirst2(item.nama)" /><br>
             <span v-html="item.email" /> 
           </template>
           <template #[`item.jabatan`]="{ item }">
@@ -90,6 +91,7 @@
           <template #expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="white">
               <v-btn
+                v-if="roleID === '1' || roleID === '2'"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -102,6 +104,7 @@
                 <v-icon small>edit</v-icon>&nbsp;Ubah
               </v-btn> 
               <v-btn
+                v-if="roleID === '1' || roleID === '2'"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -114,6 +117,7 @@
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn> 
               <v-btn
+                v-if="roleID === '1' || roleID === '2'"
                 :value="item.idUser"
                 color="#bd3a07"
                 small
@@ -242,7 +246,7 @@
               {{ previewData.nama }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -274,7 +278,7 @@
               {{ previewData.email }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"

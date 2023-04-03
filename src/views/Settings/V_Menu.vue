@@ -801,6 +801,12 @@ export default {
 </script>
 
 <style scoped>
+.v-input .v-label {
+  font-size: 11pt !important;
+}
+.v-text-field.v-input--dense {
+  font-size: 13px !important;
+}
 .kotak {
 	border: 2px dashed #000;
 	border-radius: 10px;

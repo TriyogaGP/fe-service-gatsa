@@ -17,6 +17,18 @@
             </v-tab>
             <v-tab-item value="1">
               <div v-if="roleID === '1' || roleID === '2'">
+                <div class="text-right">
+                  <v-btn
+                    color="#0bd369"
+                    small
+                    dense
+                    depressed
+                    class="white--text text--darken-2 mt-2"
+                    @click="kondisiForm = !kondisiForm"
+                  >
+                    <v-icon small>{{ kondisiForm ? 'visibility_off' : 'visibility' }}</v-icon>&nbsp;Ubah Data Diri
+                  </v-btn>
+                </div>
                 <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
                 <v-row no-gutters>
                   <v-col
@@ -47,7 +59,18 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.nama }}
+                    <span v-if="kondisiForm" v-html="previewData.nama"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputAdministrator.nama"
+                      placeholder="Nama Lengkap"
+                      outlined
+                      dense
+                      label="Nama Lengkap"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -63,7 +86,18 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.username }}
+                    <span v-if="kondisiForm" v-html="previewData.username"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputAdministrator.username"
+                      placeholder="Username"
+                      outlined
+                      dense
+                      label="Username"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -79,7 +113,19 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.email }}
+                    <span v-if="kondisiForm" v-html="previewData.email"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputAdministrator.email"
+                      placeholder="Email"
+                      outlined
+                      dense
+                      label="Email"
+                      color="light-black darken-3"
+                      :rules="this.inputAdministrator.email != '' ? [rules.emailRules] : []"
+                      hide-details="auto"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -118,7 +164,43 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
+                    <span v-if="kondisiForm">{{ `${previewData.tempat}, ${convertDateForMonth(previewData.tanggalLahir)}` }}</span>
+                    <v-row v-else no-gutters>
+                      <v-col
+                        cols="12"
+                        md="6"
+                        class="d-flex justify-center align-center"
+                      >
+                        <v-text-field
+                          v-model="inputAdministrator.tempat"
+                          placeholder="Tempat Lahir"
+                          outlined
+                          dense
+                          label="Tempat Lahir"
+                          color="light-black darken-3"
+                          hide-details
+                          clearable
+                        />
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        md="6"
+                        class="d-flex justify-end align-center"
+                      >
+                        <DatePicker
+                          v-model="inputAdministrator.tanggalLahir" 
+                          circle
+                          lang="id"
+                          position="bottom right"
+                          :date-format="{
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          }"
+                          placeholder="Tanggal Lahir"
+                        />
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -134,7 +216,21 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.jenisKelamin }}
+                    <span v-if="kondisiForm" v-html="previewData.jenisKelamin"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.jenisKelamin"
+                      :items="jenisKelaminOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Jenis Kelamin"
+                      label="Jenis Kelamin"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -150,7 +246,21 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.agama }}
+                    <span v-if="kondisiForm" v-html="previewData.agama"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.agama"
+                      :items="agamaOptions"
+                      item-text="label"
+                      item-value="kode"
+                      placeholder="Agama"
+                      label="Agama"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -166,7 +276,19 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.telp }}
+                    <span v-if="kondisiForm" v-html="previewData.telp"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputAdministrator.telp"
+                      placeholder="Telepon"
+                      outlined
+                      dense
+                      label="Telepon"
+                      color="light-black darken-3"
+                      @keypress.native="onlyNumber($event, 15, inputAdministrator.telp)"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -182,7 +304,20 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.alamat }}
+                    <span v-if="kondisiForm" v-html="previewData.alamat"></span>
+                    <v-textarea
+                      v-else
+                      v-model="inputAdministrator.alamat"
+                      placeholder="Alamat"
+                      outlined
+                      dense
+                      rows="4"
+                      label="Alamat"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      no-resize
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -198,7 +333,22 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.provinsi }}
+                    <span v-if="kondisiForm" v-html="previewData.provinsi"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.provinsi"
+                      :items="ProvinsiOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Provinsi"
+                      label="Provinsi"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      @change="wilayah('provinsi', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -214,7 +364,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kabKota }}
+                    <span v-if="kondisiForm" v-html="previewData.kabKota"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.kabKota"
+                      :items="KabKotaOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kabupaten / Kota"
+                      label="Kabupaten / Kota"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputAdministrator.provinsi ? false : true"
+                      @change="wilayah('kabkota', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -230,7 +396,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kecamatan }}				
+                    <span v-if="kondisiForm" v-html="previewData.kecamatan"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.kecamatan"
+                      :items="KecamatanOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kecamatan"
+                      label="Kecamatan"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputAdministrator.kabKota ? false : true"
+                      @change="wilayah('kecamatan', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -246,7 +428,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kelurahan }}
+                    <span v-if="kondisiForm" v-html="previewData.kelurahan"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputAdministrator.kelurahan"
+                      :items="KelurahanOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kelurahan"
+                      label="Kelurahan"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputAdministrator.kecamatan ? false : true"
+                      @change="wilayah('kelurahan', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -262,11 +460,47 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kodePos }}
+                    <span v-if="kondisiForm" v-html="previewData.kodePos"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputAdministrator.kodePos"
+                      placeholder="Kode Pos"
+                      outlined
+                      dense
+                      label="Kode Pos"
+                      color="light-black darken-3"
+                      hide-details
+                      disabled
+                    />
                   </v-col>
                 </v-row>
+                <div class="text-right">
+                  <v-btn
+                    v-if="!kondisiForm"
+                    color="#0bd369"
+                    small
+                    dense
+                    depressed
+                    class="white--text text--darken-2 mt-2"
+                    @click="SimpanDataProfile()"
+                  >
+                    Simpan Data
+                  </v-btn>
+                </div>
               </div>
               <div v-if="roleID === '3'">
+                <div class="text-right">
+                  <v-btn
+                    color="#0bd369"
+                    small
+                    dense
+                    depressed
+                    class="white--text text--darken-2 mt-2"
+                    @click="kondisiForm = !kondisiForm"
+                  >
+                    <v-icon small>{{ kondisiForm ? 'visibility_off' : 'visibility' }}</v-icon>&nbsp;Ubah Data Diri
+                  </v-btn>
+                </div>
                 <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
                 <v-row no-gutters>
                   <v-col
@@ -297,7 +531,18 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.nama }}
+                    <span v-if="kondisiForm" v-html="previewData.nama"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.nama"
+                      placeholder="Nama Lengkap"
+                      outlined
+                      dense
+                      label="Nama Lengkap"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -313,7 +558,18 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.username }}
+                    <span v-if="kondisiForm" v-html="previewData.username"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.username"
+                      placeholder="Username"
+                      outlined
+                      dense
+                      label="Username"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -329,7 +585,19 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.email }}
+                    <span v-if="kondisiForm" v-html="previewData.email"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.email"
+                      placeholder="Email"
+                      outlined
+                      dense
+                      label="Email"
+                      color="light-black darken-3"
+                      :rules="this.inputGuru.email != '' ? [rules.emailRules] : []"
+                      hide-details="auto"
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <h2 class="subheading black--text"><u>>>Data Alamat</u></h2>
@@ -346,7 +614,43 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.tempat }}, {{ convertDateForMonth(previewData.tanggalLahir) }}
+                    <span v-if="kondisiForm">{{ `${previewData.tempat}, ${convertDateForMonth(previewData.tanggalLahir)}` }}</span>
+                    <v-row v-else no-gutters>
+                      <v-col
+                        cols="12"
+                        md="6"
+                        class="d-flex justify-center align-center"
+                      >
+                        <v-text-field
+                          v-model="inputGuru.tempat"
+                          placeholder="Tempat Lahir"
+                          outlined
+                          dense
+                          label="Tempat Lahir"
+                          color="light-black darken-3"
+                          hide-details
+                          clearable
+                        />
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        md="6"
+                        class="d-flex justify-end align-center"
+                      >
+                        <DatePicker
+                          v-model="inputGuru.tanggalLahir" 
+                          circle
+                          lang="id"
+                          position="bottom right"
+                          :date-format="{
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          }"
+                          placeholder="Tanggal Lahir"
+                        />
+                      </v-col>
+                    </v-row>
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -362,7 +666,21 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.jenisKelamin }}
+                    <span v-if="kondisiForm" v-html="previewData.jenisKelamin"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.jenisKelamin"
+                      :items="jenisKelaminOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Jenis Kelamin"
+                      label="Jenis Kelamin"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -378,7 +696,21 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.agama }}
+                    <span v-if="kondisiForm" v-html="previewData.agama"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.agama"
+                      :items="agamaOptions"
+                      item-text="label"
+                      item-value="kode"
+                      placeholder="Agama"
+                      label="Agama"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -394,7 +726,19 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.telp }}
+                    <span v-if="kondisiForm" v-html="previewData.telp"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.telp"
+                      placeholder="Telepon"
+                      outlined
+                      dense
+                      label="Telepon"
+                      color="light-black darken-3"
+                      @keypress.native="onlyNumber($event, 15, inputGuru.telp)"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -410,7 +754,20 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.alamat }}
+                    <span v-if="kondisiForm" v-html="previewData.alamat"></span>
+                    <v-textarea
+                      v-else
+                      v-model="inputGuru.alamat"
+                      placeholder="Alamat"
+                      outlined
+                      dense
+                      rows="4"
+                      label="Alamat"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      no-resize
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -426,7 +783,22 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.provinsi }}
+                    <span v-if="kondisiForm" v-html="previewData.provinsi"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.provinsi"
+                      :items="ProvinsiOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Provinsi"
+                      label="Provinsi"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      @change="wilayah('provinsi', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -442,7 +814,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kabKota }}
+                    <span v-if="kondisiForm" v-html="previewData.kabKota"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.kabKota"
+                      :items="KabKotaOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kabupaten / Kota"
+                      label="Kabupaten / Kota"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputGuru.provinsi ? false : true"
+                      @change="wilayah('kabkota', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -458,7 +846,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kecamatan }}				
+                    <span v-if="kondisiForm" v-html="previewData.kecamatan"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.kecamatan"
+                      :items="KecamatanOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kecamatan"
+                      label="Kecamatan"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputGuru.kabKota ? false : true"
+                      @change="wilayah('kecamatan', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -474,7 +878,23 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kelurahan }}
+                    <span v-if="kondisiForm" v-html="previewData.kelurahan"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.kelurahan"
+                      :items="KelurahanOptions"
+                      item-text="text"
+                      item-value="value"
+                      placeholder="Kelurahan"
+                      label="Kelurahan"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                      :disabled="inputGuru.kecamatan ? false : true"
+                      @change="wilayah('kelurahan', $event)"
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -490,7 +910,18 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.kodePos }}
+                    <span v-if="kondisiForm" v-html="previewData.kodePos"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.kodePos"
+                      placeholder="Kode Pos"
+                      outlined
+                      dense
+                      label="Kode Pos"
+                      color="light-black darken-3"
+                      hide-details
+                      disabled
+                    />
                   </v-col>
                 </v-row>
                 <h2 class="subheading black--text"><u>>>Data Kelengkapan</u></h2>
@@ -507,7 +938,19 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.nomorInduk }}
+                    <span v-if="kondisiForm" v-html="previewData.nomorInduk"></span>
+                    <v-text-field
+                      v-else
+                      v-model="inputGuru.nomorInduk"
+                      placeholder="Nomor Induk"
+                      outlined
+                      dense
+                      label="Nomor Induk"
+                      color="light-black darken-3"
+                      @keypress.native="onlyNumber($event, 25, inputGuru.nomorInduk)"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
                 <v-row no-gutters>
@@ -523,9 +966,36 @@
                     md="8"
                     class="pt-3"
                   >
-                    {{ previewData.pendidikanGuru }}
+                    <span v-if="kondisiForm" v-html="previewData.pendidikanGuru"></span>
+                    <v-autocomplete
+                      v-else
+                      v-model="inputGuru.pendidikanGuru"
+                      :items="pendidikanOptions"
+                      item-text="label"
+                      item-value="kode"
+                      placeholder="Pendidikan Struktural"
+                      label="Pendidikan Struktural"
+                      outlined
+                      dense
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    />
                   </v-col>
                 </v-row>
+                <div class="text-right">
+                  <v-btn
+                    v-if="!kondisiForm"
+                    color="#0bd369"
+                    small
+                    dense
+                    depressed
+                    class="white--text text--darken-2 mt-2"
+                    @click="SimpanDataProfile()"
+                  >
+                    Simpan Data
+                  </v-btn>
+                </div>
               </div>
               <div v-if="roleID === '4'">
                 <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
@@ -1714,6 +2184,7 @@
                 </v-btn>
               </v-col>
             </v-row>
+            <!-- <h4 class="white--text text-center ma-4">******&nbsp;Raport Nilai&nbsp;******</h4> -->
           </div>
           <div v-if="roleID === '3'">
             <h4 class="white--text text-center ma-4">******&nbsp;Data Kelengkapan&nbsp;******</h4>
@@ -1879,18 +2350,18 @@ function getMimeType(file, fallback = null) {
 	switch (header) {
     case "89504e47":
       return "image/png";
-    case "47494638":
-      return "image/gif";
-    case "ffd8ffe0":
-    case "ffd8ffe1":
+      case "47494638":
+        return "image/gif";
+        case "ffd8ffe0":
+          case "ffd8ffe1":
     case "ffd8ffe2":
-    case "ffd8ffe3":
-    case "ffd8ffe8":
-      return "image/jpeg";
+      case "ffd8ffe3":
+        case "ffd8ffe8":
+          return "image/jpeg";
     default:
       return fallback;
+    }
   }
-}
 
 export default {
   name: 'Profile',
@@ -1908,6 +2379,42 @@ export default {
     dialogPDF: false,
     urlSk: window.location.href,
     BASE_URL: '',
+    inputAdministrator: {
+      idUser: '',
+      nama: '',
+      username: '',
+      email: '',
+      tempat: '',
+      tanggalLahir: '',
+      jenisKelamin: '',
+      agama: '',
+      telp: '',
+      alamat: '',
+      provinsi: '',
+      kabKota: '',
+      kecamatan: '',
+      kelurahan: '',
+      kodePos: '',
+    },
+    inputGuru: {
+      idUser: '',
+      nomorInduk: '',
+      nama: '',
+      username: '',
+      email: '',
+      tempat: '',
+      tanggalLahir: '',
+      jenisKelamin: '',
+      agama: '',
+      telp: '',
+      alamat: '',
+      provinsi: '',
+      kabKota: '',
+      kecamatan: '',
+      kelurahan: '',
+      kodePos: '',
+      pendidikanGuru: '',
+    },
     previewData: {
       idUser: '',
       namaRole: '',
@@ -1992,6 +2499,21 @@ export default {
       passwordBaru: '',
       passwordConfBaru: '',
     },
+    kondisiForm: true,
+    agamaOptions: [],
+    pendidikanOptions: [],
+    jenisKelaminOptions: [
+			{ text: 'Laki - Laki', value: 'Laki - Laki' },
+			{ text: 'Perempuan', value: 'Perempuan' },
+		],
+    levelOptions: [
+			{ text: 'Super Administrator', value: 1 },
+			{ text: 'Administrator', value: 2 },
+		],
+    ProvinsiOptions: [],
+    KabKotaOptions: [],
+    KecamatanOptions: [],
+    KelurahanOptions: [],
     kondisiTombol: true,
     dataAddress: [],
     editedIndex: 2,
@@ -2058,7 +2580,18 @@ export default {
           this.kondisiTombol = true	
         }
       }
-    }
+    },
+    inputGuru:{
+			deep: true,
+			handler(value) {
+				if(!value.provinsi){
+					this.inputGuru.kabKota = ''
+					this.inputGuru.kecamatan = ''
+					this.inputGuru.kelurahan = ''
+					this.inputGuru.kodePos = ''
+				}
+      }
+    },
 	},
   mounted() {
     this.roleID = localStorage.getItem("roleID")
@@ -2085,10 +2618,61 @@ export default {
 			this.fetchData(payload)
 			.then((res) => {
 				let data = res.data.result;
+        if(this.roleID === '3'){
+          this.inputGuru = {
+            idUser: data.idUser,
+            nomorInduk: data.nomorInduk,
+            nama: this.uppercaseLetterFirst2(data.nama),
+            username: data.username,
+            email: data.email,
+            tempat: data.tempat,
+            tanggalLahir: data.tanggalLahir,
+            jenisKelamin: data.jenisKelamin,
+            agama: data.agama.kode,
+            telp: data.telp,
+            alamat: this.uppercaseLetterFirst2(data.alamat),
+            provinsi: data.provinsi.kode,
+            kabKota: data.kabKota.kode,
+            kecamatan: data.kecamatan.kode,
+            kelurahan: data.kelurahan.kode,
+            kodePos: data.kodePos,
+            pendidikanGuru: data.pendidikanGuru.kode,
+          }
+          this.optionAgama()
+          this.optionPendidikan()
+		      this.optionWilayah('provinsi', null)
+          this.optionWilayah('kabkota', this.inputGuru.provinsi)
+          this.optionWilayah('kecamatan', this.inputGuru.kabKota)
+          this.optionWilayah('kelurahan', this.inputGuru.kecamatan)
+        }
+        if(this.roleID === '1' || this.roleID === '2'){
+          this.inputAdministrator = {
+            idUser: data.idUser,
+            nama: this.uppercaseLetterFirst2(data.nama),
+            username: data.username,
+            email: data.email,
+            tempat: data.tempat,
+            tanggalLahir: data.tanggalLahir,
+            jenisKelamin: data.jenisKelamin,
+            agama: data.agama.kode,
+            telp: data.telp,
+            alamat: data.alamat ? this.uppercaseLetterFirst2(data.alamat) : '-',
+            provinsi: data.provinsi.kode,
+            kabKota: data.kabKota.kode,
+            kecamatan: data.kecamatan.kode,
+            kelurahan: data.kelurahan.kode,
+            kodePos: data.kodePos,
+          }
+          this.optionAgama()
+		      this.optionWilayah('provinsi', null)
+          this.optionWilayah('kabkota', this.inputAdministrator.provinsi)
+          this.optionWilayah('kecamatan', this.inputAdministrator.kabKota)
+          this.optionWilayah('kelurahan', this.inputAdministrator.kecamatan)
+        }
         this.previewData = {
           idUser: data.idUser,
           namaRole: data.namaRole,
-          nama: data.nama,
+          nama: this.uppercaseLetterFirst2(data.nama),
           username: data.username,
           email: data.email,
           password: data.kataSandi,
@@ -2107,37 +2691,37 @@ export default {
           statusSekolah: this.roleID === '4' ? data.dataSekolahSebelumnya.statusSekolah.label : null,
           namaSekolah: this.roleID === '4' ? data.dataSekolahSebelumnya.namaSekolah : null,
           npsn: this.roleID === '4' ? data.dataSekolahSebelumnya.npsn ? data.dataSekolahSebelumnya.npsn : '-' : null,
-          alamatSekolah: this.roleID === '4' ? data.dataSekolahSebelumnya.alamatSekolah : null,
+          alamatSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataSekolahSebelumnya.alamatSekolah) : null,
           kabkotSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataSekolahSebelumnya.kabkotSekolah.nama) : null,
           noPesertaUN: this.roleID === '4' ? data.dataSekolahSebelumnya.noPesertaUN ? data.dataSekolahSebelumnya.noPesertaUN : '-': null,
           noSKHUN: this.roleID === '4' ? data.dataSekolahSebelumnya.noSKHUN ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
           noIjazah: this.roleID === '4' ? data.dataSekolahSebelumnya.noIjazah ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
           nilaiUN: this.roleID === '4' ? data.dataSekolahSebelumnya.nilaiUN ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
           noKK: this.roleID === '4' ? data.noKK : null,
-          namaKK: this.roleID === '4' ? data.namaKK : null,
-          telp: this.roleID === '4' ? data.dataAlamatOrangtua.telp : data.telp,
-          alamat: this.roleID === '4' ? data.dataAlamatOrangtua.alamat : data.alamat,
+          namaKK: this.roleID === '4' ? this.uppercaseLetterFirst2(data.namaKK) : null,
+          telp: this.roleID === '4' ? data.dataAlamatOrangtua.telp ? data.dataAlamatOrangtua.telp : '-' : data.telp ? data.telp : '-',
+          alamat: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.alamat ? data.dataAlamatOrangtua.alamat : '-' : data.alamat ? data.alamat : '-'),
           provinsi: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.provinsi.nama : data.provinsi.nama),
           kabKota: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kabKota.nama : data.kabKota.nama),
           kecamatan: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kecamatan.nama : data.kecamatan.nama),
           kelurahan: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kelurahan.nama : data.kelurahan.nama),
           kodePos: this.roleID === '4' ? data.dataAlamatOrangtua.kodePos : data.kodePos,
           nikAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.nikAyah : null,
-          namaAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.namaAyah : null,
+          namaAyah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataOrangtua.dataAyah.namaAyah) : null,
           tahunAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.tahunAyah : null,
           statusAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.statusAyah.label : null,
           pendidikanAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.pendidikanAyah.label : null,
           pekerjaanAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.pekerjaanAyah.label : null,
           telpAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.telpAyah : null,
           nikIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.nikIbu : null,
-          namaIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.namaIbu : null,
+          namaIbu: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataOrangtua.dataIbu.namaIbu) : null,
           tahunIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.tahunIbu : null,
           statusIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.statusIbu.label : null,
           pendidikanIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.pendidikanIbu.label : null,
           pekerjaanIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.pekerjaanIbu.label : null,
           telpIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.telpIbu : null,
           nikWali: this.roleID === '4' ? data.dataOrangtua.dataWali.nikWali ? data.dataOrangtua.dataWali.nikWali : '-' : null,
-          namaWali: this.roleID === '4' ? data.dataOrangtua.dataWali.namaWali ? data.dataOrangtua.dataWali.namaWali : '-' : null,
+          namaWali: this.roleID === '4' ? data.dataOrangtua.dataWali.namaWali ? this.uppercaseLetterFirst2(data.dataOrangtua.dataWali.namaWali) : '-' : null,
           tahunWali: this.roleID === '4' ? data.dataOrangtua.dataWali.tahunWali ? data.dataOrangtua.dataWali.tahunWali : '-' : null,
           pendidikanWali: this.roleID === '4' ? data.dataOrangtua.dataWali.pendidikanWali ? data.dataOrangtua.dataWali.pendidikanWali.label : '-' : null,
           pekerjaanWali: this.roleID === '4' ? data.dataOrangtua.dataWali.pekerjaanWali ? data.dataOrangtua.dataWali.pekerjaanWali.label : '-' : null,
@@ -2170,6 +2754,172 @@ export default {
 				console.log(err)
 			});
 		},
+    wilayah(kondisi, e){
+			if(kondisi === 'provinsi'){
+				if(e){
+					this.optionWilayah('kabkota', e)
+					this.inputGuru.kabKota = ''
+					this.inputGuru.kecamatan = ''
+					this.inputGuru.kelurahan = ''
+					this.inputGuru.kodePos = ''
+				}
+			}else if(kondisi === 'kabkota'){
+				if(e){
+					this.optionWilayah('kecamatan', e)
+					if(e !== this.inputGuru.kecamatan) {
+						this.inputGuru.kelurahan = ''
+						this.inputGuru.kodePos = ''	
+					}
+				}else{
+					this.inputGuru.kecamatan = ''
+					this.inputGuru.kelurahan = ''
+					this.inputGuru.kodePos = ''
+				}
+			}else if(kondisi === 'kecamatan'){
+				if(e){
+					this.optionWilayah('kelurahan', e)
+					if(e !== this.inputGuru.kelurahan) {
+						this.inputGuru.kodePos = ''	
+					}
+				}else{
+					this.inputGuru.kelurahan = ''
+					this.inputGuru.kodePos = ''
+				}
+			}else if(kondisi === 'kelurahan'){
+				if(e){
+					let data = this.KelurahanOptions.filter(str => str.value === e)
+          this.inputGuru.kodePos = data[0].kodePos
+				}else{
+					this.inputGuru.kodePos = ''
+				}
+			}
+		},
+    optionPendidikan(){
+      let payload = {
+        method: "get",
+				url: `settings/optionsPendidikan`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        this.pendidikanOptions = res.data.result
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
+    optionAgama(){
+      let payload = {
+        method: "get",
+				url: `settings/optionsAgama`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        this.agamaOptions = res.data.result
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
+		optionWilayah(bagian, KodeWilayah){
+      let payload = {
+        method: "get",
+				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+				if(bagian === 'provinsi'){
+					this.ProvinsiOptions = res.data.result
+				}else if(bagian === 'kabkota'){
+					this.KabKotaOptions = res.data.result
+				}else if(bagian === 'kecamatan'){
+					this.KecamatanOptions = res.data.result
+				}else if(bagian === 'kelurahan'){
+					this.KelurahanOptions = res.data.result
+				}
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
+    SimpanDataProfile(){
+      if(this.roleID === '3'){
+        let bodyData = {
+          idUser: localStorage.getItem('idLogin'),
+          role: this.roleID,
+          nomorInduk: this.inputGuru.nomorInduk,
+          nama: this.inputGuru.nama,
+          username: this.inputGuru.username,
+          email: this.inputGuru.email,
+          tempat: this.inputGuru.tempat,
+          tanggalLahir: this.inputGuru.tanggalLahir,
+          jenisKelamin: this.inputGuru.jenisKelamin,
+          agama: this.inputGuru.agama,
+          telp: this.inputGuru.telp,
+          alamat: this.inputGuru.alamat,
+          provinsi: this.inputGuru.provinsi,
+          kabKota: this.inputGuru.kabKota,
+          kecamatan: this.inputGuru.kecamatan,
+          kelurahan: this.inputGuru.kelurahan,
+          kodePos: this.inputGuru.kodePos,
+          pendidikanGuru: this.inputGuru.pendidikanGuru,
+        }
+        let payload = {
+          method: "post",
+          url: `auth/ubah-profile`,
+          body: bodyData,
+          authToken: localStorage.getItem('user_token')
+        };
+        this.fetchData(payload)
+        .then(async (res) => {
+          this.kondisiForm = true
+          this.clearForm()
+          this.getProfile(localStorage.getItem('idLogin'))
+          this.notifikasi("success", res.data.message, "1")
+        })
+        .catch((err) => {
+          this.notifikasi("error", err.response.data.message, "1")
+        });
+      }
+      if(this.roleID === '1' || this.roleID === '2'){
+        let bodyData = {
+          idUser: localStorage.getItem('idLogin'),
+          role: this.roleID,
+          nama: this.inputAdministrator.nama,
+          username: this.inputAdministrator.username,
+          email: this.inputAdministrator.email,
+          tempat: this.inputAdministrator.tempat,
+          tanggalLahir: this.inputAdministrator.tanggalLahir,
+          jenisKelamin: this.inputAdministrator.jenisKelamin,
+          agama: this.inputAdministrator.agama,
+          telp: this.inputAdministrator.telp,
+          alamat: this.inputAdministrator.alamat,
+          provinsi: this.inputAdministrator.provinsi,
+          kabKota: this.inputAdministrator.kabKota,
+          kecamatan: this.inputAdministrator.kecamatan,
+          kelurahan: this.inputAdministrator.kelurahan,
+          kodePos: this.inputAdministrator.kodePos,
+        }
+        let payload = {
+          method: "post",
+          url: `auth/ubah-profile`,
+          body: bodyData,
+          authToken: localStorage.getItem('user_token')
+        };
+        this.fetchData(payload)
+        .then(async (res) => {
+          this.kondisiForm = true
+          this.clearForm()
+          this.getProfile(localStorage.getItem('idLogin'))
+          this.notifikasi("success", res.data.message, "1")
+        })
+        .catch((err) => {
+          this.notifikasi("error", err.response.data.message, "1")
+        });
+      }
+    },
     UbahKataSandi() {
       // console.log(this.authData);
       let bodyData = {
@@ -2180,13 +2930,14 @@ export default {
       }
       let payload = {
 				method: "post",
-				url: `auth/ubahKataSandi`,
+				url: `auth/ubah-katasandi`,
         body: bodyData,
 				authToken: localStorage.getItem('user_token')
 			};
 			this.fetchData(payload)
 			.then(async (res) => {
 				this.clearForm()
+        this.getProfile(localStorage.getItem('idLogin'))
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
@@ -2322,6 +3073,46 @@ export default {
         passwordBaru: '',
         passwordConfBaru: '',
       }
+      if(this.roleID === '3'){
+        this.inputGuru = {
+          idUser: '',
+          nomorInduk: '',
+          nama: '',
+          username: '',
+          email: '',
+          tempat: '',
+          tanggalLahir: '',
+          jenisKelamin: '',
+          agama: '',
+          telp: '',
+          alamat: '',
+          provinsi: '',
+          kabKota: '',
+          kecamatan: '',
+          kelurahan: '',
+          kodePos: '',
+          pendidikanGuru: '',
+        }
+      }
+      if(this.roleID === '1' || this.roleID === '2'){
+        this.inputAdministrator = {
+          idUser: '',
+          nama: '',
+          username: '',
+          email: '',
+          tempat: '',
+          tanggalLahir: '',
+          jenisKelamin: '',
+          agama: '',
+          telp: '',
+          alamat: '',
+          provinsi: '',
+          kabKota: '',
+          kecamatan: '',
+          kelurahan: '',
+          kodePos: '',
+        }
+      }
     },
 		notifikasi(kode, text, proses){
       this.dialogNotifikasi = true
@@ -2332,6 +3123,12 @@ export default {
   },
 }
 </script>
+<style>
+.v-calendar .input-field input {
+	width: 265px !important;
+  height: 40px !important;
+}
+</style>
 <style scoped>
 .kotakleft {
 	border-top-left-radius: 5px;

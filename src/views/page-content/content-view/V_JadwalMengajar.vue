@@ -58,7 +58,7 @@
             {{ page > 1 ? ((page - 1)*limit) + DataJadwalMengajar.indexOf(item) + 1 : DataJadwalMengajar.indexOf(item) + 1 }}
           </template>
           <template #[`item.nama`]="{ item }">
-            <span v-html="uppercaseLetterFirst(item.nama)" /> 
+            <span v-html="uppercaseLetterFirst2(item.nama)" /> 
           </template>
           <template #[`item.datamapel`]="{ item }"> 
 						<span v-for="(val, i) in item.dataJadwalMengajar" :key="i" class="box fourcorners" @click="bukadialog(item.dataJadwalMengajar[i])" style="cursor: pointer;">

@@ -7,8 +7,8 @@
       <span>Data Siswa Siswi Kelas {{ kelasText }}</span>
     </div>
     <div v-if="kondisi === 'penilaian'" class="text-right wadah">
-      <span v-if="roleID === '1'" @click="gotolist('penilaian')" class="link">Data Akademis</span>
-      <v-icon v-if="roleID === '1'" small class="iconstyle">fa-solid fa-chevron-right</v-icon>
+      <span v-if="roleID === '1' || roleID === '2'" @click="gotolist('penilaian')" class="link">Data Akademis</span>
+      <v-icon v-if="roleID === '1' || roleID === '2'" small class="iconstyle">fa-solid fa-chevron-right</v-icon>
       <span @click="gotolist2(mapelText)" class="link">Data Akademis ({{ mapelText }})</span>
       <v-icon small class="iconstyle">fa-solid fa-chevron-right</v-icon>
       <span>Data Siswa Siswi Kelas {{ kelasText }}</span>
@@ -121,7 +121,7 @@
             {{ page > 1 ? ((page - 1)*limit) + DataSiswaSiswi.indexOf(item) + 1 : DataSiswaSiswi.indexOf(item) + 1 }}
           </template>
           <template #[`item.nama`]="{ item }">
-            <span v-html="uppercaseLetterFirst(item.nama)" /> 
+            <span v-html="uppercaseLetterFirst2(item.nama)" /> 
           </template>
           <template #[`item.tugas`]="{ item }">
             <span>{{ item.totalNilaiTugas }}</span>
@@ -419,8 +419,8 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-card-text class="pt-4">
-          <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Log In</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -436,7 +436,7 @@
               {{ previewData.namaRole }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -452,7 +452,7 @@
               {{ previewData.nama }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -468,7 +468,7 @@
               {{ previewData.username }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -484,7 +484,7 @@
               {{ previewData.email }}
             </v-col>
           </v-row>
-          <v-row v-if="roleID === '1'" no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -539,6 +539,22 @@
               {{ previewData.nomorInduk }}
             </v-col>
           </v-row>
+          <v-row v-if="roleID === '3'" no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Nama Lengkap
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ previewData.nama }}
+            </v-col>
+          </v-row>
           <v-row no-gutters>
             <v-col
               cols="12"
@@ -587,7 +603,7 @@
               {{ previewData.agama }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -603,7 +619,7 @@
               {{ previewData.anakKe }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -619,7 +635,7 @@
               {{ previewData.jumlahSaudara }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -635,7 +651,7 @@
               {{ previewData.hobi }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -649,6 +665,38 @@
               class="pt-3"
             >
               {{ previewData.citaCita }}
+            </v-col>
+          </v-row>
+          <v-row v-if="roleID === '3'" no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Telepon
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ `${previewData.telp} (Nomor Orangtua)` }}
+            </v-col>
+          </v-row>
+          <v-row v-if="roleID === '3'" no-gutters>
+            <v-col
+              cols="12"
+              md="4"
+              class="pt-2 d-flex align-center font-weight-bold"
+            >
+              Alamat
+            </v-col>
+            <v-col
+              cols="12"
+              md="8"
+              class="pt-3"
+            >
+              {{ `${previewData.alamat}, Kel. ${previewData.kelurahan} Kec. ${previewData.kecamatan} ${previewData.kabKota} ${previewData.provinsi} ${previewData.kodePos}` }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -667,8 +715,8 @@
               {{ previewData.kelas }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Sekolah Sebelumnya</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Sekolah Sebelumnya</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -684,7 +732,7 @@
               {{ previewData.jenjang }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -700,7 +748,7 @@
               {{ previewData.statusSekolah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -716,7 +764,7 @@
               {{ previewData.namaSekolah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -732,7 +780,7 @@
               {{ previewData.npsn }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -748,7 +796,7 @@
               {{ previewData.alamatSekolah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -764,7 +812,7 @@
               {{ previewData.kabkotSekolah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -780,7 +828,7 @@
               {{ previewData.noPesertaUN }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -796,7 +844,7 @@
               {{ previewData.noSKHUN }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -812,7 +860,7 @@
               {{ previewData.noIjazah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -828,8 +876,8 @@
               {{ previewData.nilaiUN }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Detail Orangtua</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Detail Orangtua</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -845,7 +893,7 @@
               {{ previewData.noKK }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -861,7 +909,7 @@
               {{ previewData.namaKK }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -877,7 +925,7 @@
               {{ previewData.telp }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -893,7 +941,7 @@
               {{ previewData.alamat }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -909,7 +957,7 @@
               {{ previewData.provinsi }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -925,7 +973,7 @@
               {{ previewData.kabKota }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
             cols="12"
             md="4"
@@ -941,7 +989,7 @@
               {{ previewData.kecamatan }}				
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -957,7 +1005,7 @@
               {{ previewData.kelurahan }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -973,8 +1021,8 @@
               {{ previewData.kodePos }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Ayah</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Ayah</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -990,7 +1038,7 @@
               {{ previewData.nikAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1006,7 +1054,7 @@
               {{ previewData.namaAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1022,7 +1070,7 @@
               {{ previewData.tahunAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1038,7 +1086,7 @@
               {{ previewData.statusAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1054,7 +1102,7 @@
               {{ previewData.pendidikanAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1070,7 +1118,7 @@
               {{ previewData.pekerjaanAyah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1086,8 +1134,8 @@
               {{ previewData.telpAyah }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Ibu</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Ibu</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1103,7 +1151,7 @@
               {{ previewData.nikIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1119,7 +1167,7 @@
               {{ previewData.namaIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1135,7 +1183,7 @@
               {{ previewData.tahunIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1151,7 +1199,7 @@
               {{ previewData.statusIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1167,7 +1215,7 @@
               {{ previewData.pendidikanIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1183,7 +1231,7 @@
               {{ previewData.pekerjaanIbu }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1199,8 +1247,8 @@
               {{ previewData.telpIbu }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Wali</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Wali</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1216,7 +1264,7 @@
               {{ previewData.nikWali }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1232,7 +1280,7 @@
               {{ previewData.namaWali }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1248,7 +1296,7 @@
               {{ previewData.tahunWali }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1264,7 +1312,7 @@
               {{ previewData.pendidikanWali }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1280,7 +1328,7 @@
               {{ previewData.pekerjaanWali }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1296,8 +1344,8 @@
               {{ previewData.telpWali }}
             </v-col>
           </v-row>
-          <h2 class="subheading black--text"><u>>>Data Lainnya</u></h2>
-          <v-row no-gutters>
+          <h2 v-if="roleID === '1' || roleID === '2'" class="subheading black--text"><u>>>Data Lainnya</u></h2>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1313,7 +1361,7 @@
               {{ previewData.penghasilan }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1329,7 +1377,7 @@
               {{ previewData.statusTempatTinggal }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1345,7 +1393,7 @@
               {{ previewData.jarakRumah }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1470,7 +1518,7 @@
                 <span class="tulisan-td" v-html="item.nomorInduk" /> 
               </template>
               <template #[`item.nama`]="{ item }">
-                <span class="tulisan-td" v-html="uppercaseLetterFirst(item.nama)" /> 
+                <span class="tulisan-td" v-html="uppercaseLetterFirst2(item.nama)" /> 
               </template>
               <template #[`item.tugas1`]="{ item }">
                 <v-edit-dialog
@@ -2318,7 +2366,7 @@ export default {
       this.previewData = {
         idUser: item.idUser,
         namaRole: item.namaRole,
-        nama: item.nama,
+        nama: this.uppercaseLetterFirst2(item.nama),
         username: item.username,
         email: item.email,
         password: item.kataSandi,
@@ -2337,29 +2385,29 @@ export default {
         statusSekolah: item.dataSekolahSebelumnya.statusSekolah.label,
         namaSekolah: item.dataSekolahSebelumnya.namaSekolah,
         npsn: item.dataSekolahSebelumnya.npsn ? item.dataSekolahSebelumnya.npsn : '-',
-        alamatSekolah: item.dataSekolahSebelumnya.alamatSekolah,
-        kabkotSekolah: this.uppercaseLetterFirst(item.dataSekolahSebelumnya.kabkotSekolah.nama),
+        alamatSekolah: this.uppercaseLetterFirst2(item.dataSekolahSebelumnya.alamatSekolah),
+        kabkotSekolah: this.uppercaseLetterFirst2(item.dataSekolahSebelumnya.kabkotSekolah.nama),
         noPesertaUN: item.dataSekolahSebelumnya.noPesertaUN ? item.dataSekolahSebelumnya.noPesertaUN : '-',
         noSKHUN: item.dataSekolahSebelumnya.noSKHUN ? item.dataSekolahSebelumnya.noSKHUN : '-',
         noIjazah: item.dataSekolahSebelumnya.noIjazah ? item.dataSekolahSebelumnya.noSKHUN : '-',
         nilaiUN: item.dataSekolahSebelumnya.nilaiUN ? item.dataSekolahSebelumnya.noSKHUN : '-',
         noKK: item.noKK,
-        namaKK: item.namaKK,
+        namaKK: this.uppercaseLetterFirst2(item.namaKK),
         telp: item.dataAlamatOrangtua.telp,
-        alamat: item.dataAlamatOrangtua.alamat,
-        provinsi: this.uppercaseLetterFirst(item.dataAlamatOrangtua.provinsi.nama),
-        kabKota: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kabKota.nama),
-        kecamatan: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kecamatan.nama),
-        kelurahan: this.uppercaseLetterFirst(item.dataAlamatOrangtua.kelurahan.nama),
+        alamat: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.alamat),
+        provinsi: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.provinsi.nama),
+        kabKota: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kabKota.nama),
+        kecamatan: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kecamatan.nama),
+        kelurahan: this.uppercaseLetterFirst2(item.dataAlamatOrangtua.kelurahan.nama),
         kodePos: item.dataAlamatOrangtua.kodePos,
         nikAyah: item.dataOrangtua.dataAyah.nikAyah,
-        namaAyah: item.dataOrangtua.dataAyah.namaAyah,
+        namaAyah: this.uppercaseLetterFirst2(item.dataOrangtua.dataAyah.namaAyah),
         tahunAyah: item.dataOrangtua.dataAyah.tahunAyah,
         statusAyah: item.dataOrangtua.dataAyah.statusAyah.label,
         pendidikanAyah: item.dataOrangtua.dataAyah.pendidikanAyah.label,
         pekerjaanAyah: item.dataOrangtua.dataAyah.pekerjaanAyah.label,
         telpAyah: item.dataOrangtua.dataAyah.telpAyah,
-        nikIbu: item.dataOrangtua.dataIbu.nikIbu,
+        nikIbu: this.uppercaseLetterFirst2(item.dataOrangtua.dataIbu.nikIbu),
         namaIbu: item.dataOrangtua.dataIbu.namaIbu,
         tahunIbu: item.dataOrangtua.dataIbu.tahunIbu,
         statusIbu: item.dataOrangtua.dataIbu.statusIbu.label,
@@ -2367,7 +2415,7 @@ export default {
         pekerjaanIbu: item.dataOrangtua.dataIbu.pekerjaanIbu.label,
         telpIbu: item.dataOrangtua.dataIbu.telpIbu,
         nikWali: item.dataOrangtua.dataWali.nikWali ? item.dataOrangtua.dataWali.nikWali : '-',
-        namaWali: item.dataOrangtua.dataWali.namaWali ? item.dataOrangtua.dataWali.namaWali : '-',
+        namaWali: item.dataOrangtua.dataWali.namaWali ? this.uppercaseLetterFirst2(item.dataOrangtua.dataWali.namaWali) : '-',
         tahunWali: item.dataOrangtua.dataWali.tahunWali ? item.dataOrangtua.dataWali.tahunWali : '-',
         pendidikanWali: item.dataOrangtua.dataWali.pendidikanWali ? item.dataOrangtua.dataWali.pendidikanWali.label : '-',
         pekerjaanWali: item.dataOrangtua.dataWali.pekerjaanWali ? item.dataOrangtua.dataWali.pekerjaanWali.label : '-',

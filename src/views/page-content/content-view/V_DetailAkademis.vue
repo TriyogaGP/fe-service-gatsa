@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="subheading grey--text">Data Akademis ({{ mapelText }})</h1>
-    <div v-if="roleID === '1'" class="text-right wadah">
+    <div v-if="roleID === '1' || roleID === '2'" class="text-right wadah">
       <span @click="gotolist()" class="link">Data Akademis</span>
       <v-icon small class="iconstyle">fa-solid fa-chevron-right</v-icon>
       <span>Data Akademis ({{ mapelText }})</span>

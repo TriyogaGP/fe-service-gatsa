@@ -85,7 +85,7 @@
           md="8"
           class="pt-2 font-weight-bold"
         >
-          : {{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}
+          : {{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].nama) : '-' }}
         </v-col>
       </v-row>
       <v-row no-gutters>
@@ -101,7 +101,7 @@
           md="8"
           class="pt-2 font-weight-bold"
         >
-          : {{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].waliKelas) : '-' }}
+          : {{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].waliKelas) : '-' }}
         </v-col>
       </v-row>
       <v-row no-gutters>
@@ -135,7 +135,7 @@
         >
           keyboard_arrow_left
         </v-icon>
-        <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}</span>
+        <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].nama) : '-' }}</span>
         <v-icon
           style="cursor: pointer;"
           large
@@ -314,7 +314,7 @@
               md="8"
               class="pt-2 font-weight-bold"
             >
-              : {{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}
+              : {{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].nama) : '-' }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -330,7 +330,7 @@
               md="8"
               class="pt-2 font-weight-bold"
             >
-              : {{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].waliKelas) : '-' }}
+              : {{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].waliKelas) : '-' }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -364,7 +364,7 @@
               >
                 keyboard_arrow_left
               </v-icon>
-              <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst(dataSiswaSiswi[0].nama) : '-' }}</span>
+              <span>{{ dataSiswaSiswi.length ? uppercaseLetterFirst2(dataSiswaSiswi[0].nama) : '-' }}</span>
               <v-icon
                 style="cursor: pointer;"
                 large

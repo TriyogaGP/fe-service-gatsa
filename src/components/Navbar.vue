@@ -7,7 +7,7 @@
 			<div class="ml-2 mr-2">{{ namaSekolah }}</div>
 			<v-divider vertical />
 			<v-divider vertical />
-			<v-list dense style="padding: 0px; margin-left: 3px;" v-if="roleID === '1'">
+			<v-list dense style="padding: 0px; margin-left: 3px;" v-if="roleID === '1' || roleID === '2'">
 				<v-list-item
 					router to="/dashboard"
 					class="SelectedMenu"
