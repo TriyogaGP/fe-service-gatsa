@@ -16,7 +16,7 @@
               {{ item.text }}
             </v-tab>
             <v-tab-item value="1">
-              <div v-if="roleID === '1' || roleID === '2'">
+              <div v-if="roleID === '1' || roleID === '2'" class="customScrollLeft">
                 <div class="text-right">
                   <v-btn
                     color="#0bd369"
@@ -488,7 +488,7 @@
                   </v-btn>
                 </div>
               </div>
-              <div v-if="roleID === '3'">
+              <div v-if="roleID === '3'" class="customScrollLeft">
                 <div class="text-right">
                   <v-btn
                     color="#0bd369"
@@ -997,7 +997,7 @@
                   </v-btn>
                 </div>
               </div>
-              <div v-if="roleID === '4'">
+              <div v-if="roleID === '4'" class="customScrollLeft">
                 <h2 class="subheading black--text"><u>>>Data Log In</u></h2>
                 <v-row no-gutters>
                   <v-col
@@ -1921,119 +1921,116 @@
               </div>
             </v-tab-item>
             <v-tab-item value="2">
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center"
-                >
-                  Kata Sandi Lama
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-text-field
-                    v-model="authData.passwordLama"
-                    placeholder="Kata Sandi Lama"
-                    :type="passTypeLama ? 'text' : 'password'"
-                    outlined
-                    dense
-                    label="Kata Sandi Lama"
-                    color="light-black darken-3"
-                    hide-details
-                    clearable
+              <div class="customScrollLeft">
+                <v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="pt-2 d-flex align-center"
                   >
-                    <template v-slot:append>
-                      <v-icon
-                        class="mr-1"
-                        color="light-black darken-3"
-                        tabindex="-1"
-                        @click="onClickVisible('passTypeLama')"
-                        >{{ passTypeLama ? 'visibility' : 'visibility_off' }}</v-icon
-                      >
-                    </template>
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center"
-                >
-                  Kata Sandi Baru
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-text-field
-                    v-model="authData.passwordBaru"
-                    placeholder="Kata Sandi Baru"
-                    :type="passTypeBaru ? 'text' : 'password'"
-                    outlined
-                    dense
-                    label="Kata Sandi Baru"
-                    color="light-black darken-3"
-                    hide-details
-                    clearable
+                    Kata Sandi Lama
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="8"
+                    class="pt-3"
                   >
-                    <template v-slot:append>
-                      <v-icon
-                        class="mr-1"
-                        color="light-black darken-3"
-                        tabindex="-1"
-                        @click="onClickVisible('passTypeBaru')"
-                        >{{ passTypeBaru ? 'visibility' : 'visibility_off' }}</v-icon
-                      >
-                    </template>
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="pt-2 d-flex align-center"
-                >
-                  Kata Sandi Konfirmasi Baru
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="8"
-                  class="pt-3"
-                >
-                  <v-text-field
-                    v-model="authData.passwordConfBaru"
-                    placeholder="Kata Sandi Konfirmasi Baru"
-                    :type="passTypeConfBaru ? 'text' : 'password'"
-                    outlined
-                    dense
-                    label="Kata Sandi Konfirmasi Baru"
-                    color="light-black darken-3"
-                    hide-details
-                    clearable
+                    <v-text-field
+                      v-model="authData.passwordLama"
+                      placeholder="Kata Sandi Lama"
+                      :type="passTypeLama ? 'text' : 'password'"
+                      outlined
+                      dense
+                      label="Kata Sandi Lama"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    >
+                      <template v-slot:append>
+                        <v-icon
+                          class="mr-1"
+                          color="light-black darken-3"
+                          tabindex="-1"
+                          @click="onClickVisible('passTypeLama')"
+                          >{{ passTypeLama ? 'visibility' : 'visibility_off' }}</v-icon
+                        >
+                      </template>
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="pt-2 d-flex align-center"
                   >
-                    <template v-slot:append>
-                      <v-icon
-                        class="mr-1"
-                        color="light-black darken-3"
-                        tabindex="-1"
-                        @click="onClickVisible('passTypeConfBaru')"
-                        >{{ passTypeConfBaru ? 'visibility' : 'visibility_off' }}</v-icon
-                      >
-                    </template>
-                  </v-text-field>
-                </v-col>
-              </v-row>
-              <v-row no-gutters>
-                <v-col
-                  cols="12"
-                  class="pt-2 d-flex"
-                >
+                    Kata Sandi Baru
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="8"
+                    class="pt-3"
+                  >
+                    <v-text-field
+                      v-model="authData.passwordBaru"
+                      placeholder="Kata Sandi Baru"
+                      :type="passTypeBaru ? 'text' : 'password'"
+                      outlined
+                      dense
+                      label="Kata Sandi Baru"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    >
+                      <template v-slot:append>
+                        <v-icon
+                          class="mr-1"
+                          color="light-black darken-3"
+                          tabindex="-1"
+                          @click="onClickVisible('passTypeBaru')"
+                          >{{ passTypeBaru ? 'visibility' : 'visibility_off' }}</v-icon
+                        >
+                      </template>
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    md="4"
+                    class="pt-2 d-flex align-center"
+                  >
+                    Kata Sandi Konfirmasi Baru
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="8"
+                    class="pt-3"
+                  >
+                    <v-text-field
+                      v-model="authData.passwordConfBaru"
+                      placeholder="Kata Sandi Konfirmasi Baru"
+                      :type="passTypeConfBaru ? 'text' : 'password'"
+                      outlined
+                      dense
+                      label="Kata Sandi Konfirmasi Baru"
+                      color="light-black darken-3"
+                      hide-details
+                      clearable
+                    >
+                      <template v-slot:append>
+                        <v-icon
+                          class="mr-1"
+                          color="light-black darken-3"
+                          tabindex="-1"
+                          @click="onClickVisible('passTypeConfBaru')"
+                          >{{ passTypeConfBaru ? 'visibility' : 'visibility_off' }}</v-icon
+                        >
+                      </template>
+                    </v-text-field>
+                  </v-col>
+                </v-row>
+                <div class="text-right mt-2">
                   <v-btn
                     color="light-black darken-3"
                     class="white--text text--darken-2"
@@ -2045,8 +2042,8 @@
                     >
                     Ubah Kata Sandi
                   </v-btn>
-                </v-col>
-              </v-row>
+                </div>
+              </div>
             </v-tab-item>
           </v-tabs>
         </v-col>
@@ -2074,7 +2071,7 @@
             </v-flex>
           </v-layout>
           <v-divider style="border: 1px solid #FFF" />
-          <div v-if="roleID === '4'">
+          <div v-if="roleID === '4'" class="customScrollRight">
             <h4 class="white--text text-center ma-4">******&nbsp;Berkas - Berkas&nbsp;******</h4>
             <v-row no-gutters class="mb-2">
               <v-col cols="12" md="6" class="text-left">
@@ -2186,7 +2183,7 @@
             </v-row>
             <!-- <h4 class="white--text text-center ma-4">******&nbsp;Raport Nilai&nbsp;******</h4> -->
           </div>
-          <div v-if="roleID === '3'">
+          <div v-if="roleID === '3'" class="customScrollRight">
             <h4 class="white--text text-center ma-4">******&nbsp;Data Kelengkapan&nbsp;******</h4>
             <v-row no-gutters class="mb-2">
               <v-col cols="12" md="12">
@@ -3133,7 +3130,7 @@ export default {
 .kotakleft {
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
-  border-right: 3 px solid #4CAF50;
+  border-right: 3px solid #4CAF50;
 }
 .kotakright {
 	border-top-right-radius: 5px;
@@ -3206,5 +3203,54 @@ export default {
 }
 .cropper {
   height: 450px !important;
+}
+.customScrollLeft {
+  width: 100%;
+  height: 500px;
+  background: #fff;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 5px;
+  padding: 8px;
+  border: 2px solid #000;
+	border-radius: 5px;
+}
+
+.customScrollLeft::-webkit-scrollbar {
+  width: 16px;
+}
+.customScrollLeft::-webkit-scrollbar-thumb {
+  background-color: #4CAF50;
+  border: 5px solid #fff;
+  border-radius: 10rem;
+}
+.customScrollLeft::-webkit-scrollbar-track {
+  position: absolute;
+  right: -3rem;
+  top: -50rem;
+  background: transparent;
+}
+.customScrollRight {
+  width: 100%;
+  height: 270px;
+  background: #272727;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-top: 5px;
+}
+
+.customScrollRight::-webkit-scrollbar {
+  width: 16px;
+}
+.customScrollRight::-webkit-scrollbar-thumb {
+  background-color: #4CAF50;
+  border: 5px solid #272727;
+  border-radius: 10rem;
+}
+.customScrollRight::-webkit-scrollbar-track {
+  position: absolute;
+  right: -3rem;
+  top: -50rem;
+  /* background: transparent; */
 }
 </style>

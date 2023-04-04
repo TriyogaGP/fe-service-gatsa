@@ -300,7 +300,7 @@
           </v-btn>
         </div>
         <v-card class="ma-4 pa-2">
-					<div v-if="menu.length">
+					<div v-if="menu.length" class="customScroll">
 						<ul>
 							<li v-for="val in menu" :key="val.idMenu">
 								{{ `${val.menuText} (${val.kondisi})` }}
@@ -644,5 +644,27 @@ export default {
 }
 .v-text-field.v-input--dense {
   font-size: 13px !important;
+}
+.customScroll {
+  width: 100%;
+  height: 200px;
+  background: #fff;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.customScroll::-webkit-scrollbar {
+  width: 16px;
+}
+.customScroll::-webkit-scrollbar-thumb {
+  background-color: #4CAF50;
+  border: 5px solid #fff;
+  border-radius: 10rem;
+}
+.customScroll::-webkit-scrollbar-track {
+  position: absolute;
+  right: -3rem;
+  top: -50rem;
+  background: transparent;
 }
 </style>
