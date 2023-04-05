@@ -998,28 +998,6 @@ export default {
 		preview: true,
     kondisi: '',
     passText: '',
-    agamaText: '',
-    hobiText: '',
-    citacitaText: '',
-    jenjangsekolahText: '',
-    kelasText: '',
-		pendidikanTextAyah: '',
-		pekerjaanTextAyah: '',
-		statusTextAyah: '',
-		pendidikanTextIbu: '',
-		pekerjaanTextIbu: '',
-		statusTextIbu: '',
-		pendidikanTextWali: '',
-		pekerjaanTextWali: '',
-		penghasilanText: '',
-		statustempattinggalText: '',
-		jarakrumahText: '',
-		transportasiText: '',
-    provinsiText: '',
-    kabkotaText: '',
-    kecamatanText: '',
-    kelurahanText: '',
-    kabkotaOnlyText: '',
     statusSekolahOptions: [
 			{ label: 'Negeri', kode: 1 },
 			{ label: 'Swasta', kode: 2 },
@@ -1031,6 +1009,92 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		agamaText(){
+			let agamaOptions = this.$store.state.agamaOptions
+			return agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
+		},
+		hobiText(){
+			let hobiOptions = this.$store.state.hobiOptions
+			return this.dataStepTwo.hobi ? hobiOptions.filter(str => str.kode === this.dataStepTwo.hobi)[0].label : '-'
+		},
+		citacitaText(){
+			let citacitaOptions = this.$store.state.citacitaOptions
+			return this.dataStepTwo.citaCita ? citacitaOptions.filter(str => str.kode === this.dataStepTwo.citaCita)[0].label : '-'
+		},
+		jenjangsekolahText(){
+			let jenjangOptions = this.$store.state.jenjangOptions
+			return jenjangOptions.filter(str => str.kode === this.dataStepThree.jenjang)[0].label
+		},
+		pendidikanTextAyah(){
+			let pendidikanOptions = this.$store.state.pendidikanOptions
+			return pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanAyah)[0].label
+		},
+		pendidikanTextIbu(){
+			let pendidikanOptions = this.$store.state.pendidikanOptions
+			return pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanIbu)[0].label
+		},
+		pendidikanTextWali(){
+			let pendidikanOptions = this.$store.state.pendidikanOptions
+			return this.dataStepFour.pendidikanWali ? pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanWali)[0].label : '-'
+		},
+		pekerjaanTextAyah(){
+			let pekerjaanOptions = this.$store.state.pekerjaanOptions
+			return pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanAyah)[0].label
+		},
+		pekerjaanTextIbu(){
+			let pekerjaanOptions = this.$store.state.pekerjaanOptions
+			return pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanIbu)[0].label
+		},
+		pekerjaanTextWali(){
+			let pekerjaanOptions = this.$store.state.pekerjaanOptions
+			return this.dataStepFour.pekerjaanWali ? pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanWali)[0].label : '-'
+		},
+		statusTextAyah(){
+			let statusorangtuaOptions = this.$store.state.statusorangtuaOptions
+			return statusorangtuaOptions.filter(str => str.kode === this.dataStepFour.statusAyah)[0].label
+		},
+		statusTextIbu(){
+			let statusorangtuaOptions = this.$store.state.statusorangtuaOptions
+			return statusorangtuaOptions.filter(str => str.kode === this.dataStepFour.statusIbu)[0].label
+		},
+		penghasilanText(){
+			let penghasilanOptions = this.$store.state.penghasilanOptions
+			return penghasilanOptions.filter(str => str.kode === this.dataStepFour.penghasilan)[0].label
+		},
+		statustempattinggalText(){
+			let statustempattinggalOptions = this.$store.state.statustempattinggalOptions
+			return this.dataStepFour.statusTempatTinggal ? statustempattinggalOptions.filter(str => str.kode === this.dataStepFour.statusTempatTinggal)[0].label : '-'
+		},
+		jarakrumahText(){
+			let jarakrumahOptions = this.$store.state.jarakrumahOptions
+			return this.dataStepFour.jarakRumah ? jarakrumahOptions.filter(str => str.kode === this.dataStepFour.jarakRumah)[0].label : '-'
+		},
+		transportasiText(){
+			let transportasiOptions = this.$store.state.transportasiOptions
+			return this.dataStepFour.transportasi ? transportasiOptions.filter(str => str.kode === this.dataStepFour.transportasi)[0].label : '-'
+		},
+		provinsiText(){
+			let ProvinsiOptions = this.$store.state.ProvinsiOptions
+			return ProvinsiOptions.filter(str => str.value === this.dataStepFour.provinsi)[0].text
+		},
+		kabkotaText(){
+			let KabKotaOptions = this.$store.state.KabKotaOptions
+			return KabKotaOptions.filter(str => str.value === this.dataStepFour.kabKota)[0].text
+		},
+		kecamatanText(){
+			let KecamatanOptions = this.$store.state.KecamatanOptions
+			return KecamatanOptions.filter(str => str.value === this.dataStepFour.kecamatan)[0].text
+		},
+		kelurahanText(){
+			let KelurahanOptions = this.$store.state.KelurahanOptions
+			return KelurahanOptions.filter(str => str.value === this.dataStepFour.kelurahan)[0].text
+		},
+		kabkotaOnlyText(){
+			let KabKotaOptions = this.$store.state.KabKotaOptions
+			return KabKotaOptions.filter(str => str.value === this.dataStepThree.kabkotSekolah)[0].text
+		},
+  },
 	watch: {
     stepperVal(n, o) {
       if (n != o && n == 4) {
@@ -1041,227 +1105,27 @@ export default {
     },
 	},
 	mounted() {
-		// console.log(this.dataStepOne, this.dataStepTwo, this.dataStepThree, this.dataStepFour);
     this.kondisi = this.$route.params.kondisi
-    this.optionAgama()
-    this.optionHobi()
-    this.optionCitaCita()
-    this.optionJenjangSekolah()
-    this.optionPendidikan()
-    this.optionPekerjaan()
-    this.optionStatusOrangtua()
-    this.optionPenghasilan()
-		this.optionStatusTempatTinggal()
-    this.optionJarakRumah()
-    this.optionTransportasi()
-    this.optionWilayah('kabkotaOnly', null)
-    this.optionWilayah('provinsi', null)
-    this.optionWilayah('kabkota', this.dataStepFour.provinsi)
-    this.optionWilayah('kecamatan', this.dataStepFour.kabKota)
-    this.optionWilayah('kelurahan', this.dataStepFour.kecamatan)
+		this.$store.dispatch('getAgama')
+		this.$store.dispatch('getHobi')
+		this.$store.dispatch('getCitaCita')
+		this.$store.dispatch('getJenjangSekolah')
+		this.$store.dispatch('getPendidikan')
+		this.$store.dispatch('getPekerjaan')
+		this.$store.dispatch('getStatusOrangTua')
+		this.$store.dispatch('getPenghasilan')
+		this.$store.dispatch('getStatusTempatTinggal')
+		this.$store.dispatch('getJarakRumah')
+		this.$store.dispatch('getTransportasi')
+		this.$store.dispatch('getWilayah', { bagian: 'kabkotaOnly', KodeWilayah: null })
+		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+		this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.dataStepFour.provinsi })
+		this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.dataStepFour.kabKota })
+		this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.dataStepFour.kecamatan })
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
 		...mapActions(["fetchData"]),
-    optionAgama(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsAgama`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let agamaOptions = res.data.result
-        this.agamaText = agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionHobi(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsHobi`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let hobiOptions = res.data.result
-				this.hobiText = this.dataStepTwo.hobi ? hobiOptions.filter(str => str.kode === this.dataStepTwo.hobi)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionCitaCita(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsCitaCita`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let citacitaOptions = res.data.result
-				this.citacitaText = this.dataStepTwo.citaCita ? citacitaOptions.filter(str => str.kode === this.dataStepTwo.citaCita)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionPendidikan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPendidikan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let pendidikanOptions = res.data.result
-				this.pendidikanTextAyah = pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanAyah)[0].label
-				this.pendidikanTextIbu = pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanIbu)[0].label
-				this.pendidikanTextWali = this.dataStepFour.pendidikanWali ? pendidikanOptions.filter(str => str.kode === this.dataStepFour.pendidikanWali)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionPekerjaan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPekerjaan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let pekerjaanOptions = res.data.result
-				this.pekerjaanTextAyah = pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanAyah)[0].label
-				this.pekerjaanTextIbu = pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanIbu)[0].label
-				this.pekerjaanTextWali = this.dataStepFour.pekerjaanWali ? pekerjaanOptions.filter(str => str.kode === this.dataStepFour.pekerjaanWali)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionStatusOrangtua(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsStatusOrangtua`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let statusorangtuaOptions = res.data.result
-				this.statusTextAyah = statusorangtuaOptions.filter(str => str.kode === this.dataStepFour.statusAyah)[0].label
-				this.statusTextIbu = statusorangtuaOptions.filter(str => str.kode === this.dataStepFour.statusIbu)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionJenjangSekolah(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJenjangSekolah`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let jenjangOptions = res.data.result
-				this.jenjangsekolahText = jenjangOptions.filter(str => str.kode === this.dataStepThree.jenjang)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionPenghasilan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPenghasilan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let penghasilanOptions = res.data.result
-				this.penghasilanText = penghasilanOptions.filter(str => str.kode === this.dataStepFour.penghasilan)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionStatusTempatTinggal(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsStatusTempatTinggal`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let statustempattinggalOptions = res.data.result
-				this.statustempattinggalText = this.dataStepFour.statusTempatTinggal ? statustempattinggalOptions.filter(str => str.kode === this.dataStepFour.statusTempatTinggal)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    optionJarakRumah(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJarakRumah`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let jarakrumahOptions = res.data.result
-				this.jarakrumahText = this.dataStepFour.jarakRumah ? jarakrumahOptions.filter(str => str.kode === this.dataStepFour.jarakRumah)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    optionTransportasi(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsTransportasi`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let transportasiOptions = res.data.result
-				this.transportasiText = this.dataStepFour.transportasi ? transportasiOptions.filter(str => str.kode === this.dataStepFour.transportasi)[0].label : '-'
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					let ProvinsiOptions = res.data.result
-          this.provinsiText = ProvinsiOptions.filter(str => str.value === this.dataStepFour.provinsi )[0].text
-				}else if(bagian === 'kabkota'){
-          let KabKotaOptions = res.data.result
-          this.kabkotaText = KabKotaOptions.filter(str => str.value === this.dataStepFour.kabKota )[0].text
-				}else if(bagian === 'kecamatan'){
-          let KecamatanOptions = res.data.result
-          this.kecamatanText = KecamatanOptions.filter(str => str.value === this.dataStepFour.kecamatan )[0].text
-				}else if(bagian === 'kelurahan'){
-          let KelurahanOptions = res.data.result
-          this.kelurahanText = KelurahanOptions.filter(str => str.value === this.dataStepFour.kelurahan )[0].text
-				}else if(bagian === 'kabkotaOnly'){
-          let KabKotaOptions = res.data.result
-          this.kabkotaOnlyText = KabKotaOptions.filter(str => str.value === this.dataStepThree.kabkotSekolah )[0].text
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		simpanData() {
       let bodyData = {
         user: {

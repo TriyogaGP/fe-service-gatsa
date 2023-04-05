@@ -364,15 +364,10 @@ export default {
       kelas: '',
     },
 		kondisiTombol: true,
-    agamaOptions: [],
-    hobiOptions: [],
-    citacitaOptions: [],
-    kelasOptions: [],
     jenisKelaminOptions: [
 			{ text: 'Laki - Laki', value: 'Laki - Laki' },
 			{ text: 'Perempuan', value: 'Perempuan' },
 		],
-    KabKotaOnlyOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -380,6 +375,20 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		agamaOptions(){
+			return this.$store.state.agamaOptions
+		},
+		hobiOptions(){
+			return this.$store.state.hobiOptions
+		},
+		citacitaOptions(){
+			return this.$store.state.citacitaOptions
+		},
+		kelasOptions(){
+			return this.$store.state.kelasOptions
+		},
+  },
 	watch: {
 		inputDataSiswaSiswi:{
 			deep: true,
@@ -395,10 +404,10 @@ export default {
 	},
 	mounted() {
 		this.inputDataSiswaSiswi.id_user = this.$route.params.uid;
-		this.optionAgama()
-		this.optionHobi()
-		this.optionCitaCita()
-		this.optionKelas()
+		this.$store.dispatch('getAgama')
+		this.$store.dispatch('getHobi')
+		this.$store.dispatch('getCitaCita')
+		this.$store.dispatch('getKelas', { kondisi: 'All' })
 		if(this.$route.params.kondisi === 'EDIT'){
 			this.getSiswaSiswibyUID(this.$route.params.uid)
 		}
@@ -428,7 +437,6 @@ export default {
 					cita_cita: resdata.citaCita ? resdata.citaCita.kode : null,
 					kelas: resdata.kelas ? resdata.kelas : null,
 				}
-				// console.log(resdata);
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -449,86 +457,6 @@ export default {
 				kelas: this.inputDataSiswaSiswi.kelas,
 			}
       this.$emit("DataStepTwo", inputFormTwo)
-    },
-		optionAgama(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsAgama`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.agamaOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionHobi(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsHobi`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.hobiOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionCitaCita(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsCitaCita`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.citacitaOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionKelas(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsKelas`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.kelasOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					this.ProvinsiOptions = res.data.result
-				}else if(bagian === 'kabkota'){
-					this.KabKotaOptions = res.data.result
-				}else if(bagian === 'kecamatan'){
-					this.KecamatanOptions = res.data.result
-				}else if(bagian === 'kelurahan'){
-					this.KelurahanOptions = res.data.result
-				}else if(bagian === 'kabkotaOnly'){
-					this.KabKotaOnlyOptions = res.data.result
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
     },
 		backStep() {
       this.$emit("backStep");

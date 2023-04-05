@@ -254,7 +254,6 @@ export default {
     DialogSiswaSiswi: false,
     dataSiswaSiswi: '',
     DataNilai: [],
-    mengajarOptions: [],
     tahunpelajaran: '',
 
     //notifikasi
@@ -270,13 +269,23 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    mengajarOptions(){
+			let data = this.$store.state.mengajarOptions
+      let result = []
+      data.map(str => {
+        result.push({ label: str.label, link: str.label.replace(' ', '-') })
+      })
+			return result
+		},
+  },
   watch: {
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
     this.idLogin = localStorage.getItem('idLogin')
     this.kelas = localStorage.getItem('kelas')
-    this.optionMengajar()
+		this.$store.dispatch('getMengajar')
 	},
 	methods: {
 		...mapActions(["fetchData"]),
@@ -343,20 +352,6 @@ export default {
         this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
-    optionMengajar(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsMengajar`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let data = res.data.result
-        data.map(str => {
-          this.mengajarOptions.push({ label: str.label, link: str.label.replace(' ', '-') })
-        })
-			})
-    },
     openDetail(mapel) {
       this.mapel = mapel.replace('-', ' ')
       this.getGeneralCMS()

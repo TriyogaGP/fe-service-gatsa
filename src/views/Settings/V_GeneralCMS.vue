@@ -323,10 +323,6 @@ export default {
       jenisraport: '',
       semester: '',
     },
-    ProvinsiOptions: [],
-    KabKotaOptions: [],
-    KecamatanOptions: [],
-    KelurahanOptions: [],
     tahunOptions: [],
 
 		//notifikasi
@@ -342,7 +338,20 @@ export default {
 			amp: true,
 		},
 	},
-  computed: {},
+  computed: {
+		ProvinsiOptions(){
+			return this.$store.state.ProvinsiOptions
+		},
+		KabKotaOptions(){
+			return this.$store.state.KabKotaOptions
+		},
+		KecamatanOptions(){
+			return this.$store.state.KecamatanOptions
+		},
+		KelurahanOptions(){
+			return this.$store.state.KelurahanOptions
+		},
+  },
 	watch: {
     inputData:{
 			deep: true,
@@ -358,7 +367,7 @@ export default {
   },
 	mounted() {
     this.getGeneralCMS()
-    this.optionWilayah('provinsi', null)
+		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
 	},
 	methods: {
 		...mapActions(["fetchData"]),
@@ -393,32 +402,9 @@ export default {
 					jenisraport: resdata.jenisraport ? resdata.jenisraport.value : null,
 					semester: resdata.semester ? resdata.semester.value : null,
 				}
-        this.optionWilayah('kabkota', this.inputData.provinsi)
-				this.optionWilayah('kecamatan', this.inputData.kabupatenkota)
-				this.optionWilayah('kelurahan', this.inputData.kecamatan)
-				// console.log(resdata);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					this.ProvinsiOptions = res.data.result
-				}else if(bagian === 'kabkota'){
-					this.KabKotaOptions = res.data.result
-				}else if(bagian === 'kecamatan'){
-					this.KecamatanOptions = res.data.result
-				}else if(bagian === 'kelurahan'){
-					this.KelurahanOptions = res.data.result
-				}
+				this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
+				this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
+				this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -427,7 +413,7 @@ export default {
     wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.optionWilayah('kabkota', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
 					this.inputData.kabupatenkota = ''
 					this.inputData.kecamatan = ''
 					this.inputData.kelurahan = ''
@@ -435,7 +421,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.optionWilayah('kecamatan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputData.kecamatan) {
 						this.inputData.kelurahan = ''
 						this.inputData.kodepos = ''	
@@ -447,7 +433,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.optionWilayah('kelurahan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputData.kelurahan) {
 						this.inputData.kodepos = ''	
 					}
@@ -470,10 +456,10 @@ export default {
         let tulisan = `${tahun}/${tahun+1}`
         this.tahunOptions.push({value: tulisan.toString(), label: tulisan.toString()})
       }
-      this.optionWilayah('provinsi', null)
-      this.optionWilayah('kabkota', this.inputData.provinsi)
-      this.optionWilayah('kecamatan', this.inputData.kabupatenkota)
-      this.optionWilayah('kelurahan', this.inputData.kecamatan)
+			this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+			this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
+			this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
+			this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
       let tp = this.tahunOptions.filter(str => str.value === this.inputData.tahunpelajaran)[0]
       let semester = this.semesterOptions.filter(str => str.value === this.inputData.semester)[0]
       let jenisraport = this.jenisRaportOptions.filter(str => str.value === this.inputData.jenisraport)[0]

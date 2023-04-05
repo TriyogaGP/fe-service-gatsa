@@ -285,7 +285,7 @@
             >
               {{ previewData.password }}&nbsp;
               <v-icon
-                color="light-blue darken-3"
+                color="light-black darken-3"
                 tabindex="-1"
                 @click="endecryptData('endecryptType')"
                 >{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon

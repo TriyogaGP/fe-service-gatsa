@@ -2497,8 +2497,6 @@ export default {
       passwordConfBaru: '',
     },
     kondisiForm: true,
-    agamaOptions: [],
-    pendidikanOptions: [],
     jenisKelaminOptions: [
 			{ text: 'Laki - Laki', value: 'Laki - Laki' },
 			{ text: 'Perempuan', value: 'Perempuan' },
@@ -2507,19 +2505,12 @@ export default {
 			{ text: 'Super Administrator', value: 1 },
 			{ text: 'Administrator', value: 2 },
 		],
-    ProvinsiOptions: [],
-    KabKotaOptions: [],
-    KecamatanOptions: [],
-    KelurahanOptions: [],
     kondisiTombol: true,
-    dataAddress: [],
-    editedIndex: 2,
     passType: '',
     passTypeLama: '',
     passTypeBaru: '',
     passTypeConfBaru: '',
     endecryptType: '',
-    kotaOptions: [],
     rules: {
 			emailRules: value => {
         const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -2553,6 +2544,26 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+		agamaOptions(){
+			return this.$store.state.agamaOptions
+		},
+		pendidikanOptions(){
+			return this.$store.state.pendidikanOptions
+		},
+		ProvinsiOptions(){
+			return this.$store.state.ProvinsiOptions
+		},
+		KabKotaOptions(){
+			return this.$store.state.KabKotaOptions
+		},
+		KecamatanOptions(){
+			return this.$store.state.KecamatanOptions
+		},
+		KelurahanOptions(){
+			return this.$store.state.KelurahanOptions
+		},
+  },
   watch:{
 		tab:{
 			handler(value){
@@ -2635,12 +2646,12 @@ export default {
             kodePos: data.kodePos,
             pendidikanGuru: data.pendidikanGuru.kode,
           }
-          this.optionAgama()
-          this.optionPendidikan()
-		      this.optionWilayah('provinsi', null)
-          this.optionWilayah('kabkota', this.inputGuru.provinsi)
-          this.optionWilayah('kecamatan', this.inputGuru.kabKota)
-          this.optionWilayah('kelurahan', this.inputGuru.kecamatan)
+          this.$store.dispatch('getAgama')
+          this.$store.dispatch('getPendidikan')
+		      this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+		      this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputGuru.provinsi })
+		      this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputGuru.kabKota })
+		      this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputGuru.kecamatan })
         }
         if(this.roleID === '1' || this.roleID === '2'){
           this.inputAdministrator = {
@@ -2660,11 +2671,11 @@ export default {
             kelurahan: data.kelurahan.kode,
             kodePos: data.kodePos,
           }
-          this.optionAgama()
-		      this.optionWilayah('provinsi', null)
-          this.optionWilayah('kabkota', this.inputAdministrator.provinsi)
-          this.optionWilayah('kecamatan', this.inputAdministrator.kabKota)
-          this.optionWilayah('kelurahan', this.inputAdministrator.kecamatan)
+          this.$store.dispatch('getAgama')
+		      this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+		      this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputAdministrator.provinsi })
+		      this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputAdministrator.kabKota })
+		      this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputAdministrator.kecamatan })
         }
         this.previewData = {
           idUser: data.idUser,
@@ -2754,7 +2765,7 @@ export default {
     wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.optionWilayah('kabkota', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
 					this.inputGuru.kabKota = ''
 					this.inputGuru.kecamatan = ''
 					this.inputGuru.kelurahan = ''
@@ -2762,7 +2773,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.optionWilayah('kecamatan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputGuru.kecamatan) {
 						this.inputGuru.kelurahan = ''
 						this.inputGuru.kodePos = ''	
@@ -2774,7 +2785,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.optionWilayah('kelurahan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputGuru.kelurahan) {
 						this.inputGuru.kodePos = ''	
 					}
@@ -2791,56 +2802,6 @@ export default {
 				}
 			}
 		},
-    optionPendidikan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPendidikan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.pendidikanOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    optionAgama(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsAgama`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.agamaOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					this.ProvinsiOptions = res.data.result
-				}else if(bagian === 'kabkota'){
-					this.KabKotaOptions = res.data.result
-				}else if(bagian === 'kecamatan'){
-					this.KecamatanOptions = res.data.result
-				}else if(bagian === 'kelurahan'){
-					this.KelurahanOptions = res.data.result
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
     SimpanDataProfile(){
       if(this.roleID === '3'){
         let bodyData = {

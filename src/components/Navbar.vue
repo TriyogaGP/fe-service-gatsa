@@ -288,8 +288,6 @@ export default {
 		nama: '',
 		wali_kelas: '',
 		menu: [],
-		jabatanOptions: [],
-		mengajarOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -297,6 +295,20 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		mengajarOptions(){
+			if(this.roleID === '3'){
+				let data = this.$store.state.mengajarOptions
+				let mengajar_bidang = localStorage.getItem('mengajar_bidang').split(', ')
+				let result = []
+				mengajar_bidang.map(str => {
+					let hasil = data.filter(val => { return val.kode == str })
+					result.push({ label: hasil.length ? hasil[0].label : '', link: hasil.length ? hasil[0].label.replace(' ', '-') : '' })
+				})
+				return result
+			}
+		},
+  },
 	watch: {
 		group () {
 			this.drawer = false
@@ -309,7 +321,7 @@ export default {
 		this.roleID = localStorage.getItem('roleID')
 		this.wali_kelas = localStorage.getItem('wali_kelas')
 		this.getData()
-		this.optionMengajar()
+		this.$store.dispatch('getMengajar')
 	},
 	methods: {
 		...mapActions(["fetchData"]),
@@ -328,41 +340,6 @@ export default {
 				this.notifikasi("warning", err.response.data.message, "2")
 			});
 		},
-		optionJabatan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJabatan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.jabatanOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionMengajar(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsMengajar`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let data = res.data.result
-				if(this.roleID === '3'){
-					let mengajar_bidang = localStorage.getItem('mengajar_bidang').split(', ')
-					mengajar_bidang.map(str => {
-						let hasil = data.filter(val => { return val.kode == str })[0].label
-						this.mengajarOptions.push({ label: hasil, link: hasil.replace(' ', '-') })
-					})
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		keluar() {
 			this.notifikasi("question", "Apakah anda yakin ingin keluar ?", "2")
 		},

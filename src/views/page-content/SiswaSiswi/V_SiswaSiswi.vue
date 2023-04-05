@@ -1757,7 +1757,6 @@ export default {
     isLoadingbtnPDF6: false,
     isLoadingExport: false,
 		DataSiswaSiswi: [],
-		kelasOptions: [],
     expanded: [],
     singleExpand: true,
 		searchData: '',
@@ -1892,6 +1891,11 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    kelasOptions(){
+			return this.$store.state.kelasOptions
+		},
+  },
   watch: {
     page: {
 			deep: true,
@@ -1910,7 +1914,7 @@ export default {
     this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
     this.roleID = localStorage.getItem('roleID')
 		this.getSiswaSiswi(this.page, this.limit, this.searchData);
-    this.optionKelas()
+    this.$store.dispatch('getKelas', { kondisi: 'All' })
 	},
 	methods: {
 		...mapActions({
@@ -1964,21 +1968,6 @@ export default {
         this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
-    optionKelas(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsKelas`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let data = res.data.result
-        this.kelasOptions = data.map(str => str.kelas).join(', ')
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
     HapusRecord(item) {
       let bodyData = {
         user: {

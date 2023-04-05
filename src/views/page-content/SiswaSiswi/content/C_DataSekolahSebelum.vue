@@ -339,12 +339,6 @@ export default {
 			{ label: 'Negeri', kode: 1 },
 			{ label: 'Swasta', kode: 2 },
 		],
-    jenjangOptions: [],
-		ProvinsiOptions: [],
-    KabKotaOptions: [],
-    KecamatanOptions: [],
-    KelurahanOptions: [],
-    KabKotaOnlyOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -352,6 +346,14 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		jenjangOptions(){
+			return this.$store.state.jenjangOptions
+		},
+		KabKotaOnlyOptions(){
+			return this.$store.state.KabKotaOnlyOptions
+		},
+  },
 	watch: {
 		inputDataSekolahSebelum:{
 			deep: true,
@@ -371,8 +373,8 @@ export default {
 	},
 	mounted() {
 		this.inputDataSekolahSebelum.id_user = this.$route.params.uid;
-		this.optionJenjangSekolah()
-		this.optionWilayah('kabkotaOnly', null)
+		this.$store.dispatch('getJenjangSekolah')
+		this.$store.dispatch('getWilayah', { bagian: 'kabkotaOnly', KodeWilayah: null })
 		if(this.$route.params.kondisi === 'EDIT'){
 			this.getSiswaSiswibyUID(this.$route.params.uid)
 		}
@@ -401,7 +403,6 @@ export default {
 					no_ijazah: resdata.dataSekolahSebelumnya.noIjazah ? resdata.dataSekolahSebelumnya.noIjazah : null,
 					nilai_un: resdata.dataSekolahSebelumnya.nilaiUN ? resdata.dataSekolahSebelumnya.nilaiUN : null,
 				}
-				// console.log(resdata);
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -421,44 +422,6 @@ export default {
 				nilaiUN: this.inputDataSekolahSebelum.nilai_un,
 			}
       this.$emit("DataStepThree", inputFormThree)
-    },
-		optionJenjangSekolah(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJenjangSekolah`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.jenjangOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					this.ProvinsiOptions = res.data.result
-				}else if(bagian === 'kabkota'){
-					this.KabKotaOptions = res.data.result
-				}else if(bagian === 'kecamatan'){
-					this.KecamatanOptions = res.data.result
-				}else if(bagian === 'kelurahan'){
-					this.KelurahanOptions = res.data.result
-				}else if(bagian === 'kabkotaOnly'){
-					this.KabKotaOnlyOptions = res.data.result
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
     },
 		backStep() {
       this.$emit("backStep", 2);

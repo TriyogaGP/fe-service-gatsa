@@ -282,17 +282,6 @@ export default {
     },
 		kondisiJabatan: true,
 		kondisiTombol: true,
-    agamaOptions: [],
-    pendidikanOptions: [],
-    jabatanOptions: [],
-    mengajarOptions: [],
-    kelasOptions: [],
-    kelasUseOptions: [],
-    ProvinsiOptions: [],
-    KabKotaOptions: [],
-    KecamatanOptions: [],
-    KelurahanOptions: [],
-    KabKotaOnlyOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -300,6 +289,23 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		pendidikanOptions(){
+			return this.$store.state.pendidikanOptions
+		},
+		jabatanOptions(){
+			return this.$store.state.jabatanOptions
+		},
+		mengajarOptions(){
+			return this.$store.state.mengajarOptions
+		},
+		kelasOptions(){
+			return this.$store.state.kelasOptions
+		},
+		kelasUseOptions(){
+			return this.$store.state.kelasUseOptions
+		},
+  },
 	watch: {
 		inputDataKelengkapan:{
 			deep: true,
@@ -329,11 +335,11 @@ export default {
 	},
 	mounted() {
 		this.inputDataKelengkapan.id_user = this.$route.params.uid;
-		this.optionPendidikan()
-		this.optionJabatan()
-		this.optionMengajar()
-		this.optionKelas('Use')
-		this.optionKelas('All')
+		this.$store.dispatch('getPendidikan')
+		this.$store.dispatch('getJabatan')
+		this.$store.dispatch('getMengajar')
+		this.$store.dispatch('getKelas', { kondisi: 'All' })
+		this.$store.dispatch('getKelas', { kondisi: 'Use', walikelas: null })
 		if(this.$route.params.kondisi === 'EDIT'){
 			this.getStrukturalbyUID(this.$route.params.uid)
 		}
@@ -359,17 +365,7 @@ export default {
 					wali_kelas: resdata.waliKelas ? resdata.waliKelas : null,
 				}
 				if(this.inputDataKelengkapan.wali_kelas){
-					let dataKumpul = this.kelasUseOptions
-					this.kelasUseOptions = []
-					dataKumpul.map((str, i) => {
-						if(str.kelas.includes(this.inputDataKelengkapan.wali_kelas)){
-							this.kelasUseOptions.push({ idKelas: str.idKelas, kelas: this.inputDataKelengkapan.wali_kelas, status: str.status })
-							return this.kelasUseOptions
-						}else{
-							this.kelasUseOptions.push(str)
-							return this.kelasUseOptions
-						}
-					})
+					this.$store.dispatch('getKelas', { kondisi: 'Use', walikelas: this.inputDataKelengkapan.wali_kelas })
 				}
 			})
 			.catch((err) => {
@@ -386,66 +382,6 @@ export default {
 				waliKelas: this.inputDataKelengkapan.wali_kelas,
 			}
       this.$emit("DataStepThree", inputFormThree)
-    },
-		optionPendidikan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPendidikan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.pendidikanOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionJabatan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJabatan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.jabatanOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionMengajar(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsMengajar`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.mengajarOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionKelas(kondisi){
-      let payload = {
-        method: "get",
-				url: `settings/optionsKelas?kondisi=${kondisi}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(kondisi === 'All'){
-					this.kelasOptions = res.data.result
-				}else if(kondisi === 'Use'){
-					this.kelasUseOptions = res.data.result
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
     },
 		remove(item, kondisi) {
 			if(kondisi === 'jabatan'){

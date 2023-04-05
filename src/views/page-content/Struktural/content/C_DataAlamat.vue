@@ -374,16 +374,10 @@ export default {
       kode_pos: '',
     },
 		kondisiTombol: true,
-    agamaOptions: [],
     jenisKelaminOptions: [
 			{ text: 'Laki - Laki', value: 'Laki - Laki' },
 			{ text: 'Perempuan', value: 'Perempuan' },
 		],
-    ProvinsiOptions: [],
-    KabKotaOptions: [],
-    KecamatanOptions: [],
-    KelurahanOptions: [],
-    KabKotaOnlyOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -391,6 +385,23 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		agamaOptions(){
+			return this.$store.state.agamaOptions
+		},
+		ProvinsiOptions(){
+			return this.$store.state.ProvinsiOptions
+		},
+		KabKotaOptions(){
+			return this.$store.state.KabKotaOptions
+		},
+		KecamatanOptions(){
+			return this.$store.state.KecamatanOptions
+		},
+		KelurahanOptions(){
+			return this.$store.state.KelurahanOptions
+		},
+  },
 	watch: {
 		inputDataAlamat:{
 			deep: true,
@@ -414,8 +425,8 @@ export default {
 	},
 	mounted() {
 		this.inputDataAlamat.id_user = this.$route.params.uid;
-		this.optionAgama()
-		this.optionWilayah('provinsi', null)
+		this.$store.dispatch('getAgama')
+		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
 		if(this.$route.params.kondisi === 'EDIT'){
 			this.getStrukturalbyUID(this.$route.params.uid)
 		}
@@ -445,10 +456,9 @@ export default {
 					kelurahan: resdata.kelurahan ? resdata.kelurahan.kode : null,
 					kode_pos: resdata.kodePos ? resdata.kodePos : null,
 				}
-				this.optionWilayah('kabkota', this.inputDataAlamat.provinsi)
-				this.optionWilayah('kecamatan', this.inputDataAlamat.kabkota)
-				this.optionWilayah('kelurahan', this.inputDataAlamat.kecamatan)
-				// console.log(resdata);
+				this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputDataAlamat.provinsi })
+				this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputDataAlamat.kabkota })
+				this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputDataAlamat.kecamatan })
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -473,7 +483,7 @@ export default {
 		wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.optionWilayah('kabkota', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
 					this.inputDataAlamat.kabkota = ''
 					this.inputDataAlamat.kecamatan = ''
 					this.inputDataAlamat.kelurahan = ''
@@ -481,7 +491,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.optionWilayah('kecamatan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputDataAlamat.kecamatan) {
 						this.inputDataAlamat.kelurahan = ''
 						this.inputDataAlamat.kode_pos = ''	
@@ -493,7 +503,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.optionWilayah('kelurahan', e)
+					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputDataAlamat.kelurahan) {
 						this.inputDataAlamat.kode_pos = ''	
 					}
@@ -514,44 +524,6 @@ export default {
 				}
 			}
 		},
-		optionAgama(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsAgama`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.agamaOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					this.ProvinsiOptions = res.data.result
-				}else if(bagian === 'kabkota'){
-					this.KabKotaOptions = res.data.result
-				}else if(bagian === 'kecamatan'){
-					this.KecamatanOptions = res.data.result
-				}else if(bagian === 'kelurahan'){
-					this.KelurahanOptions = res.data.result
-				}else if(bagian === 'kabkotaOnly'){
-					this.KabKotaOnlyOptions = res.data.result
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		backStep() {
       this.$emit("backStep");
     },

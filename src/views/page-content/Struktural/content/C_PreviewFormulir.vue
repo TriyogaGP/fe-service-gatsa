@@ -400,15 +400,7 @@ export default {
 		preview: true,
     kondisi: '',
     passText: '',
-    agamaText: '',
-    pendidikanText: '',
-    jabatanText: '',
-    mengajatText: '',
     kelasText: '',
-    provinsiText: '',
-    kabkotaText: '',
-    kecamatanText: '',
-    kelurahanText: '',
 
     //notifikasi
     dialogNotifikasi: false,
@@ -416,6 +408,50 @@ export default {
     notifikasiText: '',
     notifikasiButton: '',
 	}),
+	computed: {
+		agamaText(){
+			let agamaOptions = this.$store.state.agamaOptions
+			return agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
+		},
+		pendidikanText(){
+			let pendidikanOptions = this.$store.state.pendidikanOptions
+			return pendidikanOptions.filter(str => str.kode === this.dataStepThree.pendidikanGuru)[0].label
+		},
+		jabatanText(){
+			let jabatanOptions = this.$store.state.jabatanOptions
+			let kumpul = []
+			this.dataStepThree.jabatanGuru.map(str => {
+				let hasil = jabatanOptions.filter(val => val.kode === str)[0].label
+				kumpul.push(hasil)
+			})
+			return kumpul.sort().join(', ')
+		},
+		mengajatText(){
+			let mengajarOptions = this.$store.state.mengajarOptions
+			let kumpul = []
+			this.dataStepThree.mengajarBidang.map(str => {
+				let hasil = mengajarOptions.filter(val => val.kode === str)[0].label
+				kumpul.push(hasil) 
+			})
+			return kumpul.sort().join(', ')
+		},
+		provinsiText(){
+			let ProvinsiOptions = this.$store.state.ProvinsiOptions
+			return ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi)[0].text
+		},
+		kabkotaText(){
+			let KabKotaOptions = this.$store.state.KabKotaOptions
+			return KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota)[0].text
+		},
+		kecamatanText(){
+			let KecamatanOptions = this.$store.state.KecamatanOptions
+			return KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan)[0].text
+		},
+		kelurahanText(){
+			let KelurahanOptions = this.$store.state.KelurahanOptions
+			return KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan)[0].text
+		},
+  },
 	watch: {
     stepperVal(n, o) {
       if (n != o && n == 4) {
@@ -428,114 +464,18 @@ export default {
 	mounted() {
     this.kondisi = this.$route.params.kondisi
 		this.kelasText = this.dataStepThree.mengajarKelas.sort().join(', ')
-    this.optionAgama()
-    this.optionPendidikan()
-    this.optionJabatan()
-    this.optionMengajar()
-    this.optionWilayah('provinsi', null)
-    this.optionWilayah('kabkota', this.dataStepTwo.provinsi)
-    this.optionWilayah('kecamatan', this.dataStepTwo.kabKota)
-    this.optionWilayah('kelurahan', this.dataStepTwo.kecamatan)
+		this.$store.dispatch('getAgama')
+		this.$store.dispatch('getPendidikan')
+		this.$store.dispatch('getJabatan')
+		this.$store.dispatch('getMengajar')
+		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+		this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.dataStepTwo.provinsi })
+		this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.dataStepTwo.kabKota })
+		this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.dataStepTwo.kecamatan })
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
 		...mapActions(["fetchData"]),
-    optionAgama(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsAgama`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let agamaOptions = res.data.result
-        this.agamaText = agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionPendidikan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsPendidikan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let pendidikanOptions = res.data.result
-				this.pendidikanText = pendidikanOptions.filter(str => str.kode === this.dataStepThree.pendidikanGuru)[0].label
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionJabatan(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsJabatan`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then(async (res) => {
-        let jabatanOptions = res.data.result
-				let kumpul = []
-				await Promise.all(this.dataStepThree.jabatanGuru.map(str => {
-					let hasil = jabatanOptions.filter(val => val.kode === str)[0].label
-					kumpul.push(hasil)
-				}))
-				this.jabatanText = kumpul.sort().join(', ')
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionMengajar(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsMengajar`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then(async (res) => {
-        let mengajarOptions = res.data.result
-				let kumpul = []
-				await Promise.all(this.dataStepThree.mengajarBidang.map(str => {
-					let hasil = mengajarOptions.filter(val => val.kode === str)[0].label
-					kumpul.push(hasil) 
-				}))
-				this.mengajatText = kumpul.sort().join(', ')
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		optionWilayah(bagian, KodeWilayah){
-      let payload = {
-        method: "get",
-				url: `settings/optionsWilayah?bagian=${bagian}&KodeWilayah=${KodeWilayah}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				if(bagian === 'provinsi'){
-					let ProvinsiOptions = res.data.result
-          this.provinsiText = ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi )[0].text
-				}else if(bagian === 'kabkota'){
-          let KabKotaOptions = res.data.result
-          this.kabkotaText = KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota )[0].text
-				}else if(bagian === 'kecamatan'){
-          let KecamatanOptions = res.data.result
-          this.kecamatanText = KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan )[0].text
-				}else if(bagian === 'kelurahan'){
-          let KelurahanOptions = res.data.result
-          this.kelurahanText = KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan )[0].text
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		simpanData() {
       let bodyData = {
         user: {

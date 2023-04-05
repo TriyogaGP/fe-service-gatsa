@@ -323,8 +323,6 @@ export default {
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
     DialogJadwalMengajar: false,
-    mengajarOptions: [],
-    kelasOptions: [],
     inputData: {
       idUser: '',
       mapel: '',
@@ -344,6 +342,14 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    mengajarOptions(){
+			return this.$store.state.mengajarOptions
+		},
+    kelasOptions(){
+			return this.$store.state.kelasOptions
+		},
+  },
   watch: {
     page: {
 			deep: true,
@@ -432,31 +438,6 @@ export default {
 				this.notifikasi("error", err.response.data.message, "1")
 			});
     },
-    optionMengajar(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsMengajar`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.mengajarOptions = res.data.result
-			})
-    },
-    optionKelas(){
-      let payload = {
-        method: "get",
-				url: `settings/optionsKelas`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.kelasOptions = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
     remove(item, kondisi) {
       if(kondisi === 'mapel'){
         this.inputData.mapel.splice(this.inputData.mapel.indexOf(item.label), 1);
@@ -470,8 +451,8 @@ export default {
       console.log('xxx', this.dataKelasMapel);
     },
     ubahData(item){
-      this.optionMengajar()
-      this.optionKelas()
+		  this.$store.dispatch('getMengajar')
+      this.$store.dispatch('getKelas', { kondisi: 'All' })
       this.inputData = {
         idUser: item.idUser,
         mapel: item.dataJadwalMengajar.map(str => str.mapel),
@@ -502,9 +483,10 @@ export default {
 .box{
 	width: 75px;
 	height: 40px;
-  background-image:-moz-linear-gradient(top, #FAD502, #E89502);
-	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FAD502), to(#E89502), color-stop(1,#E89502));
+  background-image:-moz-linear-gradient(top, #272727, #5a5757);
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#272727), to(#5a5757), color-stop(1,#5a5757));
 	margin: 2px;
+  color: #FFF;
 }
 .fourcorners{
 	-moz-border-radius: 10px;
