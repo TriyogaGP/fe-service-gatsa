@@ -258,7 +258,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
@@ -268,6 +268,12 @@ export default {
     stepperVal: {
       type: Number,
       default: null
+    },
+		dataStruktural: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   data: () => ({
@@ -290,21 +296,13 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		pendidikanOptions(){
-			return this.$store.state.pendidikanOptions
-		},
-		jabatanOptions(){
-			return this.$store.state.jabatanOptions
-		},
-		mengajarOptions(){
-			return this.$store.state.mengajarOptions
-		},
-		kelasOptions(){
-			return this.$store.state.kelasOptions
-		},
-		kelasUseOptions(){
-			return this.$store.state.kelasUseOptions
-		},
+		...mapState([
+			'pendidikanOptions',
+			'jabatanOptions',
+			'mengajarOptions',
+			'kelasOptions',
+			'kelasUseOptions',
+		]),
   },
 	watch: {
 		inputDataKelengkapan:{
@@ -332,46 +330,48 @@ export default {
 				this.wadahInput()
 			}
 		},
-	},
-	mounted() {
-		this.inputDataKelengkapan.id_user = this.$route.params.uid;
-		this.$store.dispatch('getPendidikan')
-		this.$store.dispatch('getJabatan')
-		this.$store.dispatch('getMengajar')
-		this.$store.dispatch('getKelas', { kondisi: 'All' })
-		this.$store.dispatch('getKelas', { kondisi: 'Use', walikelas: null })
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getStrukturalbyUID(this.$route.params.uid)
-		}
-	},
-	methods: {
-		...mapActions(["fetchData"]),
-		getStrukturalbyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/struktural/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
+		dataStruktural: {
+			deep: true,
+			handler(value) {
 				this.inputDataKelengkapan = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					nomor_induk: resdata.nomorInduk ? resdata.nomorInduk : null,
-					pendidikan_guru: resdata.pendidikanGuru ? resdata.pendidikanGuru.kode : null,
-					jabatan_guru: resdata.jabatanGuru ? resdata.jabatanGuru : null,
-					mengajar_bidang: resdata.mengajarBidang ? resdata.mengajarBidang : null,
-					mengajar_kelas: resdata.mengajarKelas ? resdata.mengajarKelas.split(', ') : null,
-					wali_kelas: resdata.waliKelas ? resdata.waliKelas : null,
+					id_user: value.idUser ? value.idUser : null,
+					nomor_induk: value.nomorInduk ? value.nomorInduk : null,
+					pendidikan_guru: value.pendidikanGuru ? value.pendidikanGuru.kode : null,
+					jabatan_guru: value.jabatanGuru ? value.jabatanGuru : null,
+					mengajar_bidang: value.mengajarBidang ? value.mengajarBidang : null,
+					mengajar_kelas: value.mengajarKelas ? value.mengajarKelas.split(', ') : null,
+					wali_kelas: value.waliKelas ? value.waliKelas : null,
 				}
 				if(this.inputDataKelengkapan.wali_kelas){
-					this.$store.dispatch('getKelas', { kondisi: 'Use', walikelas: this.inputDataKelengkapan.wali_kelas })
+					this.getKelas({ kondisi: 'Use', walikelas: this.inputDataKelengkapan.wali_kelas })
 				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
+			}
+		},
+	},
+	// created() {
+	// 	this.inputDataKelengkapan = {
+	// 		id_user: this.dataStruktural ? this.dataStruktural.idUser : null,
+	// 		nomor_induk: this.dataStruktural ? this.dataStruktural.nomorInduk : null,
+	// 		pendidikan_guru: this.dataStruktural ? this.dataStruktural.pendidikanGuru.kode : null,
+	// 		jabatan_guru: this.dataStruktural ? this.dataStruktural.jabatanGuru : null,
+	// 		mengajar_bidang: this.dataStruktural ? this.dataStruktural.mengajarBidang : null,
+	// 		mengajar_kelas: this.dataStruktural ? this.dataStruktural.mengajarKelas.split(', ') : null,
+	// 		wali_kelas: this.dataStruktural ? this.dataStruktural.waliKelas : null,
+	// 	}
+	// 	if(this.inputDataKelengkapan.wali_kelas){
+	// 		this.getKelas({ kondisi: 'Use', walikelas: this.inputDataKelengkapan.wali_kelas })
+	// 	}
+	// },
+	mounted() {
+		this.inputDataKelengkapan.id_user = this.$route.params.uid;
+		this.getPendidikan()
+		this.getJabatan()
+		this.getMengajar()
+		this.getKelas({ kondisi: 'All' })
+		this.getKelas({ kondisi: 'Use', walikelas: null })
+	},
+	methods: {
+		...mapActions(["fetchData", "getPendidikan", "getJabatan", "getMengajar", "getKelas"]),
 		wadahInput(){
 			let inputFormThree = {
 				nomorInduk: this.inputDataKelengkapan.nomor_induk,

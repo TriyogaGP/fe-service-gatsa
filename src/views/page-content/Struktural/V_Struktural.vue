@@ -5,7 +5,7 @@
       <v-row no-gutters class="pa-2">
         <v-col cols="12" md="6">
           <v-btn
-            v-if="roleID === '1' || roleID === '2'"
+            v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
             color="light-blue darken-3"
             small
             dense
@@ -91,7 +91,7 @@
           <template #expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="white">
               <v-btn
-                v-if="roleID === '1' || roleID === '2'"
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -104,7 +104,7 @@
                 <v-icon small>edit</v-icon>&nbsp;Ubah
               </v-btn> 
               <v-btn
-                v-if="roleID === '1' || roleID === '2'"
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -117,7 +117,7 @@
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn> 
               <v-btn
-                v-if="roleID === '1' || roleID === '2'"
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#bd3a07"
                 small
@@ -580,7 +580,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataStruktural',
@@ -654,6 +654,7 @@ export default {
     },
     DialogStruktural: false,
     endecryptType: '',
+    kondisiKepalaSekolah: false,
 
     //notifikasi
     dialogNotifikasi: false,
@@ -668,6 +669,22 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+		...mapState({
+			jabatan: 'jabatanOptions',
+		}),
+		jabatanOptions(){
+			if(this.roleID === '3'){
+				let jabatan_guru = localStorage.getItem('jabatan_guru').split(', ')
+				let result = []
+				jabatan_guru.map(str => {
+					let hasil = this.jabatan.filter(val => { return val.kode == str })
+					result.push(hasil.length ? hasil[0].label : '')
+				})
+				return result
+			}
+		}
+  },
   watch: {
     page: {
 			deep: true,
@@ -681,6 +698,16 @@ export default {
 				this.getStruktural(1, value, this.searchData)
 			}
 		},
+    jabatanOptions: {
+			deep: true,
+			handler(value) {
+				if(this.roleID === '3'){
+					if(value.includes('Kepala Sekolah')){
+						this.kondisiKepalaSekolah = true
+					}
+				}
+			}
+		}
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')

@@ -934,7 +934,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from '../../../Layout/PopUpNotifikasi.vue';
 export default {
   components: {
@@ -944,6 +944,12 @@ export default {
     stepperVal: {
       type: Number,
       default: null
+    },
+		dataSiswaSiswi: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   data: () => ({
@@ -992,39 +998,19 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		pendidikanOptions(){
-			return this.$store.state.pendidikanOptions
-		},
-		pekerjaanOptions(){
-			return this.$store.state.pekerjaanOptions
-		},
-		penghasilanOptions(){
-			return this.$store.state.penghasilanOptions
-		},
-		statusorangtuaOptions(){
-			return this.$store.state.statusorangtuaOptions
-		},
-		statustempattinggalOptions(){
-			return this.$store.state.statustempattinggalOptions
-		},
-		jarakrumahOptions(){
-			return this.$store.state.jarakrumahOptions
-		},
-		transportasiOptions(){
-			return this.$store.state.transportasiOptions
-		},
-		ProvinsiOptions(){
-			return this.$store.state.ProvinsiOptions
-		},
-		KabKotaOptions(){
-			return this.$store.state.KabKotaOptions
-		},
-		KecamatanOptions(){
-			return this.$store.state.KecamatanOptions
-		},
-		KelurahanOptions(){
-			return this.$store.state.KelurahanOptions
-		},
+		...mapState([
+			'pendidikanOptions',
+			'pekerjaanOptions',
+			'penghasilanOptions',
+			'statusorangtuaOptions',
+			'statustempattinggalOptions',
+			'jarakrumahOptions',
+			'transportasiOptions',
+			'ProvinsiOptions',
+			'KabKotaOptions',
+			'KecamatanOptions',
+			'KelurahanOptions',
+		]),
 		tahunOptions(){
 			const d = new Date();
 			let tahunData = []
@@ -1056,118 +1042,109 @@ export default {
 				this.wadahInput()
 			}
 		},
+		dataSiswaSiswi: {
+			deep: true,
+			handler(value) {
+				this.inputDataDetailOrangtua = {
+					id_user: value.idUser ? value.idUser : null,
+          no_kk: value.noKK ? value.noKK : null,
+          nama_kk: value.namaKK ? value.namaKK : null,
+          nama_ayah: value.dataOrangtua.dataAyah.namaAyah ? value.dataOrangtua.dataAyah.namaAyah : null,
+          tahun_ayah: value.dataOrangtua.dataAyah.tahunAyah ? value.dataOrangtua.dataAyah.tahunAyah : null,
+          status_ayah: value.dataOrangtua.dataAyah.statusAyah ? value.dataOrangtua.dataAyah.statusAyah.kode : null,
+          nik_ayah: value.dataOrangtua.dataAyah.nikAyah ? value.dataOrangtua.dataAyah.nikAyah : null,
+          pendidikan_ayah: value.dataOrangtua.dataAyah.pendidikanAyah ? value.dataOrangtua.dataAyah.pendidikanAyah.kode : null,
+          pekerjaan_ayah: value.dataOrangtua.dataAyah.pekerjaanAyah ? value.dataOrangtua.dataAyah.pekerjaanAyah.kode : null,
+          telp_ayah: value.dataOrangtua.dataAyah.telpAyah ? value.dataOrangtua.dataAyah.telpAyah : null,
+          nama_ibu: value.dataOrangtua.dataIbu.namaIbu ? value.dataOrangtua.dataIbu.namaIbu : null,
+          tahun_ibu: value.dataOrangtua.dataIbu.tahunIbu ? value.dataOrangtua.dataIbu.tahunIbu : null,
+          status_ibu: value.dataOrangtua.dataIbu.statusIbu ? value.dataOrangtua.dataIbu.statusIbu.kode : null,
+          nik_ibu: value.dataOrangtua.dataIbu.nikIbu ? value.dataOrangtua.dataIbu.nikIbu : null,
+          pendidikan_ibu: value.dataOrangtua.dataIbu.pendidikanIbu ? value.dataOrangtua.dataIbu.pendidikanIbu.kode : null,
+          pekerjaan_ibu: value.dataOrangtua.dataIbu.pekerjaanIbu ? value.dataOrangtua.dataIbu.pekerjaanIbu.kode : null,
+          telp_ibu: value.dataOrangtua.dataIbu.telpIbu ? value.dataOrangtua.dataIbu.telpIbu : null,
+          nama_wali: value.dataOrangtua.dataWali.namaWali ? value.dataOrangtua.dataWali.namaWali : null,
+          tahun_wali: value.dataOrangtua.dataWali.tahunWali ? value.dataOrangtua.dataWali.tahunWali : null,
+          nik_wali: value.dataOrangtua.dataWali.nikWali ? value.dataOrangtua.dataWali.nikWali : null,
+          pendidikan_wali: value.dataOrangtua.dataWali.pendidikanWali ? value.dataOrangtua.dataWali.pendidikanWali.kode : null,
+          pekerjaan_wali: value.dataOrangtua.dataWali.pekerjaanWali ? value.dataOrangtua.dataWali.pekerjaanWali.kode : null,
+          telp_wali: value.dataOrangtua.dataWali.telpWali ? value.dataOrangtua.dataWali.telpWali : null,
+          penghasilan: value.penghasilan ? value.penghasilan.kode : null,
+          status_tempat_tinggal: value.dataLainnya.statusTempatTinggal ? value.dataLainnya.statusTempatTinggal.kode : null,
+          jarak_rumah: value.dataLainnya.jarakRumah ? value.dataLainnya.jarakRumah.kode : null,
+          transportasi: value.dataLainnya.transportasi ? value.dataLainnya.transportasi.kode : null,
+					telp: value.dataAlamatOrangtua.telp ? value.dataAlamatOrangtua.telp : null,
+					alamat: value.dataAlamatOrangtua.alamat ? value.dataAlamatOrangtua.alamat : null,
+					provinsi: value.dataAlamatOrangtua.provinsi ? value.dataAlamatOrangtua.provinsi.kode : null,
+					kabkota: value.dataAlamatOrangtua.kabKota ? value.dataAlamatOrangtua.kabKota.kode : null,
+					kecamatan: value.dataAlamatOrangtua.kecamatan ? value.dataAlamatOrangtua.kecamatan.kode : null,
+					kelurahan: value.dataAlamatOrangtua.kelurahan ? value.dataAlamatOrangtua.kelurahan.kode : null,
+					kode_pos: value.dataAlamatOrangtua.kodePos ? value.dataAlamatOrangtua.kodePos : null,
+				}
+				this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputDataDetailOrangtua.provinsi })
+				this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputDataDetailOrangtua.kabkota })
+				this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputDataDetailOrangtua.kecamatan })
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataDetailOrangtua = {
+	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
+	// 		no_kk: this.dataSiswaSiswi ? this.dataSiswaSiswi.noKK : null,
+	// 		nama_kk: this.dataSiswaSiswi ? this.dataSiswaSiswi.namaKK : null,
+	// 		nama_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.namaAyah : null,
+	// 		tahun_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.tahunAyah : null,
+	// 		status_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.statusAyah.kode : null,
+	// 		nik_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.nikAyah : null,
+	// 		pendidikan_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.pendidikanAyah.kode : null,
+	// 		pekerjaan_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.pekerjaanAyah.kode : null,
+	// 		telp_ayah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataAyah.telpAyah : null,
+	// 		nama_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.namaIbu : null,
+	// 		tahun_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.tahunIbu : null,
+	// 		status_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.statusIbu.kode : null,
+	// 		nik_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.nikIbu : null,
+	// 		pendidikan_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.pendidikanIbu.kode : null,
+	// 		pekerjaan_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.pekerjaanIbu.kode : null,
+	// 		telp_ibu: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataIbu.telpIbu : null,
+	// 		nama_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.namaWali : null,
+	// 		tahun_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.tahunWali : null,
+	// 		nik_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.nikWali : null,
+	// 		pendidikan_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.pendidikanWali.kode : null,
+	// 		pekerjaan_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.pekerjaanWali.kode : null,
+	// 		telp_wali: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataOrangtua.dataWali.telpWali : null,
+	// 		penghasilan: this.dataSiswaSiswi ? this.dataSiswaSiswi.penghasilan.kode : null,
+	// 		status_tempat_tinggal: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataLainnya.statusTempatTinggal.kode : null,
+	// 		jarak_rumah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataLainnya.jarakRumah.kode : null,
+	// 		transportasi: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataLainnya.transportasi.kode : null,
+	// 		telp: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.telp : null,
+	// 		alamat: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.alamat : null,
+	// 		provinsi: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.provinsi.kode : null,
+	// 		kabkota: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.kabKota.kode : null,
+	// 		kecamatan: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.kecamatan.kode : null,
+	// 		kelurahan: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.kelurahan.kode : null,
+	// 		kode_pos: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataAlamatOrangtua.kodePos : null,
+	// 	}
+	// 	this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputDataDetailOrangtua.provinsi })
+	// 	this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputDataDetailOrangtua.kabkota })
+	// 	this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputDataDetailOrangtua.kecamatan })
+	// },
 	mounted() {
 		this.inputDataDetailOrangtua.id_user = this.$route.params.uid;
-		this.$store.dispatch('getPendidikan')
-		this.$store.dispatch('getPekerjaan')
-		this.$store.dispatch('getPenghasilan')
-		this.$store.dispatch('getStatusOrangTua')
-		this.$store.dispatch('getStatusTempatTinggal')
-		this.$store.dispatch('getJarakRumah')
-		this.$store.dispatch('getTransportasi')
-		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getSiswaSiswabyUID(this.$route.params.uid)
-		}
+		this.getPendidikan()
+		this.getPekerjaan()
+		this.getPenghasilan()
+		this.getStatusOrangTua()
+		this.getStatusTempatTinggal()
+		this.getJarakRumah()
+		this.getTransportasi()
+		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getSiswaSiswabyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/siswasiswi/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataDetailOrangtua = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-          no_kk: resdata.noKK ? resdata.noKK : null,
-          nama_kk: resdata.namaKK ? resdata.namaKK : null,
-          nama_ayah: resdata.dataOrangtua.dataAyah.namaAyah ? resdata.dataOrangtua.dataAyah.namaAyah : null,
-          tahun_ayah: resdata.dataOrangtua.dataAyah.tahunAyah ? resdata.dataOrangtua.dataAyah.tahunAyah : null,
-          status_ayah: resdata.dataOrangtua.dataAyah.statusAyah ? resdata.dataOrangtua.dataAyah.statusAyah.kode : null,
-          nik_ayah: resdata.dataOrangtua.dataAyah.nikAyah ? resdata.dataOrangtua.dataAyah.nikAyah : null,
-          pendidikan_ayah: resdata.dataOrangtua.dataAyah.pendidikanAyah ? resdata.dataOrangtua.dataAyah.pendidikanAyah.kode : null,
-          pekerjaan_ayah: resdata.dataOrangtua.dataAyah.pekerjaanAyah ? resdata.dataOrangtua.dataAyah.pekerjaanAyah.kode : null,
-          telp_ayah: resdata.dataOrangtua.dataAyah.telpAyah ? resdata.dataOrangtua.dataAyah.telpAyah : null,
-          nama_ibu: resdata.dataOrangtua.dataIbu.namaIbu ? resdata.dataOrangtua.dataIbu.namaIbu : null,
-          tahun_ibu: resdata.dataOrangtua.dataIbu.tahunIbu ? resdata.dataOrangtua.dataIbu.tahunIbu : null,
-          status_ibu: resdata.dataOrangtua.dataIbu.statusIbu ? resdata.dataOrangtua.dataIbu.statusIbu.kode : null,
-          nik_ibu: resdata.dataOrangtua.dataIbu.nikIbu ? resdata.dataOrangtua.dataIbu.nikIbu : null,
-          pendidikan_ibu: resdata.dataOrangtua.dataIbu.pendidikanIbu ? resdata.dataOrangtua.dataIbu.pendidikanIbu.kode : null,
-          pekerjaan_ibu: resdata.dataOrangtua.dataIbu.pekerjaanIbu ? resdata.dataOrangtua.dataIbu.pekerjaanIbu.kode : null,
-          telp_ibu: resdata.dataOrangtua.dataIbu.telpIbu ? resdata.dataOrangtua.dataIbu.telpIbu : null,
-          nama_wali: resdata.dataOrangtua.dataWali.namaWali ? resdata.dataOrangtua.dataWali.namaWali : null,
-          tahun_wali: resdata.dataOrangtua.dataWali.tahunWali ? resdata.dataOrangtua.dataWali.tahunWali : null,
-          nik_wali: resdata.dataOrangtua.dataWali.nikWali ? resdata.dataOrangtua.dataWali.nikWali : null,
-          pendidikan_wali: resdata.dataOrangtua.dataWali.pendidikanWali ? resdata.dataOrangtua.dataWali.pendidikanWali.kode : null,
-          pekerjaan_wali: resdata.dataOrangtua.dataWali.pekerjaanWali ? resdata.dataOrangtua.dataWali.pekerjaanWali.kode : null,
-          telp_wali: resdata.dataOrangtua.dataWali.telpWali ? resdata.dataOrangtua.dataWali.telpWali : null,
-          penghasilan: resdata.penghasilan ? resdata.penghasilan.kode : null,
-          status_tempat_tinggal: resdata.dataLainnya.statusTempatTinggal ? resdata.dataLainnya.statusTempatTinggal.kode : null,
-          jarak_rumah: resdata.dataLainnya.jarakRumah ? resdata.dataLainnya.jarakRumah.kode : null,
-          transportasi: resdata.dataLainnya.transportasi ? resdata.dataLainnya.transportasi.kode : null,
-					telp: resdata.dataAlamatOrangtua.telp ? resdata.dataAlamatOrangtua.telp : null,
-					alamat: resdata.dataAlamatOrangtua.alamat ? resdata.dataAlamatOrangtua.alamat : null,
-					provinsi: resdata.dataAlamatOrangtua.provinsi ? resdata.dataAlamatOrangtua.provinsi.kode : null,
-					kabkota: resdata.dataAlamatOrangtua.kabKota ? resdata.dataAlamatOrangtua.kabKota.kode : null,
-					kecamatan: resdata.dataAlamatOrangtua.kecamatan ? resdata.dataAlamatOrangtua.kecamatan.kode : null,
-					kelurahan: resdata.dataAlamatOrangtua.kelurahan ? resdata.dataAlamatOrangtua.kelurahan.kode : null,
-					kode_pos: resdata.dataAlamatOrangtua.kodePos ? resdata.dataAlamatOrangtua.kodePos : null,
-				}
-				this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputDataDetailOrangtua.provinsi })
-				this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputDataDetailOrangtua.kabkota })
-				this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputDataDetailOrangtua.kecamatan })
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-		wadahInput(){
-			let inputFormFour = {
-        noKK: this.inputDataDetailOrangtua.no_kk,
-        namaKK: this.inputDataDetailOrangtua.nama_kk,
-        namaAyah: this.inputDataDetailOrangtua.nama_ayah,
-        tahunAyah: this.inputDataDetailOrangtua.tahun_ayah,
-        statusAyah: this.inputDataDetailOrangtua.status_ayah,
-        nikAyah: this.inputDataDetailOrangtua.nik_ayah,
-        pendidikanAyah: this.inputDataDetailOrangtua.pendidikan_ayah,
-        pekerjaanAyah: this.inputDataDetailOrangtua.pendidikan_ayah,
-        telpAyah: this.inputDataDetailOrangtua.telp_ayah,
-        namaIbu: this.inputDataDetailOrangtua.nama_ibu,
-        tahunIbu: this.inputDataDetailOrangtua.tahun_ibu,
-        statusIbu: this.inputDataDetailOrangtua.status_ibu,
-        nikIbu: this.inputDataDetailOrangtua.nik_ibu,
-        pendidikanIbu: this.inputDataDetailOrangtua.pendidikan_ibu,
-        pekerjaanIbu: this.inputDataDetailOrangtua.pekerjaan_ibu,
-        telpIbu: this.inputDataDetailOrangtua.telp_ibu,
-        namaWali: this.inputDataDetailOrangtua.nama_wali,
-        tahunWali: this.inputDataDetailOrangtua.tahun_wali,
-        nikWali: this.inputDataDetailOrangtua.nik_wali,
-        pendidikanWali: this.inputDataDetailOrangtua.pendidikan_wali,
-        pekerjaanWali: this.inputDataDetailOrangtua.pekerjaan_wali,
-        telpWali: this.inputDataDetailOrangtua.telp_wali,
-        penghasilan: this.inputDataDetailOrangtua.penghasilan,
-        statusTempatTinggal: this.inputDataDetailOrangtua.status_tempat_tinggal,
-        jarakRumah: this.inputDataDetailOrangtua.jarak_rumah,
-        transportasi: this.inputDataDetailOrangtua.transportasi,
-				telp: this.inputDataDetailOrangtua.telp,
-				alamat: this.inputDataDetailOrangtua.alamat,
-				provinsi: this.inputDataDetailOrangtua.provinsi,
-				kabKota: this.inputDataDetailOrangtua.kabkota,
-				kecamatan: this.inputDataDetailOrangtua.kecamatan,
-				kelurahan: this.inputDataDetailOrangtua.kelurahan,
-				kodePos: this.inputDataDetailOrangtua.kode_pos,
-			}
-      this.$emit("DataStepFour", inputFormFour)
-    },
+		...mapActions(["fetchData", "getPendidikan", "getPekerjaan", "getPenghasilan", "getStatusOrangTua", "getStatusTempatTinggal", "getJarakRumah", "getTransportasi", "getWilayah"]),
 		wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
 					this.inputDataDetailOrangtua.kabkota = ''
 					this.inputDataDetailOrangtua.kecamatan = ''
 					this.inputDataDetailOrangtua.kelurahan = ''
@@ -1175,7 +1152,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputDataDetailOrangtua.kecamatan) {
 						this.inputDataDetailOrangtua.kelurahan = ''
 						this.inputDataDetailOrangtua.kode_pos = ''	
@@ -1187,7 +1164,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', e })
+					this.getWilayah({ bagian: 'kelurahan', e })
 					if(e !== this.inputDataDetailOrangtua.kelurahan) {
 						this.inputDataDetailOrangtua.kode_pos = ''	
 					}

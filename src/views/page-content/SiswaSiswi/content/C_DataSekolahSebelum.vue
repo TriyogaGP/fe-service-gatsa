@@ -308,7 +308,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
@@ -318,6 +318,12 @@ export default {
     stepperVal: {
       type: Number,
       default: null
+    },
+		dataSiswaSiswi: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   data: () => ({
@@ -347,12 +353,10 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		jenjangOptions(){
-			return this.$store.state.jenjangOptions
-		},
-		KabKotaOnlyOptions(){
-			return this.$store.state.KabKotaOnlyOptions
-		},
+		...mapState([
+			'jenjangOptions',
+			'KabKotaOnlyOptions',
+		]),
   },
 	watch: {
 		inputDataSekolahSebelum:{
@@ -370,44 +374,47 @@ export default {
 				this.wadahInput()
 			}
 		},
+		dataSiswaSiswi: {
+			deep: true,
+			handler(value) {
+				this.inputDataSekolahSebelum = {
+					id_user: value.idUser ? value.idUser : null,
+					jenjang: value.dataSekolahSebelumnya.jenjang ? value.dataSekolahSebelumnya.jenjang.kode : null,
+					status_sekolah: value.dataSekolahSebelumnya.statusSekolah ? value.dataSekolahSebelumnya.statusSekolah.kode : null,
+					nama_sekolah: value.dataSekolahSebelumnya.namaSekolah ? value.dataSekolahSebelumnya.namaSekolah : null,
+					npsn: value.dataSekolahSebelumnya.npsn ? value.dataSekolahSebelumnya.npsn : null,
+					alamat_sekolah: value.dataSekolahSebelumnya.alamatSekolah ? value.dataSekolahSebelumnya.alamatSekolah : null,
+					kabkot_sekolah: value.dataSekolahSebelumnya.kabkotSekolah ? value.dataSekolahSebelumnya.kabkotSekolah.kode : null,
+					no_peserta_un: value.dataSekolahSebelumnya.noPesertaUN ? value.dataSekolahSebelumnya.noPesertaUN : null,
+					no_skhun: value.dataSekolahSebelumnya.noSKHUN ? value.dataSekolahSebelumnya.noSKHUN : null,
+					no_ijazah: value.dataSekolahSebelumnya.noIjazah ? value.dataSekolahSebelumnya.noIjazah : null,
+					nilai_un: value.dataSekolahSebelumnya.nilaiUN ? value.dataSekolahSebelumnya.nilaiUN : null,
+				}
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataSekolahSebelum = {
+	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
+	// 		jenjang: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.jenjang.kode : null,
+	// 		status_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.statusSekolah.kode : null,
+	// 		nama_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.namaSekolah : null,
+	// 		npsn: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.npsn : null,
+	// 		alamat_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.alamatSekolah : null,
+	// 		kabkot_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.kabkotSekolah.kode : null,
+	// 		no_peserta_un: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noPesertaUN : null,
+	// 		no_skhun: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noSKHUN : null,
+	// 		no_ijazah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noIjazah : null,
+	// 		nilai_un: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.nilaiUN : null,
+	// 	}
+	// },
 	mounted() {
 		this.inputDataSekolahSebelum.id_user = this.$route.params.uid;
-		this.$store.dispatch('getJenjangSekolah')
-		this.$store.dispatch('getWilayah', { bagian: 'kabkotaOnly', KodeWilayah: null })
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getSiswaSiswibyUID(this.$route.params.uid)
-		}
+		this.getJenjangSekolah()
+		this.getWilayah({ bagian: 'kabkotaOnly', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getSiswaSiswibyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/siswasiswi/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataSekolahSebelum = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					jenjang: resdata.dataSekolahSebelumnya.jenjang ? resdata.dataSekolahSebelumnya.jenjang.kode : null,
-					status_sekolah: resdata.dataSekolahSebelumnya.statusSekolah ? resdata.dataSekolahSebelumnya.statusSekolah.kode : null,
-					nama_sekolah: resdata.dataSekolahSebelumnya.namaSekolah ? resdata.dataSekolahSebelumnya.namaSekolah : null,
-					npsn: resdata.dataSekolahSebelumnya.npsn ? resdata.dataSekolahSebelumnya.npsn : null,
-					alamat_sekolah: resdata.dataSekolahSebelumnya.alamatSekolah ? resdata.dataSekolahSebelumnya.alamatSekolah : null,
-					kabkot_sekolah: resdata.dataSekolahSebelumnya.kabkotSekolah ? resdata.dataSekolahSebelumnya.kabkotSekolah.kode : null,
-					no_peserta_un: resdata.dataSekolahSebelumnya.noPesertaUN ? resdata.dataSekolahSebelumnya.noPesertaUN : null,
-					no_skhun: resdata.dataSekolahSebelumnya.noSKHUN ? resdata.dataSekolahSebelumnya.noSKHUN : null,
-					no_ijazah: resdata.dataSekolahSebelumnya.noIjazah ? resdata.dataSekolahSebelumnya.noIjazah : null,
-					nilai_un: resdata.dataSekolahSebelumnya.nilaiUN ? resdata.dataSekolahSebelumnya.nilaiUN : null,
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
+		...mapActions(["fetchData", "getJenjangSekolah", "getWilayah"]),
 		wadahInput(){
 			let inputFormThree = {
 				jenjang: this.inputDataSekolahSebelum.jenjang,

@@ -283,7 +283,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
   components: {
@@ -302,11 +302,6 @@ export default {
 		preview: true,
     kondisi: '',
     passText: '',
-    // agamaText: '',
-    // provinsiText: '',
-    // kabkotaText: '',
-    // kecamatanText: '',
-    // kelurahanText: '',
     levelOptions: [
 			{ text: 'Super Administrator', value: 1 },
 			{ text: 'Administrator', value: 2 },
@@ -319,25 +314,27 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
+		...mapState([
+			'agamaOptions',
+			'ProvinsiOptions',
+			'KabKotaOptions',
+			'KecamatanOptions',
+			'KelurahanOptions',
+		]),
 		agamaText(){
-			let agamaOptions = this.$store.state.agamaOptions
-			return agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
+			return this.agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
 		},
 		provinsiText(){
-			let ProvinsiOptions = this.$store.state.ProvinsiOptions
-			return ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi)[0].text
+			return this.ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi)[0].text
 		},
 		kabkotaText(){
-			let KabKotaOptions = this.$store.state.KabKotaOptions
-			return KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota)[0].text
+			return this.KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota)[0].text
 		},
 		kecamatanText(){
-			let KecamatanOptions = this.$store.state.KecamatanOptions
-			return KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan)[0].text
+			return this.KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan)[0].text
 		},
 		kelurahanText(){
-			let KelurahanOptions = this.$store.state.KelurahanOptions
-			return KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan)[0].text
+			return this.KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan)[0].text
 		},
   },
 	watch: {
@@ -351,15 +348,15 @@ export default {
 	},
 	mounted() {
     this.kondisi = this.$route.params.kondisi
-		this.$store.dispatch('getAgama')
-		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.dataStepTwo.provinsi })
-		this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.dataStepTwo.kabKota })
-		this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.dataStepTwo.kecamatan })
+		this.getAgama()
+		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+		this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.dataStepTwo.provinsi })
+		this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.dataStepTwo.kabKota })
+		this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.dataStepTwo.kecamatan })
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getAgama", "getWilayah"]),
 		simpanData() {
       let bodyData = {
         user: {

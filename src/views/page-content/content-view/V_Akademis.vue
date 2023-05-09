@@ -239,7 +239,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataAkademis',
@@ -270,10 +270,12 @@ export default {
 		},
 	},
   computed: {
+    ...mapState({
+      mengajar: 'mengajarOptions',
+    }),
     mengajarOptions(){
-			let data = this.$store.state.mengajarOptions
       let result = []
-      data.map(str => {
+      this.mengajar.map(str => {
         result.push({ label: str.label, link: str.label.replace(' ', '-') })
       })
 			return result
@@ -285,7 +287,7 @@ export default {
     this.roleID = localStorage.getItem('roleID')
     this.idLogin = localStorage.getItem('idLogin')
     this.kelas = localStorage.getItem('kelas')
-		this.$store.dispatch('getMengajar')
+		this.getMengajar()
 	},
 	methods: {
 		...mapActions(["fetchData"]),

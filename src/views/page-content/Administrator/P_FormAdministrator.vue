@@ -29,6 +29,7 @@
       <v-stepper-content step="1">
         <C_DataLogin 
           :stepper-val="stepperVal"
+          :data-administrator.sync="administrator"
           @DataStepOne="DataStepOne"
           @StepOne="nextStep(1)"
           @BackToList="gotolist()"
@@ -38,6 +39,7 @@
       <v-stepper-content step="2">
         <C_DataAlamat 
           :stepper-val="stepperVal"
+          :data-administrator.sync="administrator"
           @DataStepTwo="DataStepTwo"
           @backStep="backStep(2)"
           @StepTwo="nextStep(2)"
@@ -60,7 +62,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import C_DataLogin from './content/C_DataLogin.vue';
 import C_DataAlamat from "./content/C_DataAlamat.vue";
 import C_PreviewFormulir from './content/C_PreviewFormulir.vue';
@@ -85,6 +87,9 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+		...mapGetters(['administrator']),
+	},
   watch: {
     stepperVal(n, o) {
       if (n !== o) {
@@ -100,9 +105,12 @@ export default {
   },
   mounted() {
     // let uid = this.$route.params.uid;
+    if(this.$route.params.kondisi === 'EDIT'){
+      this.getAdminbyUID(this.$route.params.uid)
+		}
   },
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getAdminbyUID"]),
     gotolist() {
       this.$router.push({name: "DataAdministrator"});
     },

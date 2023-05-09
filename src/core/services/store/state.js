@@ -19,4 +19,8 @@ export default {
   KecamatanOptions: [],
   KelurahanOptions: [],
   KabKotaOnlyOptions: [],
+  dataAdministrator: null,
+  dataStruktural: null,
+  dataSiswaSiswi: null,
+  dataCMSSetting: null,
 }

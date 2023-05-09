@@ -151,7 +151,7 @@
 							<v-btn  
 								v-if="i !== (inputRoleMenu.kumpulanMenu.length - 1)"
 								icon
-								@click="() => { inputRoleMenu.kumpulanMenu.splice(i, 1) }"
+								@click="() => { inputRoleMenu.kumpulanMenu.splice(i, 1); inputRoleMenu.menu.splice(i, 1) }"
 							>
 								<v-icon color="red" small>close</v-icon>
 							</v-btn>
@@ -569,7 +569,7 @@ export default {
 			let bodyData = {
 				id_role_menu: this.inputRoleMenu.id_role_menu,
         id_role: this.inputRoleMenu.id_role,
-        menu: menu.length ? menu : [],
+        menu: menu.length ? menu.filter(str => str.idMenu !== '') : [],
       }
       let payload = {
 				method: "post",

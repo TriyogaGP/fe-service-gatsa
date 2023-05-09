@@ -380,7 +380,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
   components: {
@@ -409,47 +409,49 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
+		...mapState([
+			"agamaOptions",
+			"pendidikanOptions",
+			"jabatanOptions",
+			"mengajarOptions",
+			'ProvinsiOptions',
+			'KabKotaOptions',
+			'KecamatanOptions',
+			'KelurahanOptions',
+		]),
 		agamaText(){
-			let agamaOptions = this.$store.state.agamaOptions
-			return agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
+			return this.agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
 		},
 		pendidikanText(){
-			let pendidikanOptions = this.$store.state.pendidikanOptions
-			return pendidikanOptions.filter(str => str.kode === this.dataStepThree.pendidikanGuru)[0].label
+			return this.pendidikanOptions.filter(str => str.kode === this.dataStepThree.pendidikanGuru)[0].label
 		},
 		jabatanText(){
-			let jabatanOptions = this.$store.state.jabatanOptions
 			let kumpul = []
 			this.dataStepThree.jabatanGuru.map(str => {
-				let hasil = jabatanOptions.filter(val => val.kode === str)[0].label
+				let hasil = this.jabatanOptions.filter(val => val.kode === str)[0].label
 				kumpul.push(hasil)
 			})
 			return kumpul.sort().join(', ')
 		},
 		mengajatText(){
-			let mengajarOptions = this.$store.state.mengajarOptions
 			let kumpul = []
 			this.dataStepThree.mengajarBidang.map(str => {
-				let hasil = mengajarOptions.filter(val => val.kode === str)[0].label
+				let hasil = this.mengajarOptions.filter(val => val.kode === str)[0].label
 				kumpul.push(hasil) 
 			})
 			return kumpul.sort().join(', ')
 		},
 		provinsiText(){
-			let ProvinsiOptions = this.$store.state.ProvinsiOptions
-			return ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi)[0].text
+			return this.ProvinsiOptions.filter(str => str.value === this.dataStepTwo.provinsi)[0].text
 		},
 		kabkotaText(){
-			let KabKotaOptions = this.$store.state.KabKotaOptions
-			return KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota)[0].text
+			return this.KabKotaOptions.filter(str => str.value === this.dataStepTwo.kabKota)[0].text
 		},
 		kecamatanText(){
-			let KecamatanOptions = this.$store.state.KecamatanOptions
-			return KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan)[0].text
+			return this.KecamatanOptions.filter(str => str.value === this.dataStepTwo.kecamatan)[0].text
 		},
 		kelurahanText(){
-			let KelurahanOptions = this.$store.state.KelurahanOptions
-			return KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan)[0].text
+			return this.KelurahanOptions.filter(str => str.value === this.dataStepTwo.kelurahan)[0].text
 		},
   },
 	watch: {
@@ -464,18 +466,18 @@ export default {
 	mounted() {
     this.kondisi = this.$route.params.kondisi
 		this.kelasText = this.dataStepThree.mengajarKelas.sort().join(', ')
-		this.$store.dispatch('getAgama')
-		this.$store.dispatch('getPendidikan')
-		this.$store.dispatch('getJabatan')
-		this.$store.dispatch('getMengajar')
-		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.dataStepTwo.provinsi })
-		this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.dataStepTwo.kabKota })
-		this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.dataStepTwo.kecamatan })
+		this.getAgama()
+		this.getPendidikan()
+		this.getJabatan()
+		this.getMengajar()
+		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+		this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.dataStepTwo.provinsi })
+		this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.dataStepTwo.kabKota })
+		this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.dataStepTwo.kecamatan })
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getAgama", "getPendidikan", "getJabatan", "getMengajar", "getWilayah"]),
 		simpanData() {
       let bodyData = {
         user: {

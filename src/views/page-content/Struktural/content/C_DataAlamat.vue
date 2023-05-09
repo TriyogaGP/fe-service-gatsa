@@ -346,7 +346,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
@@ -356,6 +356,12 @@ export default {
     stepperVal: {
       type: Number,
       default: null
+    },
+		dataStruktural: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   data: () => ({
@@ -386,21 +392,13 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		agamaOptions(){
-			return this.$store.state.agamaOptions
-		},
-		ProvinsiOptions(){
-			return this.$store.state.ProvinsiOptions
-		},
-		KabKotaOptions(){
-			return this.$store.state.KabKotaOptions
-		},
-		KecamatanOptions(){
-			return this.$store.state.KecamatanOptions
-		},
-		KelurahanOptions(){
-			return this.$store.state.KelurahanOptions
-		},
+		...mapState([
+			'agamaOptions',
+			'ProvinsiOptions',
+			'KabKotaOptions',
+			'KecamatanOptions',
+			'KelurahanOptions',
+		]),
   },
 	watch: {
 		inputDataAlamat:{
@@ -422,48 +420,55 @@ export default {
 				this.wadahInput()
 			}
 		},
+		dataStruktural: {
+			deep: true,
+			handler(value) {
+				this.inputDataAlamat = {
+					id_user: value.idUser ? value.idUser : null,
+					tempat: value.tempat ? value.tempat : null,
+					tanggal_lahir: value.tanggalLahir ? value.tanggalLahir : null,
+					jenis_kelamin: value.jenisKelamin ? value.jenisKelamin : null,
+					agama: value.agama ? value.agama.kode : null,
+					telp: value.telp ? value.telp : null,
+					alamat: value.alamat ? value.alamat : null,
+					provinsi: value.provinsi ? value.provinsi.kode : null,
+					kabkota: value.kabKota ? value.kabKota.kode : null,
+					kecamatan: value.kecamatan ? value.kecamatan.kode : null,
+					kelurahan: value.kelurahan ? value.kelurahan.kode : null,
+					kode_pos: value.kodePos ? value.kodePos : null,
+				}
+				this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputDataAlamat.provinsi })
+				this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputDataAlamat.kabkota })
+				this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputDataAlamat.kecamatan })
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataAlamat = {
+	// 		id_user: this.dataStruktural ? this.dataStruktural.idUser : null,
+	// 		tempat: this.dataStruktural ? this.dataStruktural.tempat : null,
+	// 		tanggal_lahir: this.dataStruktural ? this.dataStruktural.tanggalLahir : null,
+	// 		jenis_kelamin: this.dataStruktural ? this.dataStruktural.jenisKelamin : null,
+	// 		agama: this.dataStruktural ? this.dataStruktural.agama.kode : null,
+	// 		telp: this.dataStruktural ? this.dataStruktural.telp : null,
+	// 		alamat: this.dataStruktural ? this.dataStruktural.alamat : null,
+	// 		provinsi: this.dataStruktural ? this.dataStruktural.provinsi.kode : null,
+	// 		kabkota: this.dataStruktural ? this.dataStruktural.kabKota.kode : null,
+	// 		kecamatan: this.dataStruktural ? this.dataStruktural.kecamatan.kode : null,
+	// 		kelurahan: this.dataStruktural ? this.dataStruktural.kelurahan.kode : null,
+	// 		kode_pos: this.dataStruktural ? this.dataStruktural.kodePos : null,
+	// 	}
+	// 	this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputDataAlamat.provinsi })
+	// 	this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputDataAlamat.kabkota })
+	// 	this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputDataAlamat.kecamatan })
+	// },
 	mounted() {
 		this.inputDataAlamat.id_user = this.$route.params.uid;
-		this.$store.dispatch('getAgama')
-		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getStrukturalbyUID(this.$route.params.uid)
-		}
+		this.getAgama()
+		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getStrukturalbyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/struktural/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataAlamat = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					tempat: resdata.tempat ? resdata.tempat : null,
-					tanggal_lahir: resdata.tanggalLahir ? resdata.tanggalLahir : null,
-					jenis_kelamin: resdata.jenisKelamin ? resdata.jenisKelamin : null,
-					agama: resdata.agama ? resdata.agama.kode : null,
-					telp: resdata.telp ? resdata.telp : null,
-					alamat: resdata.alamat ? resdata.alamat : null,
-					provinsi: resdata.provinsi ? resdata.provinsi.kode : null,
-					kabkota: resdata.kabKota ? resdata.kabKota.kode : null,
-					kecamatan: resdata.kecamatan ? resdata.kecamatan.kode : null,
-					kelurahan: resdata.kelurahan ? resdata.kelurahan.kode : null,
-					kode_pos: resdata.kodePos ? resdata.kodePos : null,
-				}
-				this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputDataAlamat.provinsi })
-				this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputDataAlamat.kabkota })
-				this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputDataAlamat.kecamatan })
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
+		...mapActions(["fetchData", "getAgama", "getWilayah"]),
 		wadahInput(){
 			let inputFormTwo = {
 				tempat: this.inputDataAlamat.tempat,
@@ -483,7 +488,7 @@ export default {
 		wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
 					this.inputDataAlamat.kabkota = ''
 					this.inputDataAlamat.kecamatan = ''
 					this.inputDataAlamat.kelurahan = ''
@@ -491,7 +496,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputDataAlamat.kecamatan) {
 						this.inputDataAlamat.kelurahan = ''
 						this.inputDataAlamat.kode_pos = ''	
@@ -503,7 +508,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputDataAlamat.kelurahan) {
 						this.inputDataAlamat.kode_pos = ''	
 					}

@@ -18,6 +18,7 @@ const actions = {
         fData.append('file', data.files); //data files
       }else if(data.jenis === 'excel') {
         fData.append('jenis', data.jenis); //jenis
+        fData.append('createupdateBy', data.createupdateBy); //createupdateBy
         fData.append('file', data.files); //data files
       }
       // fData.append('id_profile', idProfile ? idProfile : null); //id profile user

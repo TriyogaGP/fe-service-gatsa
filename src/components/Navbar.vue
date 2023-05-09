@@ -29,8 +29,9 @@
 			>
 				<template v-slot:activator="{ attrs, on }">
 					<v-list dense style="padding: 0px; margin-left: 3px;">
+						<!-- untuk menu admin tanpa -->
 						<v-list-item
-							v-if="data.menuText !== 'Wali Kelas'"
+							v-if="data.menuText !== 'Wali Kelas' && (roleID === '1' || roleID === '2' || roleID === '4')"
 							router :to="!data.kondisi ? data.menuRoute : ''"
 							class="SelectedMenu"
 							active-class="SelectedMenu-active"
@@ -43,7 +44,33 @@
 							</v-list-item-title>
 						</v-list-item>
 						<v-list-item
-							v-if="data.menuText === 'Wali Kelas' && (roleID === '1' || roleID === '2')"
+							v-if="data.menuText !== 'Wali Kelas' && data.menuText !== 'Jadwal Mengajar' && data.menuText !== 'Guru' && data.menuText !== 'Siswa Siswi' && roleID === '3'"
+							router :to="!data.kondisi ? data.menuRoute : ''"
+							class="SelectedMenu"
+							active-class="SelectedMenu-active"
+							v-bind="attrs"
+							v-on="on"
+						>
+							<v-icon left middle>{{ data.menuIcon }}</v-icon>
+							<v-list-item-title>
+								<span>{{ data.menuText }}</span>
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
+							v-if="data.menuText === 'Wali Kelas' && wali_kelas !== ''"
+							router :to="data.menuRoute"
+							class="SelectedMenu"
+							active-class="SelectedMenu-active"
+							v-bind="attrs"
+							v-on="on"
+						>
+							<v-icon left middle>{{ data.menuIcon }}</v-icon>
+							<v-list-item-title>
+								<span>{{ `${data.menuText}${wali_kelas == null ? '':' '+wali_kelas}` }}</span>
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
+							v-if="data.menuText === 'Jadwal Mengajar' && kondisiWaKaBidKurikulum && roleID === '3'"
 							router :to="data.menuRoute"
 							class="SelectedMenu"
 							active-class="SelectedMenu-active"
@@ -56,7 +83,7 @@
 							</v-list-item-title>
 						</v-list-item>
 						<v-list-item
-							v-if="data.menuText === 'Wali Kelas' && wali_kelas !== '' && roleID === '3'"
+							v-if="data.menuText === 'Siswa Siswi' && kondisiWaKaBidKesiswaan && roleID === '3'"
 							router :to="data.menuRoute"
 							class="SelectedMenu"
 							active-class="SelectedMenu-active"
@@ -65,7 +92,20 @@
 						>
 							<v-icon left middle>{{ data.menuIcon }}</v-icon>
 							<v-list-item-title>
-								<span>{{ `${data.menuText} ${wali_kelas}` }}</span>
+								<span>{{ data.menuText }}</span>
+							</v-list-item-title>
+						</v-list-item>
+						<v-list-item
+							v-if="(data.menuText === 'Siswa Siswi' || data.menuText === 'Guru') && kondisiKepalaSekolah && roleID === '3'"
+							router :to="data.menuRoute"
+							class="SelectedMenu"
+							active-class="SelectedMenu-active"
+							v-bind="attrs"
+							v-on="on"
+						>
+							<v-icon left middle>{{ data.menuIcon }}</v-icon>
+							<v-list-item-title>
+								<span>{{ data.menuText }}</span>
 							</v-list-item-title>
 						</v-list-item>
 					</v-list>
@@ -268,7 +308,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../views/Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
@@ -287,6 +327,9 @@ export default {
 		roleID: '',
 		nama: '',
 		wali_kelas: '',
+		kondisiKepalaSekolah: false,
+		kondisiWaKaBidKesiswaan: false,
+		kondisiWaKaBidKurikulum: false,
 		menu: [],
 
 		//notifikasi
@@ -296,23 +339,51 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
+		...mapState({
+			mengajar: 'mengajarOptions',
+			jabatan: 'jabatanOptions',
+		}),
 		mengajarOptions(){
 			if(this.roleID === '3'){
-				let data = this.$store.state.mengajarOptions
 				let mengajar_bidang = localStorage.getItem('mengajar_bidang').split(', ')
 				let result = []
 				mengajar_bidang.map(str => {
-					let hasil = data.filter(val => { return val.kode == str })
+					let hasil = this.mengajar.filter(val => { return val.kode == str })
 					result.push({ label: hasil.length ? hasil[0].label : '', link: hasil.length ? hasil[0].label.replace(' ', '-') : '' })
 				})
 				return result
 			}
 		},
+		jabatanOptions(){
+			if(this.roleID === '3'){
+				let jabatan_guru = localStorage.getItem('jabatan_guru').split(', ')
+				let result = []
+				jabatan_guru.map(str => {
+					let hasil = this.jabatan.filter(val => { return val.kode == str })
+					result.push(hasil.length ? hasil[0].label : '')
+				})
+				return result
+			}
+		}
   },
 	watch: {
 		group () {
 			this.drawer = false
 		},
+		jabatanOptions: {
+			deep: true,
+			handler(value) {
+				if(this.roleID === '3'){
+					if(value.includes('WaKaBid. Kurikulum')){
+						this.kondisiWaKaBidKurikulum = true
+					}else if(value.includes('WaKaBid. Kesiswaan')){
+						this.kondisiWaKaBidKesiswaan = true
+					}else if(value.includes('Kepala Sekolah')){
+						this.kondisiKepalaSekolah = true
+					}
+				}
+			}
+		}
 	},
 	mounted() {
 		if(!localStorage.getItem('user_token')) return this.$router.push({name: 'Login'});
@@ -321,10 +392,11 @@ export default {
 		this.roleID = localStorage.getItem('roleID')
 		this.wali_kelas = localStorage.getItem('wali_kelas')
 		this.getData()
-		this.$store.dispatch('getMengajar')
+		this.getMengajar()
+		this.getJabatan()
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getMengajar", "getJabatan"]),
 		getData() {
       let payload = {
 				method: "get",

@@ -2332,7 +2332,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import PdfCetakan from './Layout/PdfCetakan.vue';
 import { Cropper, CircleStencil, RectangleStencil } from 'vue-advanced-cropper'
@@ -2545,24 +2545,14 @@ export default {
 		},
 	},
   computed: {
-		agamaOptions(){
-			return this.$store.state.agamaOptions
-		},
-		pendidikanOptions(){
-			return this.$store.state.pendidikanOptions
-		},
-		ProvinsiOptions(){
-			return this.$store.state.ProvinsiOptions
-		},
-		KabKotaOptions(){
-			return this.$store.state.KabKotaOptions
-		},
-		KecamatanOptions(){
-			return this.$store.state.KecamatanOptions
-		},
-		KelurahanOptions(){
-			return this.$store.state.KelurahanOptions
-		},
+    ...mapState([
+      'agamaOptions',
+      'pendidikanOptions',
+      'ProvinsiOptions',
+      'KabKotaOptions',
+      'KecamatanOptions',
+      'KelurahanOptions',
+    ]),
   },
   watch:{
 		tab:{
@@ -2600,6 +2590,17 @@ export default {
 				}
       }
     },
+    inputAdministrator:{
+			deep: true,
+			handler(value) {
+				if(!value.provinsi){
+					this.inputAdministrator.kabKota = ''
+					this.inputAdministrator.kecamatan = ''
+					this.inputAdministrator.kelurahan = ''
+					this.inputAdministrator.kodePos = ''
+				}
+      }
+    },
 	},
   mounted() {
     this.roleID = localStorage.getItem("roleID")
@@ -2616,6 +2617,9 @@ export default {
     ...mapActions({
       fetchData: "fetchData",
       uploadFiles: "upload/uploadFiles",
+      getAgama: 'getAgama',
+      getPendidikan: 'getPendidikan',
+      getWilayah: 'getWilayah',
     }),
 		getProfile(id) {
 			let payload = {
@@ -2646,12 +2650,12 @@ export default {
             kodePos: data.kodePos,
             pendidikanGuru: data.pendidikanGuru.kode,
           }
-          this.$store.dispatch('getAgama')
-          this.$store.dispatch('getPendidikan')
-		      this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		      this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputGuru.provinsi })
-		      this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputGuru.kabKota })
-		      this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputGuru.kecamatan })
+          this.getAgama()
+          this.getPendidikan()
+		      this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+		      this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputGuru.provinsi })
+		      this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputGuru.kabKota })
+		      this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputGuru.kecamatan })
         }
         if(this.roleID === '1' || this.roleID === '2'){
           this.inputAdministrator = {
@@ -2671,11 +2675,11 @@ export default {
             kelurahan: data.kelurahan.kode,
             kodePos: data.kodePos,
           }
-          this.$store.dispatch('getAgama')
-		      this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-		      this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputAdministrator.provinsi })
-		      this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputAdministrator.kabKota })
-		      this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputAdministrator.kecamatan })
+          this.getAgama()
+		      this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+		      this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputAdministrator.provinsi })
+		      this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputAdministrator.kabKota })
+		      this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputAdministrator.kecamatan })
         }
         this.previewData = {
           idUser: data.idUser,
@@ -2765,7 +2769,7 @@ export default {
     wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
 					this.inputGuru.kabKota = ''
 					this.inputGuru.kecamatan = ''
 					this.inputGuru.kelurahan = ''
@@ -2773,7 +2777,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputGuru.kecamatan) {
 						this.inputGuru.kelurahan = ''
 						this.inputGuru.kodePos = ''	
@@ -2785,7 +2789,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputGuru.kelurahan) {
 						this.inputGuru.kodePos = ''	
 					}

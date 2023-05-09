@@ -6,7 +6,7 @@
           <v-avatar size="35">
             <v-img src="../../public/gatsa.png"></v-img>
           </v-avatar>
-          <div class="ml-2 mr-2">{{ namasekolah }}</div>
+          <div class="ml-2 mr-2">{{ namaSekolah }}</div>
           <v-divider vertical />
           <v-divider vertical />
           <v-spacer />
@@ -19,7 +19,7 @@
             <v-row>
               <v-col cols="12" md="12">
                 <v-card-text>
-                  <h6 class="text-center display-1 light-black--text"><strong>{{ namasekolah }}</strong></h6>
+                  <h6 class="text-center display-1 light-black--text"><strong>{{ namaSekolah }}</strong></h6>
                   <h6 class="text-center display-1 light-black--text mb-3"><div class="pembungkus"><h4>Masuk Panel</h4></div></h6>
                   <v-form>
                     <v-col cols="12" class="py-0 px-0 mb-3">
@@ -72,7 +72,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <Footer :nama-sekolah="namasekolah"/>
+      <Footer :nama-sekolah="namaSekolah"/>
     </v-container>
     <v-dialog
       v-model="dialogNotifikasi"
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import Footer from '../components/Footer.vue';
 export default {
@@ -105,7 +105,6 @@ export default {
     passType: '',
     username: '',
     katasandi: '',
-    namasekolah: '',
 
     //notifikasi
     dialogNotifikasi: false,
@@ -120,31 +119,23 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    ...mapGetters(['cmssettings']),
+    namaSekolah(){
+      console.log(this.cmssettings);
+      return this.cmssettings ? this.cmssettings.namasekolah : null
+    }
+  },
   mounted() {
     if(localStorage.getItem('user_token')) return this.$router.push({name: "Dashboard"});
-    this.getGeneralCMS()
+    this.getCMSSettings()
   },
   methods: {
     ...mapActions({
       fetchData: "fetchData",
+      getCMSSettings: "getCMSSettings",
       AuthLogin: "auth/AuthLogin",
     }),
-    getGeneralCMS(){
-      let payload = {
-        method: "get",
-				url: `settings/cmssetting`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.namasekolah = resdata.namasekolah ? resdata.namasekolah : null
-				// console.log(resdata);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
     async AutentificationLogin(){
       const payload = {
         username: this.username,

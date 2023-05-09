@@ -5,6 +5,7 @@
       <v-row no-gutters class="pa-2">
         <v-col cols="12" md="6">
           <v-btn
+            v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
             color="light-blue darken-3"
             small
             dense
@@ -15,6 +16,7 @@
             <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
           <v-btn
+            v-if="roleID === '1' || roleID === '2'"
             color="#0bd369"
             small
             dense
@@ -118,6 +120,7 @@
           <template #expanded-item="{ headers, item }">
             <td :colspan="headers.length" class="white">
               <v-btn
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -130,6 +133,7 @@
                 <v-icon small>edit</v-icon>&nbsp;Ubah
               </v-btn> 
               <v-btn
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -142,6 +146,7 @@
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn>
               <v-btn
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#bd3a07"
                 small
@@ -154,6 +159,7 @@
                 <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn>
               <v-btn
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#0bd369"
                 small
@@ -166,13 +172,14 @@
                 <v-icon small>{{ item.validasiAkun === false ? 'check' : 'clear' }}</v-icon>&nbsp;{{ item.validasiAkun === false ? 'Validate' : 'Not Validate' }}
               </v-btn>
               <v-btn
+                v-if="roleID === '1' || roleID === '2' || (roleID === '3' && kondisiKepalaSekolah)"
                 :value="item.idUser"
                 color="#bd3a07"
                 small
                 dense
                 depressed
                 class="ma-2 white--text text--darken-2"
-                :disabled="item.statusAktif == false || (roleID !== '1' && item.mutasiAkun === true)"
+                :disabled="item.statusAktif == false || (roleID !== '4' && item.mutasiAkun === true)"
                 @click="ProsesRecord(item, 'MUTASIAKUN', !item.mutasiAkun)"
               >
                 <v-icon small>fa-person-circle-exclamation</v-icon>&nbsp;Mutasi Akun
@@ -189,12 +196,14 @@
                 <v-icon small>info</v-icon>&nbsp;Detail
               </v-btn> 
               <v-btn
+                v-if="roleID === '1' || roleID === '2'"
                 :value="item.idUser"
                 color="#0bd369"
                 small
                 dense
                 depressed
                 class="ma-2 white--text text--darken-2"
+                :disabled="item.statusAktif == false"
                 @click="() => { dialogUploadBerkas = true; previewData.idUser = item.idUser; }"
               >
                 <v-icon small>upload</v-icon>&nbsp;Upload Berkas
@@ -349,7 +358,7 @@
               {{ previewData.email }}
             </v-col>
           </v-row>
-          <v-row no-gutters>
+          <v-row v-if="roleID === '1' || roleID === '2'" no-gutters>
             <v-col
               cols="12"
               md="4"
@@ -1736,7 +1745,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 import PdfCetakan from '../../Layout/PdfCetakan.vue';
 
@@ -1877,6 +1886,7 @@ export default {
     fcKTP: '',
     fcAktaLahir: '',
     fcSKL: '',
+    kondisiKepalaSekolah: false,
 
     //notifikasi
     dialogNotifikasi: false,
@@ -1892,9 +1902,24 @@ export default {
 		},
 	},
   computed: {
+    ...mapState({
+      jabatan: 'jabatanOptions',
+      kelas: 'kelasOptions',
+    }),
     kelasOptions(){
-			return this.$store.state.kelasOptions
+			return this.kelas
 		},
+    jabatanOptions(){
+      if(this.roleID === '3'){
+        let jabatan_guru = localStorage.getItem('jabatan_guru').split(', ')
+        let result = []
+        jabatan_guru.map(str => {
+          let hasil = this.jabatan.filter(val => { return val.kode == str })
+          result.push(hasil.length ? hasil[0].label : '')
+        })
+        return result
+      }
+    }
   },
   watch: {
     page: {
@@ -1909,6 +1934,16 @@ export default {
 				this.getSiswaSiswi(1, value, this.searchData)
 			}
 		},
+    jabatanOptions: {
+			deep: true,
+			handler(value) {
+				if(this.roleID === '3'){
+					if(value.includes('Kepala Sekolah')){
+						this.kondisiKepalaSekolah = true
+					}
+				}
+			}
+		}
   },
   mounted() {
     this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
@@ -1973,6 +2008,7 @@ export default {
         user: {
           jenis: 'DELETE',
           idUser: item.idUser,
+          deleteBy: localStorage.getItem('idLogin'),
         },
         userdetail: {}
       }
@@ -1997,6 +2033,7 @@ export default {
           jenis: jenis,
           idUser: item.idUser,
           kondisi: kondisi,
+          createupdateBy: localStorage.getItem('idLogin')
         },
         userdetail: {}
       }
@@ -2360,6 +2397,7 @@ export default {
       if(files){
 				const bodyData = {
 					jenis: "excel",
+				  createupdateBy: localStorage.getItem('idLogin'),
 					files: files,
 				};
 				try {

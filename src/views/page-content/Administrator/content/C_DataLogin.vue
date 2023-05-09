@@ -199,6 +199,7 @@ export default {
       type: Number,
       default: null
     },
+    dataAdministrator: Object,
   },
   data: () => ({
 		inputDataLogIn: {
@@ -240,39 +241,36 @@ export default {
 				}
 				this.wadahInput()
 			}
-		}
+		},
+		dataAdministrator: {
+			deep: true,
+			handler(value) {
+				this.inputDataLogIn = {
+					id_user: value.idUser ? value.idUser : null,
+					level: value.consumerType ? value.consumerType : null,
+					nama_lengkap: value.nama ? value.nama : null,
+					username: value.username ? value.username : null,
+					email: value.email ? value.email : null,
+					password: value.kataSandi ? value.kataSandi : null,
+				}
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataLogIn = {
+	// 		id_user: this.dataAdministrator ? this.dataAdministrator.idUser : null,
+	// 		level: this.dataAdministrator ? this.dataAdministrator.consumerType : null,
+	// 		nama_lengkap: this.dataAdministrator ? this.dataAdministrator.nama : null,
+	// 		username: this.dataAdministrator ? this.dataAdministrator.username : null,
+	// 		email: this.dataAdministrator ? this.dataAdministrator.email : null,
+	// 		password: this.dataAdministrator ? this.dataAdministrator.kataSandi : null,
+	// 	}
+	// },
 	mounted() {
 		this.inputDataLogIn.id_user = this.$route.params.uid;
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getAdminbyUID(this.$route.params.uid)
-		}
 	},
 	methods: {
 		...mapActions(["fetchData"]),
-		getAdminbyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/admin/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataLogIn = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					level: resdata.consumerType ? resdata.consumerType : null,
-					nama_lengkap: resdata.nama ? resdata.nama : null,
-					username: resdata.username ? resdata.username : null,
-					email: resdata.email ? resdata.email : null,
-					password: resdata.kataSandi ? resdata.kataSandi : null,
-				}
-				// console.log(resdata);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		wadahInput(){
 			let inputFormOne = {
 				idUser: this.inputDataLogIn.id_user,

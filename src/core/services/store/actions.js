@@ -134,3 +134,44 @@ export const getWilayah = async ({ commit }, data) => {
 		console.log(error);
 	}
 }
+
+export const getAdminbyUID = async ({ commit }, uid) => {
+	try {
+		let res = await ApiService.get(`user/admin/${uid}`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_ADMINBY', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getStrukturalbyUID = async ({ commit }, uid) => {
+	try {
+		let res = await ApiService.get(`user/struktural/${uid}`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_STRUKTURALBY', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getSiswaSiswibyUID = async ({ commit }, uid) => {
+	try {
+		let res = await ApiService.get(`user/siswasiswi/${uid}`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_SISWASISWIBY', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+export const getCMSSettings = async ({ commit }) => {
+	try {
+		let res = await ApiService.get(`settings/cmssetting`, localStorage.getItem('user_token'));
+		// console.log(res.data.result);
+		commit('SET_CMSSETTINGS', res.data.result)
+	} catch (error) {
+		console.log(error);
+	}
+}
+

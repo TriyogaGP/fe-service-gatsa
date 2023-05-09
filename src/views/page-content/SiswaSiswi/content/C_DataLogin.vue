@@ -187,6 +187,12 @@ export default {
       type: Number,
       default: null
     },
+		dataSiswaSiswi: {
+      type: Object,
+      default: () => {
+        return {};
+      },
+    },
   },
   data: () => ({
 		inputDataLogIn: {
@@ -224,38 +230,34 @@ export default {
 				}
 				this.wadahInput()
 			}
-		}
+		},
+		dataSiswaSiswi: {
+			deep: true,
+			handler(value) {
+				this.inputDataLogIn = {
+					id_user: value.idUser ? value.idUser : null,
+					nama_lengkap: value.nama ? value.nama : null,
+					username: value.username ? value.username : null,
+					email: value.email ? value.email : null,
+					password: value.kataSandi ? value.kataSandi : null,
+				}
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataLogIn = {
+	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
+	// 		nama_lengkap: this.dataSiswaSiswi ? this.dataSiswaSiswi.nama : null,
+	// 		username: this.dataSiswaSiswi ? this.dataSiswaSiswi.username : null,
+	// 		email: this.dataSiswaSiswi ? this.dataSiswaSiswi.email : null,
+	// 		password: this.dataSiswaSiswi ? this.dataSiswaSiswi.kataSandi : null,
+	// 	}
+	// },
 	mounted() {
 		this.inputDataLogIn.id_user = this.$route.params.uid;
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getSiswaSiswibyUID(this.$route.params.uid)
-		}
 	},
 	methods: {
 		...mapActions(["fetchData"]),
-		getSiswaSiswibyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/siswasiswi/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataLogIn = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					nama_lengkap: resdata.nama ? resdata.nama : null,
-					username: resdata.username ? resdata.username : null,
-					email: resdata.email ? resdata.email : null,
-					password: resdata.kataSandi ? resdata.kataSandi : null,
-				}
-				// console.log(resdata);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		wadahInput(){
 			let inputFormOne = {
 				idUser: this.inputDataLogIn.id_user,

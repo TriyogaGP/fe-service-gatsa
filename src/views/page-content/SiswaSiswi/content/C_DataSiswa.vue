@@ -336,7 +336,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../../Layout/PopUpNotifikasi.vue";
 export default {
 	components: {
@@ -346,6 +346,12 @@ export default {
     stepperVal: {
       type: Number,
       default: null
+    },
+		dataSiswaSiswi: {
+      type: Object,
+      default: () => {
+        return {};
+      },
     },
   },
   data: () => ({
@@ -376,18 +382,12 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		agamaOptions(){
-			return this.$store.state.agamaOptions
-		},
-		hobiOptions(){
-			return this.$store.state.hobiOptions
-		},
-		citacitaOptions(){
-			return this.$store.state.citacitaOptions
-		},
-		kelasOptions(){
-			return this.$store.state.kelasOptions
-		},
+		...mapState([
+			'agamaOptions',
+			'hobiOptions',
+			'citacitaOptions',
+			'kelasOptions',
+		]),
   },
 	watch: {
 		inputDataSiswaSiswi:{
@@ -401,47 +401,51 @@ export default {
 				this.wadahInput()
 			}
 		},
+		dataSiswaSiswi: {
+			deep: true,
+			handler(value) {
+				this.inputDataSiswaSiswi = {
+					id_user: value.idUser ? value.idUser : null,
+					nik_siswa: value.nikSiswa ? value.nikSiswa : null,
+					nomor_induk: value.nomorInduk ? value.nomorInduk : null,
+					tempat: value.tempat ? value.tempat : null,
+					tanggal_lahir: value.tanggalLahir ? value.tanggalLahir : null,
+					jenis_kelamin: value.jenisKelamin ? value.jenisKelamin : null,
+					agama: value.agama ? value.agama.kode : null,
+					anakke: value.anakKe ? value.anakKe : null,
+					jumlah_saudara: value.jumlahSaudara ? value.jumlahSaudara : null,
+					hobi: value.hobi ? value.hobi.kode : null,
+					cita_cita: value.citaCita ? value.citaCita.kode : null,
+					kelas: value.kelas ? value.kelas : null,
+				}
+			}
+		},
 	},
+	// created() {
+	// 	this.inputDataSiswaSiswi = {
+	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
+	// 		nik_siswa: this.dataSiswaSiswi ? this.dataSiswaSiswi.nikSiswa : null,
+	// 		nomor_induk: this.dataSiswaSiswi ? this.dataSiswaSiswi.nomorInduk : null,
+	// 		tempat: this.dataSiswaSiswi ? this.dataSiswaSiswi.tempat : null,
+	// 		tanggal_lahir: this.dataSiswaSiswi ? this.dataSiswaSiswi.tanggalLahir : null,
+	// 		jenis_kelamin: this.dataSiswaSiswi ? this.dataSiswaSiswi.jenisKelamin : null,
+	// 		agama: this.dataSiswaSiswi ? this.dataSiswaSiswi.agama.kode : null,
+	// 		anakke: this.dataSiswaSiswi ? this.dataSiswaSiswi.anakKe : null,
+	// 		jumlah_saudara: this.dataSiswaSiswi ? this.dataSiswaSiswi.jumlahSaudara : null,
+	// 		hobi: this.dataSiswaSiswi ? this.dataSiswaSiswi.hobi.kode : null,
+	// 		cita_cita: this.dataSiswaSiswi ? this.dataSiswaSiswi.citaCita.kode : null,
+	// 		kelas: this.dataSiswaSiswi ? this.dataSiswaSiswi.kelas : null,
+	// 	}
+	// },
 	mounted() {
 		this.inputDataSiswaSiswi.id_user = this.$route.params.uid;
-		this.$store.dispatch('getAgama')
-		this.$store.dispatch('getHobi')
-		this.$store.dispatch('getCitaCita')
-		this.$store.dispatch('getKelas', { kondisi: 'All' })
-		if(this.$route.params.kondisi === 'EDIT'){
-			this.getSiswaSiswibyUID(this.$route.params.uid)
-		}
+		this.getAgama()
+		this.getHobi()
+		this.getCitaCita()
+		this.getKelas({ kondisi: 'All' })
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getSiswaSiswibyUID(uid){
-      let payload = {
-        method: "get",
-				url: `user/siswasiswi/${uid}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.inputDataSiswaSiswi = {
-					id_user: resdata.idUser ? resdata.idUser : null,
-					nik_siswa: resdata.nikSiswa ? resdata.nikSiswa : null,
-					nomor_induk: resdata.nomorInduk ? resdata.nomorInduk : null,
-					tempat: resdata.tempat ? resdata.tempat : null,
-					tanggal_lahir: resdata.tanggalLahir ? resdata.tanggalLahir : null,
-					jenis_kelamin: resdata.jenisKelamin ? resdata.jenisKelamin : null,
-					agama: resdata.agama ? resdata.agama.kode : null,
-					anakke: resdata.anakKe ? resdata.anakKe : null,
-					jumlah_saudara: resdata.jumlahSaudara ? resdata.jumlahSaudara : null,
-					hobi: resdata.hobi ? resdata.hobi.kode : null,
-					cita_cita: resdata.citaCita ? resdata.citaCita.kode : null,
-					kelas: resdata.kelas ? resdata.kelas : null,
-				}
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
+		...mapActions(["fetchData", "getAgama", "getHobi", "getCitaCita", "getKelas"]),
 		wadahInput(){
 			let inputFormTwo = {
 				nikSiswa: this.inputDataSiswaSiswi.nik_siswa,

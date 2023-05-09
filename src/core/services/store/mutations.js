@@ -71,3 +71,19 @@ export const SET_WILAYAH = (state, data) => {
 		state.KabKotaOnlyOptions = data.wilayah
 	}
 }
+
+export const SET_ADMINBY = (state, data) => {
+	state.dataAdministrator = data
+}
+
+export const SET_STRUKTURALBY = (state, data) => {
+	state.dataStruktural = data
+}
+
+export const SET_SISWASISWIBY = (state, data) => {
+	state.dataSiswaSiswi = data
+}
+
+export const SET_CMSSETTINGS = (state, data) => {
+	state.dataCMSSetting = data
+}

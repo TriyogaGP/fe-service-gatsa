@@ -282,7 +282,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'GeneralCMS',
@@ -339,6 +339,12 @@ export default {
 		},
 	},
   computed: {
+		...mapState([
+			'ProvinsiOptions',
+			'KabKotaOptions',
+			'KecamatanOptions',
+			'KelurahanOptions',
+		]),
 		ProvinsiOptions(){
 			return this.$store.state.ProvinsiOptions
 		},
@@ -367,10 +373,10 @@ export default {
   },
 	mounted() {
     this.getGeneralCMS()
-		this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
+		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getWilayah"]),
     getGeneralCMS(){
       let payload = {
         method: "get",
@@ -402,9 +408,9 @@ export default {
 					jenisraport: resdata.jenisraport ? resdata.jenisraport.value : null,
 					semester: resdata.semester ? resdata.semester.value : null,
 				}
-				this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
-				this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
-				this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
+				this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
+				this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
+				this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -413,7 +419,7 @@ export default {
     wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
 					this.inputData.kabupatenkota = ''
 					this.inputData.kecamatan = ''
 					this.inputData.kelurahan = ''
@@ -421,7 +427,7 @@ export default {
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kecamatan', KodeWilayah: e })
 					if(e !== this.inputData.kecamatan) {
 						this.inputData.kelurahan = ''
 						this.inputData.kodepos = ''	
@@ -433,7 +439,7 @@ export default {
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
-					this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: e })
+					this.getWilayah({ bagian: 'kelurahan', KodeWilayah: e })
 					if(e !== this.inputData.kelurahan) {
 						this.inputData.kodepos = ''	
 					}
@@ -456,10 +462,10 @@ export default {
         let tulisan = `${tahun}/${tahun+1}`
         this.tahunOptions.push({value: tulisan.toString(), label: tulisan.toString()})
       }
-			this.$store.dispatch('getWilayah', { bagian: 'provinsi', KodeWilayah: null })
-			this.$store.dispatch('getWilayah', { bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
-			this.$store.dispatch('getWilayah', { bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
-			this.$store.dispatch('getWilayah', { bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
+			this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+			this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputData.provinsi })
+			this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputData.kabupatenkota })
+			this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputData.kecamatan })
       let tp = this.tahunOptions.filter(str => str.value === this.inputData.tahunpelajaran)[0]
       let semester = this.semesterOptions.filter(str => str.value === this.inputData.semester)[0]
       let jenisraport = this.jenisRaportOptions.filter(str => str.value === this.inputData.jenisraport)[0]
@@ -522,7 +528,7 @@ export default {
 			this.fetchData(payload)
 			.then((res) => {
         this.getGeneralCMS()
-        this.optionWilayah('provinsi', null)
+        this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {

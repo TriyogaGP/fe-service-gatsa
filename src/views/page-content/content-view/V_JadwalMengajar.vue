@@ -279,7 +279,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataJadwalMengajar',
@@ -343,12 +343,10 @@ export default {
 		},
 	},
   computed: {
-    mengajarOptions(){
-			return this.$store.state.mengajarOptions
-		},
-    kelasOptions(){
-			return this.$store.state.kelasOptions
-		},
+    ...mapState([
+      'mengajarOptions',
+      'kelasOptions',
+    ]),
   },
   watch: {
     page: {
@@ -368,7 +366,7 @@ export default {
 		this.getJadwalMengajar(this.page, this.limit, this.searchData)
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(["fetchData", "getMengajar", "getKelas"]),
     getJadwalMengajar(page = 1, limit, keyword) {
       this.itemsPerPage = limit
       this.page = page
@@ -451,8 +449,8 @@ export default {
       console.log('xxx', this.dataKelasMapel);
     },
     ubahData(item){
-		  this.$store.dispatch('getMengajar')
-      this.$store.dispatch('getKelas', { kondisi: 'All' })
+		  this.getMengajar()
+      this.getKelas({ kondisi: 'All' })
       this.inputData = {
         idUser: item.idUser,
         mapel: item.dataJadwalMengajar.map(str => str.mapel),
@@ -460,7 +458,6 @@ export default {
           return str.resdata.map(val => val.kelas)
         })[0],
       }
-      // console.log('xxx', this.inputData);
       this.DialogJadwalMengajar = true
     },
     notifikasi(kode, text, proses){
