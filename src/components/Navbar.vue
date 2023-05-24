@@ -29,7 +29,6 @@
 			>
 				<template v-slot:activator="{ attrs, on }">
 					<v-list dense style="padding: 0px; margin-left: 3px;">
-						<!-- untuk menu admin tanpa -->
 						<v-list-item
 							v-if="data.menuText !== 'Wali Kelas' && (roleID === '1' || roleID === '2' || roleID === '4')"
 							router :to="!data.kondisi ? data.menuRoute : ''"
@@ -183,7 +182,21 @@
 						</div> -->
 						<div>	
 							<div class="SelectedMenuNotif pa-2" active-class="SelectedMenuNotif-active">
-								<p class="kondisiNotif">sudah dibaca <v-icon small color="green">check</v-icon></p>
+								<v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    md="6"
+                  >
+										<span class="box fourcorners" style="background-color: green;">tipe pesan</span>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="6"
+										class="kondisiNotif"
+                  >
+										<p>sudah dibaca <v-icon small color="green">check</v-icon></p>
+                  </v-col>
+                </v-row>
 								<p class="judulNotif">judul notifikasi</p>
 								<p class="pesanNotif">pesan notifikasi</p>
 								<p class="tanggalNotif">jam notifikasi</p>
@@ -485,12 +498,12 @@ export default {
   overflow-y: auto !important;
 }
 .judulNotif {
-	margin-bottom: 2px !important;
+	margin-bottom: 1px !important;
 	font-size: 14px;
 	font-weight: bold;
 }
 .pesanNotif {
-	margin-bottom: 2px !important;
+	margin-bottom: 1px !important;
 	font-size: 12px;
 	font-weight: 500;
 	text-align: justify;
@@ -519,5 +532,22 @@ export default {
 }
 .theme--dark.v-list {
 	background: #272727 !important;
+}
+.box{
+	width: 75px;
+	height: 20px;
+  /* background-image:-moz-linear-gradient(top, #272727, #5a5757); */
+	/* background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#272727), to(#5a5757), color-stop(1,#5a5757)); */
+	margin: 2px;
+  color: #FFF;
+}
+.fourcorners{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px; 
+	border-radius: 5px;
+	padding: 5px;
+	text-align: center;
+	font-size: 10px;
 }
 </style>

@@ -26,7 +26,51 @@
           >
             <v-icon small>fa-solid fa-file-import</v-icon>&nbsp;Import Data
           </v-btn>
-          <v-btn
+          <v-menu
+            open-on-hover
+            rounded="t-xs b-lg"
+            offset-y
+            transition="slide-y-transition"
+            bottom
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                color="#0bd369"
+                small
+                dense
+                depressed
+                class="ma-2 white--text text--darken-2"
+              >
+                <v-icon small>fa-solid fa-file-export</v-icon>&nbsp;Export Data
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item
+                @click="exportExcel('full')"
+                class="SelectedMenu"
+                active-class="SelectedMenu-active"
+              >
+                <v-icon left>fa-solid fa-file-export</v-icon>
+                <v-list-item-title>
+                  <span>Export Data Full</span>
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                @click="exportExcel('emis')"
+                class="SelectedMenu"
+                active-class="SelectedMenu-active"
+              >
+                <v-icon left>fa-solid fa-file-export</v-icon>
+                <v-list-item-title>
+                  <span>Export Data Emis</span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- <v-btn
             color="#0bd369"
             small
             dense
@@ -35,7 +79,7 @@
             @click="exportExcel()"
           >
             <v-icon small>fa-solid fa-file-export</v-icon>&nbsp;Export Data
-          </v-btn>
+          </v-btn> -->
         </v-col>
         <v-col cols="12" md="6">
           <v-row no-gutters>
@@ -1716,6 +1760,69 @@
       </v-card>
     </v-dialog>
     <v-dialog
+      v-model="DialogKelasExport"
+      fullscreen
+      scrollable
+      hide-overlay
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar
+          dark
+          color="light-black darken-3"
+        >
+          <v-toolbar-title>Memilih Kelas</v-toolbar-title>
+          <v-spacer />
+          <v-toolbar-items>
+            <v-btn
+              icon
+              dark
+              @click="DialogKelasExport = false"
+            >
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text style="height: 100%;">
+          <div class="px-5">
+            <v-divider />
+          </div>
+          <div
+            v-for="data in DataKelas"
+            :key="data.kategori"
+            class="mt-4"
+          >
+            <h3 class="subheading black--text ml-3"><u>Kelas ({{ data.kategori }})</u></h3>
+            <v-layout v-if="DataKelas.length" class="ma-1" row wrap>  
+              <v-flex
+                v-for="hasil in data.dataKelas"
+                :key="hasil.kelas"
+                sm6 xs12 md4 lg4
+                class="pa-1"
+              >
+                <v-card @click="hasil.jumlah > 0 ? exportExcelEmis(hasil.kelas) : warningNotif()">
+                  <v-list-item>
+                    <v-list-item-avatar tile class="mt-n7">
+                      <v-sheet color="green" width="40" height="40" elevation="6">
+                        <v-icon dark middle>fa-duotone fa-user-secret</v-icon>
+                      </v-sheet>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <div class="judul text-center">Kelas {{ hasil.kelas }}</div>
+                      <v-list-item-title class="mb-2 text-center">{{ hasil.jumlah }} Orang</v-list-item-title>
+                      <v-divider />
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </div>
+        </v-card-text>
+        <v-divider />
+        <v-card-actions />
+      </v-card>
+    </v-dialog>
+    <v-dialog
 			v-model="isLoadingExport"
 			transition="dialog-bottom-transition"
 			persistent
@@ -1766,6 +1873,7 @@ export default {
     isLoadingbtnPDF6: false,
     isLoadingExport: false,
 		DataSiswaSiswi: [],
+    DataKelas: [],
     expanded: [],
     singleExpand: true,
 		searchData: '',
@@ -1876,6 +1984,7 @@ export default {
     DialogSiswaSiswi: false,
     dialogUploadBerkas: false,
     dialogImport: false,
+    DialogKelasExport: false,
     urlSk: window.location.href,
     endecryptType: '',
     BASE_URL: '',
@@ -2003,12 +2112,49 @@ export default {
         this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
+    getKelasSiswa() {
+      this.DataKelas = []
+			let payload = {
+        method: "get",
+				url: `kelas/kelassiswa`,
+				authToken: localStorage.getItem('user_token')
+			};
+			this.fetchData(payload)
+			.then((res) => {
+        let resdata = res.data.result
+        let result = [
+          { kategori: '7'},
+          { kategori: '8'},
+          { kategori: '9'},
+        ]
+
+        result.map(async val => {
+          let hasil = []
+          await resdata.map(str => {
+            let split = str.kelas.split('-')
+            if(split[0] === val.kategori){
+              hasil.push({
+                kelas: str.kelas,
+                jumlah: str.jumlah,
+              })
+            }
+            return hasil
+          })
+          this.DataKelas.push({
+            kategori: val.kategori,
+            dataKelas: hasil,
+          })
+        })
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+		},
     HapusRecord(item) {
       let bodyData = {
         user: {
           jenis: 'DELETE',
           idUser: item.idUser,
-          deleteBy: localStorage.getItem('idLogin'),
         },
         userdetail: {}
       }
@@ -2033,7 +2179,6 @@ export default {
           jenis: jenis,
           idUser: item.idUser,
           kondisi: kondisi,
-          createupdateBy: localStorage.getItem('idLogin')
         },
         userdetail: {}
       }
@@ -2158,23 +2303,46 @@ export default {
 				this.notifikasi("success", 'Sukses Export Excel', "1")
 			})
 		},
-    exportExcel() {
-			this.isLoadingExport = true
-			fetch(`${this.BASEURL}user/exportexcel?kelas=${this.kelasOptions}`, {
-				method: 'GET',
-				dataType: "xml",
+    exportExcel(kategori) {
+      if(kategori === 'full'){
+        this.isLoadingExport = true
+        fetch(`${this.BASEURL}user/exportexcel?kategori=${kategori}&kelas=${this.kelasOptions.map(str => str.kelas).join(', ')}`, {
+          method: 'GET',
+          dataType: "xml",
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('user_token')}`
+          }
+        })
+        .then(response => response.arrayBuffer())
+        .then(async response => {
+          // console.log(response)
+          this.isLoadingExport = false
+          let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+          this.downloadBlob(blob,`Data Siswa Siswi.xlsx`)
+          this.notifikasi("success", 'Sukses Export Excel', "1")
+        })
+      }else if(kategori === 'emis'){
+        this.getKelasSiswa()
+        this.DialogKelasExport = true
+      }
+		},
+    exportExcelEmis(kelas) {
+      this.isLoadingExport = true
+      fetch(`${this.BASEURL}user/exportexcel?kategori=emis&kelas=${kelas}`, {
+        method: 'GET',
+        dataType: "xml",
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('user_token')}`
         }
-			})
-			.then(response => response.arrayBuffer())
-			.then(async response => {
-				// console.log(response)
-				this.isLoadingExport = false
-				let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-				this.downloadBlob(blob,`Data Siswa Siswi.xlsx`)
-				this.notifikasi("success", 'Sukses Export Excel', "1")
-			})
+      })
+      .then(response => response.arrayBuffer())
+      .then(async response => {
+        // console.log(response)
+        this.isLoadingExport = false
+        let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        this.downloadBlob(blob,`Data Siswa Siswi (EMIS).xlsx`)
+        this.notifikasi("success", 'Sukses Export Excel', "1")
+      })
 		},
     pdfCreate(idUser, berkas = null, jenis = null, view) {
       if(view === 'berkas'){
@@ -2423,9 +2591,13 @@ export default {
       }  
     },
     row_classes(item) {
+      console.log(item.condition);
       if (item.condition) {
-        return "style-1";
+        return "myclass";
       } 
+    },
+    warningNotif(){
+      this.notifikasi("warning", "Tidak ada siswa/i dikelas ini", "1")
     },
     endecryptData(d) {
       this[d] = !this[d]
@@ -2476,5 +2648,27 @@ export default {
   flex-wrap: wrap;
   flex-direction: row;
   cursor: pointer;
+}
+.SelectedMenu{
+  min-height: 35px !important;
+}
+.SelectedMenu:hover {
+	border-radius: 2px;
+	background: #939494;
+	cursor: pointer;
+}
+.SelectedMenu-active {
+	border-radius: 2px;
+	background: rgba(132, 131, 195, 0.19);
+	cursor: pointer;
+}
+.v-list-item__title {
+  align-self: center;
+  font-size: 10pt !important;
+  font-weight: bold;
+}
+.myclass {
+  color: red;
+  background-color: green;
 }
 </style>

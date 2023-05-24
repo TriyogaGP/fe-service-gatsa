@@ -21,7 +21,7 @@ export default {
 	computed: {
     ...mapGetters(['cmssettings']),
     namaSekolah(){
-      console.log(this.cmssettings);
+      // console.log(this.cmssettings);
       return this.cmssettings ? this.cmssettings.namasekolah : null
     }
   },

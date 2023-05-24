@@ -126,7 +126,7 @@ export default {
     },
     goToProses() {
       this.dialogNotifikasi = false
-      this.$router.push({name: 'Admin'});
+      this.$router.push({name: 'Login'});
     },
     login() {
       this.$router.push({name: 'Login'});

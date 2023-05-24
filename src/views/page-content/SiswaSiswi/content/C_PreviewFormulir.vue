@@ -1133,7 +1133,6 @@ export default {
           username: this.dataStepOne.username,
           email: this.dataStepOne.email,
           password: this.dataStepOne.password,
-					createupdateBy: localStorage.getItem('idLogin'),
         },
         userdetail: {
           nikSiswa: this.dataStepTwo.nikSiswa,
