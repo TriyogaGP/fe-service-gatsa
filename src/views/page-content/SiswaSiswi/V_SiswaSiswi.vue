@@ -2110,7 +2110,7 @@ export default {
 		}
   },
   mounted() {
-    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
+    this.BASEURL = process.env.VUE_APP_BASE_URL
     this.roleID = localStorage.getItem('roleID')
     this.mengajarKelas = localStorage.getItem('mengajar_kelas')
 		this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: this.page, limit: this.limit, keyword: this.searchData} : {page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas});

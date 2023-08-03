@@ -596,7 +596,7 @@ export default {
 		},
   },
   mounted() {
-    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
+    this.BASEURL = process.env.VUE_APP_BASE_URL
     this.roleID = localStorage.getItem('roleID')
     if(this.roleID === '1' || this.roleID === '2') {
       this.getKelasSiswa({kelas: null, roleID: this.roleID})

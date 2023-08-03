@@ -441,7 +441,7 @@ export default {
 	},
 	mounted() {
 		if(!localStorage.getItem('user_token')) return this.$router.push({name: 'Login'});
-    this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
+    this.API_URL = process.env.VUE_APP_BASE_URL_VIEW
 		this.fotoProfil = localStorage.getItem('fotoProfil')
 		this.nama = localStorage.getItem('nama')
 		this.roleID = localStorage.getItem('roleID')

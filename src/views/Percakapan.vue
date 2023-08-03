@@ -200,7 +200,7 @@ export default {
 		this.scrollToEnd()
 	},
   mounted() {
-    this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
+    this.API_URL = process.env.VUE_APP_BASE_URL_VIEW
     this.roleID = localStorage.getItem("roleID")
     this.idLogin = localStorage.getItem("idLogin")
     this.nama = localStorage.getItem("nama")

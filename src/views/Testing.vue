@@ -62,14 +62,14 @@ export default {
     notifikasiButton: '',
 	}),
 	created() {
-		this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
+		this.API_URL = process.env.VUE_APP_BASE_URL_VIEW
 		const socket = io(this.API_URL);
 		socket.on("clear", (data) => {
 			this.userData = data
 		});
 	},
 	mounted() {
-		this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
+		this.API_URL = process.env.VUE_APP_BASE_URL_VIEW
 		this.nama = localStorage.getItem('nama');
 	},
 	methods: {

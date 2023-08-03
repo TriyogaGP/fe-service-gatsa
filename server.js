@@ -1,9 +1,7 @@
 const express = require('express');
-// const http = require('http').Server(express);
-// const socketio = require('socket.io')(http, { pingTimeout: 60000 });
-const port = process.env.PORT || 5200;
-// const port_socketid = 8083;
-
+const dotenv = require('dotenv');
+dotenv.config();
+const port = process.env.PORT;
 const app = express();
 
 app.use(express.static(__dirname + "/dist/"));

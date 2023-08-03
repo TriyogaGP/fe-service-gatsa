@@ -2746,7 +2746,7 @@ export default {
     this.roleID = localStorage.getItem("roleID")
     this.nama = localStorage.getItem("nama")
     this.namaRole = localStorage.getItem("nama_role")
-    this.BASE_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
+    this.BASE_URL = process.env.VUE_APP_BASE_URL_VIEW
     this.passType = true
     this.endecryptType = false
     this.passTypeLama = false
