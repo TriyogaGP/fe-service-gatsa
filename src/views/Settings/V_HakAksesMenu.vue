@@ -14,7 +14,7 @@
 					dense
 					color="light-black darken-3"
 					clearable
-					@keyup.enter="getHakAksesMenu(1, limit, searchData)"
+					@keyup.enter="getRoleMenu({page: 1, limit: limit, keyword: searchData})"
 				/>
 			</v-col>
     </v-row>
@@ -35,8 +35,15 @@
 				:items-per-page="itemsPerPage"
 				@page-count="pageCount = $event"
 			>
+				<!-- <template v-slot:header="{ props }">
+					<thead class="v-data-table-header">
+						<tr>
+							<th v-for="header in props.headers" :key="header.text" style="font-weight: bold;">{{ header.text.toUpperCase() }}</th>
+						</tr>
+					</thead>
+				</template> -->
 				<template #[`item.number`]="{ item }">
-					{{ DataHakAksesMenu.indexOf(item) + 1 }}
+					{{ page > 1 ? ((page - 1)*limit) + DataHakAksesMenu.indexOf(item) + 1 : DataHakAksesMenu.indexOf(item) + 1 }}
 				</template>
 				<template #[`item.menu`]="{ item }">
 					<v-btn
@@ -101,7 +108,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataHakAksesMenu.length ? pageSummary.page != 1 ? false : true : true"
-						@click="getHakAksesMenu(pageSummary.page - 1, limit, searchData)"
+						@click="() => { page = pageSummary.page - 1 }"
 					>
 						keyboard_arrow_left
 					</v-icon>
@@ -109,7 +116,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataHakAksesMenu.length ? pageSummary.page != pageSummary.totalPages ? false : true : true"
-						@click="getHakAksesMenu(pageSummary.page + 1, limit, searchData)"
+						@click="() => { page = pageSummary.page + 1 }"
 					>
 						keyboard_arrow_right
 					</v-icon>
@@ -327,6 +334,7 @@
         :notifikasi-kode.sync="notifikasiKode"
         :notifikasi-text.sync="notifikasiText"
         :notifikasi-button.sync="notifikasiButton"
+        @proses="gotoRefresh"
         @cancel="dialogNotifikasi = false"
       />
     </v-dialog>
@@ -334,7 +342,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'HakAksesMenu',
@@ -365,8 +373,8 @@ export default {
 		headers: [
       { text: "No", value: "number", sortable: false, width: "7%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
-      { text: "Nama Role", value: "namaRole", sortable: false },
-      { text: "Menu", value: "menu", sortable: false },
+      { text: "NAMA ROLE", value: "namaRole", sortable: false },
+      { text: "MENU", value: "menu", sortable: false },
     ],
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
@@ -403,80 +411,62 @@ export default {
 			amp: true,
 		},
 	},
+	computed: {
+		...mapGetters({
+			menuAll: 'setting/menuAll',
+			rolemenuAll: 'setting/rolemenuAll',
+		}),
+	},
 	watch: {
-		limit: {
+		menuAll: {
 			deep: true,
 			handler(value) {
-				this.getHakAksesMenu(1, value, this.searchData)
-			}
-		},
-	},
-	mounted() {
-		this.getHakAksesMenu(1, this.limit, this.searchData);
-	},
-	methods: {
-		...mapActions(["fetchData"]),
-		getHakAksesMenu(page = 1, limit, keyword) {
-			this.isLoading = true
-			this.DataHakAksesMenu = []
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-				method: "get",
-				url: `settings/RoleMenu?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				let resdata = res.data.result
-				this.DataHakAksesMenu = resdata.records
-				this.pageSummary = {
-					page: resdata.pageSummary.page,
-					limit: resdata.pageSummary.limit,
-					total: resdata.pageSummary.total,
-					totalPages: resdata.pageSummary.totalPages
-				}
-				this.isLoading = false
-			})
-			.catch((err) => {
-				this.isLoading = false
-				this.DataHakAksesMenu = []
-				this.pageSummary = {
-					page: '',
-					limit: '',
-					total: '',
-					totalPages: ''
-				}
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-		getMenu() {
-			let payload = {
-				method: "get",
-				url: `settings/Menu?pilihan=ALL`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				let data = res.data.result;
-				data.map(str => {
+				value.map(str => {
 					if(str.kategori === 'menu'){
 						this.menuOptions.push(str)
 					}else if(str.kategori === 'submenu'){
 						this.submenuOptions.push(str)
 					}
 				})
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
+			}
 		},
+		rolemenuAll: {
+			deep: true,
+			handler(value) {
+				this.DataHakAksesMenu = value.records
+				this.pageSummary = {
+					page: value.pageSummary.page,
+					limit: value.pageSummary.limit,
+					total: value.pageSummary.total,
+					totalPages: value.pageSummary.totalPages
+				}
+			}
+		},
+		page: {
+			deep: true,
+			handler(value) {
+				this.getRoleMenu({page: value, limit: this.limit, keyword: this.searchData})
+			}
+		},
+		limit: {
+			deep: true,
+			handler(value) {
+				this.page = 1
+				this.getRoleMenu({page: 1, limit: value, keyword: this.searchData})
+			}
+		},
+	},
+	mounted() {
+		this.getRoleMenu({page: 1, limit: this.limit, keyword: this.searchData});
+	},
+	methods: {
+		...mapActions({
+			fetchData: 'fetchData',
+			getMenu: 'setting/getMenuData',
+			getRoleMenu: 'setting/getRoleMenu',
+		}),
 		bukaDialog(item){
-			this.getMenu()
+			this.getMenu({pilihan: 'ALL'})
 			this.inputRoleMenu.id_role_menu = item.idRoleMenu
 			this.inputRoleMenu.id_role = item.idRole
 			let kumpulanMenu = []
@@ -571,22 +561,19 @@ export default {
         id_role: this.inputRoleMenu.id_role,
         menu: menu.length ? menu.filter(str => str.idMenu !== '') : [],
       }
-      let payload = {
-				method: "post",
-				url: `settings/RoleMenu`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+			this.$store.dispatch('setting/postRoleMenu', bodyData)
+      .then((res) => {
         this.tutupDialog()
-        this.getHakAksesMenu(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
+        this.getRoleMenu({page: 1, limit: this.limit, keyword: this.searchData});
+        this.notifikasi("success", res.data.message, "2")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
+		gotoRefresh(){
+      window.location.reload();
+    },
 		removeDataSubMenu(item, menuID) {
 			let check = this.inputRoleMenu.kumpulanMenu.filter(str => str.idMenu === menuID)[0]
 			let index = check.submenu.map(str => str.idMenu).indexOf(item.idMenu)

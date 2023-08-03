@@ -35,7 +35,7 @@
           dense
 					color="light-black darken-3"
 					clearable
-          @keyup.enter="getMenu(1, limit, searchData)"
+          @keyup.enter="getMenu({page: 1, limit: limit, keyword: searchData})"
 				/>
 			</v-col>
     </v-row>
@@ -45,7 +45,7 @@
 				no-data-text="Tidak ada data yang tersedia"
 				no-results-text="Tidak ada catatan yang cocok ditemukan"
 				:headers="headers"
-				:loading="isLoading"
+				:loading="loadingtable"
 				:items="DataMenu"
 				:single-expand="singleExpand"
 				:expanded.sync="expanded"
@@ -56,8 +56,15 @@
 				:items-per-page="itemsPerPage"
 				@page-count="pageCount = $event"
 			>
+				<!-- <template v-slot:header="{ props }">
+					<thead class="v-data-table-header">
+						<tr>
+							<th v-for="header in props.headers" :key="header.text" style="font-weight: bold;">{{ header.text.toUpperCase() }}</th>
+						</tr>
+					</thead>
+				</template> -->
 				<template #[`item.number`]="{ item }">
-					{{ DataMenu.indexOf(item) + 1 }}
+					{{ page > 1 ? ((page - 1)*limit) + DataMenu.indexOf(item) + 1 : DataMenu.indexOf(item) + 1 }}
 				</template>
 				<template #[`item.menuIcon`]="{ item }">
 					<v-icon midle>{{ item.menuIcon }}</v-icon>
@@ -82,39 +89,26 @@
 						<v-icon small>edit</v-icon>&nbsp;Ubah
 						</v-btn> 
 						<v-btn
-							v-if="item.statusAktif == false"
 							:value="item.idMenu"
 							color="#0bd369"
 							small
-							dark
 							dense
-							class="ma-2"
-							@click="StatusRecord(item, 1)"
+							depressed
+							class="ma-2 white--text text--darken-2"
+							@click="postRecord(item, 'STATUSRECORD', !item.statusAktif)"
 						>
-						<v-icon small>visibility</v-icon>&nbsp;Active
-						</v-btn> 
-						<v-btn
-							v-else-if="item.statusAktif == true"
-							:value="item.idMenu"
-							color="#0bd369"
-							small
-							dark
-							dense
-							class="ma-2"
-							@click="StatusRecord(item, 0)"
-						>
-						<v-icon small>visibility_off</v-icon>&nbsp;Non Active
+							<v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
 						</v-btn> 
 						<v-btn
 							:value="item.idMenu"
 							color="#bd3a07"
 							small
-							dark
 							dense
-							class="ma-2"
-							@click="HapusRecord(item)"
+							depressed
+							class="ma-2 white--text text--darken-2"
+							@click="postRecord(item, 'DELETE', null)"
 						>
-						<v-icon small>delete</v-icon>&nbsp;Hapus
+							<v-icon small>delete</v-icon>&nbsp;Hapus
 						</v-btn> 
 						<v-divider />
 					</td>
@@ -150,7 +144,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataMenu.length ? pageSummary.page != 1 ? false : true : true"
-						@click="getMenu(pageSummary.page - 1, limit, searchData)"
+						@click="() => { page = pageSummary.page - 1 }"
 					>
 						keyboard_arrow_left
 					</v-icon>
@@ -158,7 +152,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataMenu.length ? pageSummary.page != pageSummary.totalPages ? false : true : true"
-						@click="getMenu(pageSummary.page + 1, limit, searchData)"
+						@click="() => { page = pageSummary.page + 1 }"
 					>
 						keyboard_arrow_right
 					</v-icon>
@@ -312,7 +306,7 @@
                 dense
                 depressed
                 :disabled="kondisiTombol"
-                @click="SimpanForm(0)"
+                @click="postRecord(null, 'ADD', null)"
               >
                 Simpan Data
               </v-btn> 
@@ -324,7 +318,7 @@
                 dense
                 depressed
                 :disabled="kondisiTombol"
-                @click="SimpanForm(1)"
+                @click="postRecord(null, 'EDIT', null)"
               >
                 Ubah Data
               </v-btn>
@@ -360,7 +354,7 @@
         <v-card-text class="pt-4">
           <v-tabs
             v-model="tab"
-            fixed-tabs
+            grow
             background-color="light-black darken-3"
             dark
           >
@@ -456,6 +450,7 @@
         :notifikasi-kode.sync="notifikasiKode"
         :notifikasi-text.sync="notifikasiText"
         :notifikasi-button.sync="notifikasiButton"
+        @proses="gotoRefresh"
         @cancel="dialogNotifikasi = false"
       />
     </v-dialog>
@@ -463,7 +458,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../Layout/PopUpNotifikasi.vue";
 import draggable from "vuedraggable";
 export default {
@@ -471,7 +466,6 @@ export default {
 	components: { PopUpNotifikasiVue, draggable },
   data: () => ({
 		tab: "",
-    isLoading: false,
 		DataMenu: [],
 		expanded: [],
     singleExpand: true,
@@ -496,11 +490,11 @@ export default {
 		headers: [
       { text: "No", value: "number", sortable: false, width: "7%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
-      { text: "Kategori", value: "kategori", sortable: false },
-      { text: "Nama Menu", value: "menuText", sortable: false },
-      { text: "Nama Route", value: "menuRoute", sortable: false },
-      { text: "Nama Icon", value: "menuIcon", sortable: false },
-      { text: "Status", value: "statusAktif", sortable: false },
+      { text: "KATEGORI", value: "kategori", sortable: false },
+      { text: "NAMA MENU", value: "menuText", sortable: false },
+      { text: "NAMA ROUTE", value: "menuRoute", sortable: false },
+      { text: "NAMA ICON", value: "menuIcon", sortable: false },
+      { text: "STATUS MENU", value: "statusAktif", sortable: false },
     ],
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
@@ -540,6 +534,13 @@ export default {
 		},
 	},
   computed: {
+    ...mapState({
+      loadingtable: 'setting/loadingtable',
+    }),
+    ...mapGetters({
+			menuAll: 'setting/menuAll',
+			sequencemenuAll: 'setting/sequencemenuAll',
+		}),
 		optionsMenu () {
 			return {
 				disabled: !this.editingMenu
@@ -552,6 +553,32 @@ export default {
 		}
   },
 	watch: {
+    menuAll: {
+			deep: true,
+			handler(value) {
+				this.DataMenu = value.records
+				this.pageSummary = {
+					page: value.pageSummary.page,
+					limit: value.pageSummary.limit,
+					total: value.pageSummary.total,
+					totalPages: value.pageSummary.totalPages
+				}
+        this.DataMenu.map(val => { 
+          if(val.kategori === 'menu'){
+            this.Menu.push(val)
+          }else if(val.kategori === 'submenu'){
+            this.SubMenu.push(val)
+          }
+        })
+			}
+		},
+    sequencemenuAll: {
+			deep: true,
+			handler(value) {
+				this.Menu = value.Menu
+				this.SubMenu = value.SubMenu
+			}
+		},
     inputMenu: {
       deep: true,
       handler(value){
@@ -567,86 +594,69 @@ export default {
         }
       }
     },
+    page: {
+			deep: true,
+			handler(value) {
+				this.getMenu({page: value, limit: this.limit, keyword: this.searchData})
+			}
+		},
     limit: {
 			deep: true,
 			handler(value) {
-				this.getMenu(1, value, this.searchData)
+        this.page = 1
+				this.getMenu({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
 	mounted() {
-		this.getMenu(1, this.limit, this.searchData);
+		this.getMenu({page: 1, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getMenu(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-			this.isLoading = true
-      this.DataMenu = []
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-      this.Menu = []
-      this.SubMenu = []
-			let payload = {
-				method: "get",
-				url: `settings/Menu?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataMenu = resdata.records
-				this.pageSummary = {
-					page: resdata.pageSummary.page,
-					limit: resdata.pageSummary.limit,
-					total: resdata.pageSummary.total,
-					totalPages: resdata.pageSummary.totalPages
+		...mapActions({
+      getMenu: "setting/getMenuData",
+      getSequenceMenu: "setting/getSequenceMenu",
+    }),
+    postRecord(item, jenis, status_aktif) {
+      let bodyData = {
+				ADDEDIT: {
+          jenis: jenis,
+          id_menu: jenis === 'ADD' ? '' : this.inputMenu.id_menu,
+          kategori: this.inputMenu.kategori,
+          menu_text: this.inputMenu.menu_text,
+          menu_route: this.inputMenu.menu_route,
+          menu_icon: this.inputMenu.menu_icon,
+        },
+				STATUSDELETE: {
+					jenis: jenis,
+					id_menu: item.idMenu,
+          status_aktif: status_aktif,
 				}
-        this.DataMenu.map(val => { 
-          if(val.kategori === 'menu'){
-            this.Menu.push(val)
-          }else if(val.kategori === 'submenu'){
-            this.SubMenu.push(val)
-          }
-        })
-        this.isLoading = false
-			})
-			.catch((err) => {
-				this.isLoading = false
-        this.DataMenu = []
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.Menu = []
-        this.SubMenu = []
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    getSequenceMenu() {
-			let payload = {
-				method: "get",
-				url: `settings/SequenceMenu`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.Menu = []
-        this.SubMenu = []
-        let resdata = res.data.result
-				this.Menu = resdata.Menu
-				this.SubMenu = resdata.SubMenu
+      }
+      this.$store.dispatch('setting/postMenuData', jenis === 'ADD' || jenis === 'EDIT' ? bodyData.ADDEDIT : bodyData.STATUSDELETE)
+      .then((res) => {
+        this.DialogMenu = false
+        this.getMenu({page: 1, limit: this.limit, keyword: this.searchData});
+        this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
 			});
-		},
+    },
+    SimpanSequenceMenu(kategori) {
+      this.$store.dispatch('setting/postSequenceMenu', {
+        Menu : kategori === 'menu' ? this.Menu : this.SubMenu
+      })
+      .then((res) => {
+        this.getSequenceMenu()
+        this.notifikasi("success", res.data.message, "2")
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
+    },
+    gotoRefresh(){
+      window.location.reload();
+    },
 		bukaDialog(item, index){
       this.editedIndex = index
       if(index == 0){
@@ -676,92 +686,6 @@ export default {
 			this.inputMenu.menu_icon = ''
 			this.DialogMenu = false
 		},
-		SimpanForm(index) {
-      let bodyData = {
-        jenis: index == 0 ? 'ADD' : 'EDIT',
-        id_menu: index == 0 ? '' : this.inputMenu.id_menu,
-        kategori: this.inputMenu.kategori,
-        menu_text: this.inputMenu.menu_text,
-        menu_route: this.inputMenu.menu_route,
-        menu_icon: this.inputMenu.menu_icon,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Menu`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogMenu = false
-        this.getMenu(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    HapusRecord(item) {
-      let bodyData = {
-        jenis: 'DELETE',
-        id_menu: item.idMenu,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Menu`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogMenu = false
-        this.getMenu(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    StatusRecord(item, status_aktif) {
-      let bodyData = {
-        jenis: 'STATUSRECORD',
-        id_menu: item.idMenu,
-        status_aktif: status_aktif,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Menu`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogMenu = false
-        this.getMenu(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    SimpanSequenceMenu(kategori) {
-      let payload = {
-				method: "post",
-				url: `settings/SequenceMenu`,
-        body: {
-          Menu : kategori === 'menu' ? this.Menu : this.SubMenu
-        },
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getSequenceMenu()
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
     actionMenu (e) {
       if (e === 'edit') {
         this.beforeMenu = Object.assign([],this.Menu)

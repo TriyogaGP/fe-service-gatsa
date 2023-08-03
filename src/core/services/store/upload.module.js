@@ -14,14 +14,13 @@ const actions = {
         fData.append('nama_file', data.nama_file); //nama_file
         fData.append('jenis', data.jenis); //jenis
         fData.append('bagian', data.bagian); //bagian
-        fData.append('table', data.table); //bagian
+        fData.append('table', data.table); //table
         fData.append('file', data.files); //data files
       }else if(data.jenis === 'excel') {
         fData.append('jenis', data.jenis); //jenis
         fData.append('createupdateBy', data.createupdateBy); //createupdateBy
         fData.append('file', data.files); //data files
       }
-      // fData.append('id_profile', idProfile ? idProfile : null); //id profile user
       // axios services
       let link = data.jenis === 'pdf' || data.jenis === 'image' ? 'settings/updateFile' : 'user/importexcel'
       ApiService.postFile(link, fData)
@@ -32,18 +31,12 @@ const actions = {
   uploadBerkas: function ({commit}, data) {
     return new Promise((resolve, reject) => {
       let fData = new FormData();
-      fData.append('proses', data.proses); //proses
-      fData.append('id', data.id); //id
-      if(data.bagian == 'barang_lelang'){
-        fData.append('nama_barang_lelang', data.nama_barang_lelang); //nama
-      }
-      fData.append('nama_folder', data.nama_folder); //nama_folder
+      fData.append('title', data.title); //title
+      fData.append('type', data.type); //type
+      fData.append('ext', data.ext); //ext
       fData.append('nama_file', data.nama_file); //nama_file
-      fData.append('jenis', data.jenis); //jenis
-      fData.append('bagian', data.bagian); //bagian
-      fData.append('table', data.table); //bagian
+      fData.append('table', data.table); //table
       fData.append('file', data.files); //data files
-      // fData.append('id_profile', idProfile ? idProfile : null); //id profile user
       // axios services
       ApiService.postFile('settings/updateBerkas', fData)
         .then((res) => resolve(res))

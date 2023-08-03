@@ -35,7 +35,7 @@
       <v-stepper-content step="1">
         <C_DataLogin 
           :stepper-val="stepperVal"
-          :data-struktural.sync="struktural"
+          :data-struktural.sync="strukturalBy"
           @DataStepOne="DataStepOne"
           @StepOne="nextStep(1)"
           @BackToList="gotolist()"
@@ -45,7 +45,7 @@
       <v-stepper-content step="2">
         <C_DataAlamat 
           :stepper-val="stepperVal"
-          :data-struktural.sync="struktural"
+          :data-struktural.sync="strukturalBy"
           @DataStepTwo="DataStepTwo"
           @backStep="backStep(2)"
           @StepTwo="nextStep(2)"
@@ -55,7 +55,7 @@
       <v-stepper-content step="3">
         <C_DataKelengkapan 
           :stepper-val="stepperVal"
-          :data-struktural.sync="struktural"
+          :data-struktural.sync="strukturalBy"
           @DataStepThree="DataStepThree"
           @backStep="backStep(3)"
           @StepThree="nextStep(3)"
@@ -108,7 +108,9 @@ export default {
 		},
 	},
   computed: {
-    ...mapGetters(['struktural'])
+    ...mapGetters({
+      strukturalBy: 'user/strukturalBy',
+    })
   },
   watch: {
     stepperVal(n, o) {
@@ -130,7 +132,9 @@ export default {
 		}
   },
 	methods: {
-		...mapActions(["fetchData", "getStrukturalbyUID"]),
+		...mapActions({
+      getStrukturalbyUID: 'user/getStrukturalbyUID',
+    }),
     gotolist() {
       this.$router.push({name: "DataStruktural"});
     },

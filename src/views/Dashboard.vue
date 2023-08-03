@@ -18,12 +18,14 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 export default {
   name: 'Dashboard',
   components: { PopUpNotifikasiVue },
   data: () => ({
+    totalNotif: 0,
+
     //notifikasi
     dialogNotifikasi: false,
     notifikasiKode: '',
@@ -37,12 +39,13 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+  },
   watch: {
   },
   mounted() {
   },  
 	methods: {
-		...mapActions(["fetchData"]),
     notifikasi(kode, text, proses){
       this.dialogNotifikasi = true
       this.notifikasiKode = kode
@@ -53,5 +56,38 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.list-group-wrapper {
+  position: relative;
+}
+.list-group {
+  overflow: auto;
+  height: 200px;
+  border: 2px solid #dce4ec;
+  border-radius: 5px;
+}
+.list-group-item {
+  margin-top: 1px;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 2px solid #dce4ec;
+}
+.loading {
+  text-align: center;
+  position: absolute;
+  color: #fff;
+  z-index: 9;
+  background: #5c4084;
+  padding: 8px 18px;
+  border-radius: 5px;
+  left: calc(50% - 45px);
+  top: calc(50% - 18px);
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0
+}
 </style>

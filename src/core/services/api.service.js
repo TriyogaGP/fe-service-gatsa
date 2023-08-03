@@ -66,7 +66,7 @@ const ApiService = {
       //   "user_key"
       // ] = await userKey;
       Vue.axios.defaults.headers.common = {
-        'Authorization': `Bearer ${await localStorage.getItem('user_token')}`
+        'Authorization': `Bearer ${localStorage.getItem('user_token')}`
       }
       // const response = await Vue.axios.defaults.headers.common[
       //   "user_key"
@@ -105,10 +105,17 @@ const ApiService = {
    * @returns {*}
    */
   get(resource, token) {
+    let checktoken = this.checkToken(token)
+    let authToken = {
+      JWT: {
+        'Authorization': `Bearer ${checktoken.token}`
+      },
+      NONJWT: {
+        'x-inter-service-call': `${checktoken.token}`
+      },
+    }
     return Vue.axios.get(`${resource}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: checktoken.jwt ? authToken.JWT : authToken.NONJWT
     })
     .catch((error) => {
       // throw new Error(`[KT] ApiService ${error}`);
@@ -123,10 +130,17 @@ const ApiService = {
    * @returns {*}
    */
   post(resource, token, body) {
+    let checktoken = this.checkToken(token)
+    let authToken = {
+      JWT: {
+        'Authorization': `Bearer ${checktoken.token}`
+      },
+      NONJWT: {
+        'x-inter-service-call': `${checktoken.token}`
+      },
+    }
     return Vue.axios.post(`${resource}`, body, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: checktoken.jwt ? authToken.JWT : authToken.NONJWT
     })
     .catch((error) => {
       // throw new Error(`[KT] ApiService ${error}`);
@@ -173,10 +187,17 @@ const ApiService = {
    * @returns {IDBRequest<IDBValidKey> | Promise<void>}
    */
   update(resource, token, body) {
+    let checktoken = this.checkToken(token)
+    let authToken = {
+      JWT: {
+        'Authorization': `Bearer ${checktoken.token}`
+      },
+      NONJWT: {
+        'x-inter-service-call': `${checktoken.token}`
+      },
+    }
     return Vue.axios.put(`${resource}`, body, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: checktoken.jwt ? authToken.JWT : authToken.NONJWT
     })
     .catch((error) => {
       // throw new Error(`[KT] ApiService ${error}`);
@@ -191,10 +212,17 @@ const ApiService = {
    * @returns {IDBRequest<IDBValidKey> | Promise<void>}
    */
   put(resource, token, body) {
+    let checktoken = this.checkToken(token)
+    let authToken = {
+      JWT: {
+        'Authorization': `Bearer ${checktoken.token}`
+      },
+      NONJWT: {
+        'x-inter-service-call': `${checktoken.token}`
+      },
+    }
     return Vue.axios.put(`${resource}`, body, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: checktoken.jwt ? authToken.JWT : authToken.NONJWT
     })
     .catch((error) => {
       // throw new Error(`[KT] ApiService ${error}`);
@@ -207,15 +235,43 @@ const ApiService = {
    * @param resource
    * @returns {*}
    */
-  delete(resource, token) {
-    return Vue.axios.delete(resource, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+  delete(resource, token, body) {
+    let checktoken = this.checkToken(token)
+    let authToken = {
+      JWT: {
+        'Authorization': `Bearer ${checktoken.token}`
+      },
+      NONJWT: {
+        'x-inter-service-call': `${checktoken.token}`
+      },
+    }
+    return Vue.axios.delete(`${resource}`, body, {
+      headers: checktoken.jwt ? authToken.JWT : authToken.NONJWT
     }).catch((error) => {
       // throw new Error(`[RWV] ApiService ${error}`);
       throw error;
     });
+  },
+
+  /**
+   * Send the CHECK Token
+   * @param token
+   * @returns {*}
+   */
+  checkToken(token) {
+    let res;
+    if(token === '12qwaszx@321123'){
+      res = {
+        token,
+        jwt: false,
+      }
+    }else{
+      res = {
+        token,
+        jwt: true,
+      }
+    }
+    return res
   },
 };
 

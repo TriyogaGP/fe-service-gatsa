@@ -10,7 +10,7 @@
             dense
             depressed
             class="ma-2 white--text text--darken-2"
-            @click="gotoForm()"
+            @click="getUID"
           >
             <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
@@ -23,12 +23,13 @@
                 append-icon="mdi-magnify"
                 label="Pencarian..."
                 single-line
-                hide-details
                 solo
                 dense
                 color="light-black darken-3"
+                hide-details
                 clearable
-                @keyup.enter="getAdministrator(1, limit, searchData)"
+                @click:clear="getAdministrator({page: 1, limit: limit, keyword: ''})"
+                @keyup.enter="getAdministrator({page: 1, limit: limit, keyword: searchData})"
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -38,7 +39,8 @@
                 item-text="value"
                 item-value="value"
                 label="Page"
-                outlined
+                single-line
+                solo
                 dense
                 color="light-black darken-3"
                 hide-details
@@ -54,7 +56,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataAdministrator"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -105,7 +107,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.mutasiAkun == true"
-                @click="ProsesRecord(item, 'STATUSRECORD', !item.statusAktif)"
+                @click="postRecord(item, 'STATUSRECORD', !item.statusAktif)"
               >
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn> 
@@ -117,7 +119,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.idUser == idLog || item.statusAktif == false"
-                @click="HapusRecord(item)"
+                @click="postRecord(item, 'DELETE', null)"
               >
                 <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn> 
@@ -149,8 +151,9 @@
 						item-text="value"
 						item-value="value"
             label="Limit"
-						outlined
-						dense
+						single-line
+            solo
+            dense
             color="light-black darken-3"
 						hide-details
 						:disabled="DataAdministrator.length ? false : true"
@@ -475,7 +478,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataAdministrator',
@@ -483,7 +486,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
 		DataAdministrator: [],
     expanded: [],
     singleExpand: true,
@@ -556,98 +558,63 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    ...mapState({
+      loadingtable: state => state.user.loadingtable,
+    }),
+    ...mapGetters({
+      administratorAll: 'user/administratorAll',
+      UID: 'setting/userUID',
+    }),
+  },
   watch: {
+    UID: {
+      deep: true,
+			handler(value) {
+        this.$router.push({name: "FormulirAdministrator", params: { kondisi: 'ADD', uid: value }});
+      }
+    },
+    administratorAll: {
+			deep: true,
+			handler(value) {
+        this.DataAdministrator = value.records
+				this.pageSummary = {
+					page: this.DataAdministrator.length ? value.pageSummary.page : 0,
+					limit: this.DataAdministrator.length ? value.pageSummary.limit : 0,
+					total: this.DataAdministrator.length ? value.pageSummary.total : 0,
+					totalPages: this.DataAdministrator.length ? value.pageSummary.totalPages : 0
+				}
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+      }
+		},
     page: {
 			deep: true,
 			handler(value) {
-				this.getAdministrator(value, this.limit, this.searchData)
+				this.getAdministrator({page: value, limit: this.limit, keyword: this.searchData})
 			}
 		},
     limit: {
 			deep: true,
 			handler(value) {
-				this.getAdministrator(1, value, this.searchData)
+        this.page = 1
+				this.getAdministrator({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
     this.idLog = localStorage.getItem('idLogin')
-		this.getAdministrator(this.page, this.limit, this.searchData);
+		this.getAdministrator({page: this.page, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getAdministrator(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataAdministrator = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/admin?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataAdministrator = resdata.records
-				this.pageSummary = {
-					page: this.DataAdministrator.length ? resdata.pageSummary.page : 0,
-					limit: this.DataAdministrator.length ? resdata.pageSummary.limit : 0,
-					total: this.DataAdministrator.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataAdministrator.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataAdministrator = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    HapusRecord(item) {
-      let bodyData = {
-        user: {
-          jenis: 'DELETE',
-          idUser: item.idUser,
-        },
-        userdetail: {}
-      }
-      let payload = {
-				method: "post",
-				url: `user/admin`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getAdministrator(1, this.limit, this.searchData)
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    ProsesRecord(item, jenis, kondisi) {
+    ...mapActions({
+      fetchData: 'fetchData',
+      getAdministrator: 'user/getAdministrator',
+      getUID: 'setting/getUID',
+    }),
+    postRecord(item, jenis, kondisi) {
       let bodyData = {
         user: {
           jenis: jenis,
@@ -656,31 +623,10 @@ export default {
         },
         userdetail: {}
       }
-      let payload = {
-				method: "post",
-				url: `user/admin`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getAdministrator(1, this.limit, this.searchData)
+      this.$store.dispatch('user/postAdministrator', bodyData)
+      .then((res) => {
+        this.getAdministrator({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    gotoForm(){
-      let payload = {
-        method: "get",
-				url: `settings/getUID`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.$router.push({name: "FormulirAdministrator", params: { kondisi: 'ADD', uid: resdata }});
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")

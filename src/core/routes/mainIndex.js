@@ -18,6 +18,26 @@ export default [
         name: 'Pengaturan',
         component: () => import('@/views/Settings.vue')
       },
+      {
+        path: '/notifikasi',
+        name: 'Notifikasi',
+        component: () => import('@/views/Notifikasi.vue')
+      },
+      {
+        path: '/broadcast',
+        name: 'Broadcast',
+        component: () => import('@/views/Broadcast.vue')
+      },
+      {
+        path: '/percakapan',
+        name: 'Percakapan',
+        component: () => import('@/views/Percakapan.vue')
+      },
+      {
+        path: '/testing',
+        name: 'Testing',
+        component: () => import('@/views/Testing.vue')
+      },
 
       {
         path: '/dataAdministrator',

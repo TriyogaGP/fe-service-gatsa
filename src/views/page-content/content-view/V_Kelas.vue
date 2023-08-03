@@ -28,7 +28,7 @@
                 dense
                 color="light-black darken-3"
                 clearable
-                @keyup.enter="getKelas(1, limit, searchData)"
+                @keyup.enter="getKelas({page: 1, limit: limit, keyword: searchData})"
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -54,7 +54,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataKelas"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -100,28 +100,15 @@
                 <v-icon small>edit</v-icon>&nbsp;Ubah
               </v-btn> 
               <v-btn
-                v-if="item.status == false"
                 :value="item.idKelas"
                 color="#0bd369"
                 small
                 dense
                 depressed
                 class="ma-2 white--text text--darken-2"
-                @click="StatusRecord(item, 1)"
+                @click="postRecord('STATUSRECORD', item, !item.status)"
               >
-                <v-icon small>visibility</v-icon>&nbsp;Active
-              </v-btn> 
-              <v-btn
-                v-else-if="item.status == true"
-                :value="item.idKelas"
-                color="#0bd369"
-                small
-                dense
-                depressed
-                class="ma-2 white--text text--darken-2"
-                @click="StatusRecord(item, 0)"
-              >
-                <v-icon small>visibility_off</v-icon>&nbsp;Non Active
+                <v-icon small>{{ item.status === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.status === false ? 'Active' : 'Non Active' }}
               </v-btn> 
               <v-btn
                 :value="item.idKelas"
@@ -131,7 +118,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.status == false"
-                @click="HapusRecord(item)"
+                @click="postRecord('DELETE', item, null)"
               >
                 <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn> 
@@ -259,7 +246,7 @@
                 dense
                 depressed
                 :disabled="kondisiTombol"
-                @click="SimpanForm(0)"
+                @click="postRecord('ADD', null, null)"
               >
                 Simpan Data
               </v-btn> 
@@ -271,7 +258,7 @@
                 dense
                 depressed
                 :disabled="kondisiTombol"
-                @click="SimpanForm(1)"
+                @click="postRecord('EDIT', null, null)"
               >
                 Ubah Data
               </v-btn>
@@ -297,7 +284,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataKelas',
@@ -305,7 +292,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
 		DataKelas: [],
     expanded: [],
     singleExpand: true,
@@ -361,7 +347,30 @@ export default {
 			amp: true,
 		},
 	},
+  computed: {
+    ...mapState({
+      loadingtable: store => store.kelas.loadingtable
+    }),
+    ...mapGetters({
+      kelasAll: 'kelas/kelasAll',
+    }),
+  },
   watch: {
+    kelasAll: {
+      deep: true,
+      handler(value){
+        this.DataKelas = value.records
+				this.pageSummary = {
+					page: this.DataKelas.length ? value.pageSummary.page : 0,
+					limit: this.DataKelas.length ? value.pageSummary.limit : 0,
+					total: this.DataKelas.length ? value.pageSummary.total : 0,
+					totalPages: this.DataKelas.length ? value.pageSummary.totalPages : 0
+				}
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+      }
+    },
     inputDataKelas: {
       deep: true,
       handler(value){
@@ -375,131 +384,47 @@ export default {
     page: {
 			deep: true,
 			handler(value) {
-				this.getKelas(value, this.limit, this.searchData)
+				this.getKelas({page: value, limit: this.limit, keyword: this.searchData})
 			}
 		},
     limit: {
 			deep: true,
 			handler(value) {
-				this.getKelas(1, value, this.searchData)
+        this.page = 1
+				this.getKelas({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
     this.idLog = localStorage.getItem('idLogin')
-		this.getKelas(this.page, this.limit, this.searchData);
+		this.getKelas({page: this.page, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getKelas(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataKelas = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `kelas/kelas?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataKelas = resdata.records
-				this.pageSummary = {
-					page: this.DataKelas.length ? resdata.pageSummary.page : 0,
-					limit: this.DataKelas.length ? resdata.pageSummary.limit : 0,
-					total: this.DataKelas.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataKelas.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataKelas = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    SimpanForm(index) {
+		...mapActions({
+      getKelas: 'kelas/getKelas',
+    }),
+    postRecord(jenis, item = null, status) {
       let bodyData = {
-        jenis: index == 0 ? 'ADD' : 'EDIT',
-        id_kelas: index == 0 ? '' : this.inputDataKelas.idKelas,
-        kelas: this.inputDataKelas.kelas,
+        ADDEDIT: {
+          jenis: jenis,
+          id_kelas: jenis === 'ADD' ? '' : this.inputDataKelas.id_kelas,
+          kelas: this.inputDataKelas.kelas,
+        },
+        DELETESTATUS: {
+          jenis: jenis,
+          id_kelas: item.idKelas,
+          status: status,
+        },
       }
-      let payload = {
-				method: "post",
-				url: `kelas/kelas`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('kelas/postKelas', jenis === 'ADD' || jenis === 'EDIT' ? bodyData.ADDEDIT : bodyData.DELETESTATUS)
+      .then((res) => {
         this.DialogKelas = false
-        this.getKelas(1, this.limit, this.searchData)
+        this.getKelas({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    HapusRecord(item) {
-      let bodyData = {
-        jenis: 'DELETE',
-        id_kelas: item.idKelas,
-      }
-      let payload = {
-				method: "post",
-				url: `kelas/kelas`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getKelas(1, this.limit, this.searchData)
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    StatusRecord(item, status) {
-      let bodyData = {
-        jenis: 'STATUSRECORD',
-        id_kelas: item.idKelas,
-        status: status,
-      }
-      let payload = {
-				method: "post",
-				url: `kelas/kelas`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getKelas(1, this.limit, this.searchData)
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     openDialog(item, index){

@@ -290,14 +290,25 @@ const Helper = {
           var finalText = cek ? stringArray.join(". ") : stringArray.join("");
           return finalText;
         },
+        isNumeric(value) {
+          return /^-?\d+$/.test(value);
+        },
         inisialuppercaseLetterFirst(textInput) {
           textInput = textInput.toLowerCase();
           var stringArray = textInput.split(/\b(\s)/);
+          var dataText = [];
           for (var i = 0; i < stringArray.length; i++) {
-            stringArray[i] =
+            if(this.isNumeric(stringArray[i])){
+              stringArray[i] = stringArray[i]
+            }else{
+              stringArray[i] =
               stringArray[i].charAt(0).toUpperCase()
+            }
+            if(stringArray[i] !== ' '){
+              dataText.push(stringArray[i])
+            }
           }
-          var finalText = stringArray.join("");
+          var finalText = dataText.join("");
           return finalText;
         },
         uppercaseLetter(textInput) {

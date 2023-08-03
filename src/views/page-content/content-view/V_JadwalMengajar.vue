@@ -17,7 +17,7 @@
                 dense
                 color="light-black darken-3"
                 clearable
-                @keyup.enter="getJadwalMengajar(1, limit, searchData)"
+                @keyup.enter="getJadwalMengajar({page: 1, limit: limit, keyword: searchData})"
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -43,7 +43,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataJadwalMengajar"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -279,7 +279,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataJadwalMengajar',
@@ -287,7 +287,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
 		DataJadwalMengajar: [],
 		dataKelasMapel: [],
     expanded: [],
@@ -343,97 +342,68 @@ export default {
 		},
 	},
   computed: {
-    ...mapState([
-      'mengajarOptions',
-      'kelasOptions',
-    ]),
+    ...mapState({
+      mengajarOptions: store => store.setting.mengajarOptions, 
+      kelasOptions: store => store.setting.kelasOptions, 
+      loadingtable: store => store.user.loadingtable, 
+    }),
+    ...mapGetters({
+      jadwalMengajarAll: 'user/jadwalMengajarAll',
+    }),
   },
   watch: {
+    jadwalMengajarAll: {
+			deep: true,
+			handler(value) {
+        this.DataJadwalMengajar = value.records
+				this.pageSummary = {
+					page: this.DataJadwalMengajar.length ? value.pageSummary.page : 0,
+					limit: this.DataJadwalMengajar.length ? value.pageSummary.limit : 0,
+					total: this.DataJadwalMengajar.length ? value.pageSummary.total : 0,
+					totalPages: this.DataJadwalMengajar.length ? value.pageSummary.totalPages : 0
+				}
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+      }
+		},
     page: {
 			deep: true,
 			handler(value) {
-				this.getJadwalMengajar(value, this.limit, this.searchData)
+				this.getJadwalMengajar({page: value, limit: this.limit, keyword: this.searchData})
 			}
 		},
     limit: {
 			deep: true,
 			handler(value) {
-				this.getJadwalMengajar(1, value, this.searchData)
+        this.page = 1
+				this.getJadwalMengajar({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
   mounted() {
-		this.getJadwalMengajar(this.page, this.limit, this.searchData)
+		this.getJadwalMengajar({page: this.page, limit: this.limit, keyword: this.searchData})
 	},
 	methods: {
-		...mapActions(["fetchData", "getMengajar", "getKelas"]),
-    getJadwalMengajar(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataJadwalMengajar = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/jadwal?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataJadwalMengajar = resdata.records
-				this.pageSummary = {
-					page: this.DataJadwalMengajar.length ? resdata.pageSummary.page : 0,
-					limit: this.DataJadwalMengajar.length ? resdata.pageSummary.limit : 0,
-					total: this.DataJadwalMengajar.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataJadwalMengajar.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataJadwalMengajar = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
+		...mapActions({
+      getJadwalMengajar: 'user/getJadwalMengajar', 
+      getMengajar: 'setting/getMengajar', 
+      getKelas: 'setting/getKelas',
+    }),
     SimpanForm() {
       let bodyData = {
         idUser: this.inputData.idUser,
         kelas: this.inputData.kelas,
         mapel: this.inputData.mapel,
       }
-      let payload = {
-				method: "post",
-				url: `user/jadwal`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postJadwalMengajar', bodyData)
+      .then((res) => {
         this.DialogJadwalMengajar = false
-        this.getJadwalMengajar(this.page, this.limit, this.searchData)
+        this.getJadwalMengajar({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     remove(item, kondisi) {
@@ -446,7 +416,6 @@ export default {
     },
     bukadialog(item){
       this.dataKelasMapel = item.resdata
-      console.log('xxx', this.dataKelasMapel);
     },
     ubahData(item){
 		  this.getMengajar()

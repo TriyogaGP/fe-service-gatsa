@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataKelasSiswa',
@@ -53,7 +53,6 @@ export default {
   },
   data: () => ({
     kelas: '',
-    DataKelas: [],
 
     //notifikasi
     dialogNotifikasi: false,
@@ -69,11 +68,17 @@ export default {
 		},
 	},
   computed: {
+    ...mapGetters({
+      kelasSiswa: 'kelas/kelasSiswa',
+    }),
     kelasText() {
       this.kelas = this.$route.params.kelas
       let roleID = localStorage.getItem('roleID')
-      this.getKelasSiswa(this.kelas, roleID)
+      this.getKelasSiswa({kelas: this.kelas, roleID: roleID})
       return this.kelas
+    },
+    DataKelas(){
+      return this.kelasSiswa
     }
   },
   watch: {
@@ -81,22 +86,9 @@ export default {
   mounted() {
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-    getKelasSiswa(kelas, roleID) {
-      this.DataKelas = []
-			let payload = {
-        method: "get",
-				url: `kelas/kelassiswa?kelas=${kelas}${roleID === '3' ? `&mengajar=${localStorage.getItem('mengajar_kelas')}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DataKelas = res.data.result
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
+		...mapActions({
+      getKelasSiswa: 'kelas/getKelasSiswa',
+    }),
     gotoDetail(kelas) {
       this.$router.push({name: "DataDetailKelasSiswa", params: { kondisi: 'view', kelas: kelas }});
     },

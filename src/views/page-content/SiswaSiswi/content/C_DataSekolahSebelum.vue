@@ -353,10 +353,10 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'jenjangOptions',
-			'KabKotaOnlyOptions',
-		]),
+		...mapState({
+			jenjangOptions: store => store.setting.jenjangOptions,
+			KabKotaOnlyOptions: store => store.setting.KabKotaOnlyOptions,
+		}),
   },
 	watch: {
 		inputDataSekolahSebelum:{
@@ -393,28 +393,16 @@ export default {
 			}
 		},
 	},
-	// created() {
-	// 	this.inputDataSekolahSebelum = {
-	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
-	// 		jenjang: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.jenjang.kode : null,
-	// 		status_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.statusSekolah.kode : null,
-	// 		nama_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.namaSekolah : null,
-	// 		npsn: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.npsn : null,
-	// 		alamat_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.alamatSekolah : null,
-	// 		kabkot_sekolah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.kabkotSekolah.kode : null,
-	// 		no_peserta_un: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noPesertaUN : null,
-	// 		no_skhun: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noSKHUN : null,
-	// 		no_ijazah: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.noIjazah : null,
-	// 		nilai_un: this.dataSiswaSiswi ? this.dataSiswaSiswi.dataSekolahSebelumnya.nilaiUN : null,
-	// 	}
-	// },
 	mounted() {
 		this.inputDataSekolahSebelum.id_user = this.$route.params.uid;
 		this.getJenjangSekolah()
 		this.getWilayah({ bagian: 'kabkotaOnly', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData", "getJenjangSekolah", "getWilayah"]),
+		...mapActions({
+			getJenjangSekolah: 'setting/getJenjangSekolah',
+			getWilayah: 'setting/getWilayah',
+		}),
 		wadahInput(){
 			let inputFormThree = {
 				jenjang: this.inputDataSekolahSebelum.jenjang,

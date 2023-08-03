@@ -1,9 +1,9 @@
 <template>
 	<nav>
 		<v-app-bar color="light-black darken-3" dark app>
-			<v-avatar size="35">
-				<v-img src="../../public/gatsa.png"></v-img>
-			</v-avatar>
+			<!-- <v-avatar size="35"> -->
+				<img src="../../public/gatsa.png" width="40" />
+			<!-- </v-avatar> -->
 			<div class="ml-2 mr-2">{{ namaSekolah }}</div>
 			<v-divider vertical />
 			<v-divider vertical />
@@ -20,7 +20,7 @@
 				</v-list-item>
 			</v-list>
 			<v-menu
-				v-for="data in menu" :key="data.menuText"
+				v-for="data in menuOptions" :key="data.menuText"
 				open-on-hover
 				rounded="t-xs b-lg"
 				offset-y
@@ -140,7 +140,19 @@
 				</v-list>
 			</v-menu>
 			<v-spacer />
-			<v-menu
+			<v-badge
+				v-if="roleID === '1'"
+				:content="totalNotif"
+				:value="totalNotif"
+				color="green"
+				overlap
+				class="badgeNotif"
+			>
+				<v-btn icon small class="ma-1" router to="/notifikasi">
+					<v-icon medium>notifications</v-icon>
+				</v-btn>
+			</v-badge>
+			<!-- <v-menu
 				v-if="roleID === '1'"
 				open-on-hover
 				rounded="t-xs b-lg"
@@ -155,8 +167,8 @@
 						v-on="on"
 					>
 						<v-badge
-							:content="6"
-							:value="6"
+							:content="totalNotif"
+							:value="totalNotif"
 							color="green"
 							overlap
 							class="badgeNotif"
@@ -168,43 +180,33 @@
 
 				<v-list dense style="width: 350px;">
 					<div class="scrollNotif">
-						<!-- <div
+						<div
 							v-for="(notif, index) in dataNotif"
 							:key="index"
 						>
 							<div @click="() => { Hasil(notif.idNotification); }" class="SelectedMenuNotif pa-2" active-class="SelectedMenuNotif-active">
-								<p class="kondisiNotif">{{notif.isRead ? 'sudah dibaca' : 'belum dibaca' }} <v-icon small :color="notif.isRead == true ? 'green' : 'red'">{{ notif.isRead == true ? 'check' : 'clear' }}</v-icon></p>
-								<p class="judulNotif">{{notif.judul}}</p>
-								<p class="pesanNotif">{{(notif.pesan || '').length > 60 ? `${notif.pesan.substring(0, 60)}...` : notif.pesan}}</p>
-								<p class="tanggalNotif">{{notif.createdAt}}</p>
-							</div>
-							<div class="mt-2 mb-2"><v-divider /></div>
-						</div> -->
-						<div>	
-							<div class="SelectedMenuNotif pa-2" active-class="SelectedMenuNotif-active">
 								<v-row no-gutters>
                   <v-col
                     cols="12"
                     md="6"
                   >
-										<span class="box fourcorners" style="background-color: green;">tipe pesan</span>
+										<span class="box fourcorners" style="background-color: green;">{{notif.type}}</span>
                   </v-col>
                   <v-col
                     cols="12"
                     md="6"
 										class="kondisiNotif"
                   >
-										<p>sudah dibaca <v-icon small color="green">check</v-icon></p>
+										<p>{{notif.isRead ? 'sudah dibaca' : 'belum dibaca' }} <v-icon small :color="notif.isRead == true ? 'green' : 'red'">{{ notif.isRead == true ? 'check' : 'clear' }}</v-icon></p>
                   </v-col>
                 </v-row>
-								<p class="judulNotif">judul notifikasi</p>
-								<p class="pesanNotif">pesan notifikasi</p>
-								<p class="tanggalNotif">jam notifikasi</p>
+								<p class="judulNotif">{{notif.judul}}</p>
+								<p class="pesanNotif">{{(notif.pesan || '').length > 60 ? `${notif.pesan.substring(0, 60)}...` : notif.pesan}}</p>
+								<p class="tanggalNotif">{{notif.createdAt}}</p>
 							</div>
 							<div class="mt-2 mb-2"><v-divider /></div>
 						</div>
 					</div>
-					<!-- router to="/Notifikasi" -->
 					<v-list-item
 						class="SelectedMenuNotif"
 						active-class="SelectedMenuNotif-active"
@@ -215,7 +217,7 @@
 						<v-icon right>arrow_forward</v-icon>
 					</v-list-item>
 				</v-list>
-			</v-menu>
+			</v-menu> -->
 			<v-menu
 				open-on-hover
 				rounded="t-xs b-lg"
@@ -246,7 +248,7 @@
 						<v-list-item-title>
 							<span>Pengaturan</span>
 						</v-list-item-title>
-						<v-icon right>settings</v-icon>
+						<v-icon medium right>settings</v-icon>
 					</v-list-item>
 					<v-list-item
 						router to="/profile"
@@ -259,6 +261,28 @@
 						<v-icon right>person</v-icon>
 					</v-list-item>
 					<v-list-item
+						router to="/broadcast"
+						class="SelectedMenu"
+						active-class="SelectedMenu-active"
+						>
+						<v-list-item-title>
+							<span>Broadcast</span>
+						</v-list-item-title>
+						<span class="boxnotif" v-html="totalBroadcast" />
+						<v-icon medium right>fas fa-bullhorn</v-icon>
+					</v-list-item>
+					<v-list-item
+						v-if="roleID === '3' || roleID === '4'"
+						router to="/percakapan"
+						class="SelectedMenu"
+						active-class="SelectedMenu-active"
+						>
+						<v-list-item-title>
+							<span>Percakapan</span>
+						</v-list-item-title>
+						<v-icon medium right>chat</v-icon>
+					</v-list-item>
+					<v-list-item
 						@click="keluar()"
 						class="SelectedMenu"
 						active-class="SelectedMenu-active"
@@ -266,7 +290,7 @@
 						<v-list-item-title>
 							<span>Keluar</span>
 						</v-list-item-title>
-						<v-icon right>exit_to_app</v-icon>
+						<v-icon medium right>exit_to_app</v-icon>
 					</v-list-item>
 				</v-list>
 			</v-menu>
@@ -323,6 +347,7 @@
 <script>
 import { mapActions, mapState } from "vuex";
 import PopUpNotifikasiVue from "../views/Layout/PopUpNotifikasi.vue";
+import io from 'socket.io-client'
 export default {
 	components: {
     PopUpNotifikasiVue
@@ -332,8 +357,17 @@ export default {
       type: String,
       default: null
     },
+    totalNotif: {
+      type: Number,
+      default: 0,
+    },
+    totalBroadcast: {
+      type: Number,
+      default: 0,
+    },
   },
 	data: () => ({
+		API_URL: '',
 		drawer: false,
 		group: null,
 		fotoProfil: '',
@@ -343,7 +377,7 @@ export default {
 		kondisiKepalaSekolah: false,
 		kondisiWaKaBidKesiswaan: false,
 		kondisiWaKaBidKurikulum: false,
-		menu: [],
+		menuOptions: [],
 
 		//notifikasi
     dialogNotifikasi: false,
@@ -353,8 +387,9 @@ export default {
 	}),
 	computed: {
 		...mapState({
-			mengajar: 'mengajarOptions',
-			jabatan: 'jabatanOptions',
+			mengajar: store => store.setting.mengajarOptions,
+			jabatan: store => store.setting.jabatanOptions,
+			// menu: store => store.setting.menuOptions,
 		}),
 		mengajarOptions(){
 			if(this.roleID === '3'){
@@ -377,12 +412,18 @@ export default {
 				})
 				return result
 			}
-		}
+		},
   },
 	watch: {
 		group () {
 			this.drawer = false
 		},
+		// menu: {
+		// 	deep: true,
+		// 	handler(value) {
+		// 		this.menuOptions = value.length ? value[0].menu : null
+		// 	}
+		// },
 		jabatanOptions: {
 			deep: true,
 			handler(value) {
@@ -400,47 +441,61 @@ export default {
 	},
 	mounted() {
 		if(!localStorage.getItem('user_token')) return this.$router.push({name: 'Login'});
+    this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
 		this.fotoProfil = localStorage.getItem('fotoProfil')
 		this.nama = localStorage.getItem('nama')
 		this.roleID = localStorage.getItem('roleID')
 		this.wali_kelas = localStorage.getItem('wali_kelas')
-		this.getData()
+		this.Navbar()
 		this.getMengajar()
 		this.getJabatan()
 	},
 	methods: {
-		...mapActions(["fetchData", "getMengajar", "getJabatan"]),
-		getData() {
-      let payload = {
-				method: "get",
-				url: `settings/optionsMenu?id_role=${this.roleID}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
+		...mapActions({
+			fetchData: "fetchData",
+			getMengajar: "setting/getMengajar",
+			getJabatan: "setting/getJabatan",
+			getMenu: "setting/getMenu",
+			AuthLogout: "auth/AuthLogout",
+		}),
+		Navbar(){
+			this.getMenu(this.roleID)
 			.then((res) => {
-				let resdata = res.data.result
-				this.menu = resdata[0].menu
+				let data = res.data.result;
+				this.menuOptions = data.length ? data[0].menu : null
 			})
 			.catch((err) => {
-				this.notifikasi("warning", err.response.data.message, "2")
+				if(err.response.data.kode === 401) {
+					return this.notifikasi("error", err.response.data.message, "2")
+				}
+				this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
 		keluar() {
 			this.notifikasi("question", "Apakah anda yakin ingin keluar ?", "2")
 		},
 		goToProses(){
-			localStorage.removeItem('user_token');
-			localStorage.removeItem('nama');
-			localStorage.removeItem('nama_role');
-			localStorage.removeItem('idLogin');
-			localStorage.removeItem('roleID');
-			localStorage.removeItem('fotoProfil');
-			localStorage.removeItem('jabatan_guru');
-			localStorage.removeItem('mengajar_bidang');
-			localStorage.removeItem('mengajar_kelas');
-			localStorage.removeItem('wali_kelas');
-			localStorage.removeItem('kelas');
-			this.$router.push({name: "Login"});
+			this.AuthLogout(localStorage.getItem('idLogin'))
+			.then((res) => {
+				const socket = io(this.API_URL);
+        socket.emit("dataonline");
+
+				localStorage.removeItem('user_token');
+				localStorage.removeItem('nama');
+				localStorage.removeItem('nama_role');
+				localStorage.removeItem('idLogin');
+				localStorage.removeItem('roleID');
+				localStorage.removeItem('fotoProfil');
+				localStorage.removeItem('jabatan_guru');
+				localStorage.removeItem('mengajar_bidang');
+				localStorage.removeItem('mengajar_kelas');
+				localStorage.removeItem('wali_kelas');
+				localStorage.removeItem('kelas');
+				this.$router.push({name: "Login"});
+			})
+			.catch((err) => {
+				this.notifikasi("error", err.response.data.message, "1")
+			});
 		},
 		notifikasi(kode, text, proses){
       this.dialogNotifikasi = true
@@ -451,6 +506,12 @@ export default {
 	}
 }
 </script>
+
+<style scoped>
+.theme--light.v-list {
+	width: 200px !important;
+}
+</style>
 
 <style>
 .menufont {
@@ -489,6 +550,7 @@ export default {
 }
 .badgeNotif {
 	cursor: pointer;
+	margin-right: 10px;
 }
 .UserPanel {
 	cursor: pointer;
@@ -496,30 +558,6 @@ export default {
 .scrollNotif{
   max-height: 500px !important;
   overflow-y: auto !important;
-}
-.judulNotif {
-	margin-bottom: 1px !important;
-	font-size: 14px;
-	font-weight: bold;
-}
-.pesanNotif {
-	margin-bottom: 1px !important;
-	font-size: 12px;
-	font-weight: 500;
-	text-align: justify;
-}
-.tanggalNotif {
-	margin-bottom: 1px !important;
-	font-size: 10px;
-	font-weight: 500;
-	text-align: right;
-	font-style: italic;
-}
-.kondisiNotif {
-	margin-bottom: 1px !important;
-	font-size: 10px;
-	text-align: right;
-	font-style: italic;
 }
 .theme--dark.v-icon {
 	color: #FFFFFF !important;
@@ -541,13 +579,17 @@ export default {
 	margin: 2px;
   color: #FFF;
 }
-.fourcorners{
+.boxnotif{
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	-khtml-border-radius: 5px; 
 	border-radius: 5px;
-	padding: 5px;
+	padding: 0px 5px;
 	text-align: center;
-	font-size: 10px;
+	font-size: 8pt;
+	font-weight: bold;
+	background: rgba(10, 204, 117, 0.694);
+	border: 1px solid #000;
+	color: black;
 }
 </style>

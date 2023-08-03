@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataDetailAkademis',
@@ -80,6 +80,9 @@ export default {
 		},
 	},
   computed: {
+    ...mapGetters({
+      kelasSiswa: 'kelas/kelasSiswa',
+    }),
     mapelText() {
       let pelajaran = this.$route.params.mapel
       this.mapel = pelajaran.replace('-', ' ')
@@ -87,23 +90,9 @@ export default {
     }
   },
   watch: {
-  },
-  mounted() {
-    this.roleID = localStorage.getItem('roleID')
-    this.getKelasSiswa(this.roleID)
-	},
-	methods: {
-		...mapActions(["fetchData"]),
-    getKelasSiswa(roleID) {
-      this.DataKelas = []
-			let payload = {
-        method: "get",
-				url: `kelas/kelassiswa?${roleID === '3' ? `mengajar=${localStorage.getItem('mengajar_kelas')}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
+    kelasSiswa: {
+      deep: true,
+			handler(value) {
         let result = [
           { kategori: '7'},
           { kategori: '8'},
@@ -112,7 +101,7 @@ export default {
 
         result.map(async val => {
           let hasil = []
-          await resdata.map(str => {
+          await value.map(str => {
             let split = str.kelas.split('-')
             if(split[0] === val.kategori){
               hasil.push({
@@ -127,12 +116,17 @@ export default {
             dataKelas: hasil,
           })
         })
-        // console.log(this.DataKelas);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
+      }
+    },
+  },
+  mounted() {
+    this.roleID = localStorage.getItem('roleID')
+    this.getKelasSiswa({kelas: null, roleID: this.roleID})
+	},
+	methods: {
+		...mapActions({
+      getKelasSiswa: 'kelas/getKelasSiswa',
+    }),
     gotoDetail(kelas, mapel) {
       this.$router.push({name: "DataDetailKelasSiswa", params: { kondisi: 'penilaian', kelas: kelas }, query: { mapel: mapel }});
     },

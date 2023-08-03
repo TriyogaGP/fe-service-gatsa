@@ -95,6 +95,7 @@
 import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import Footer from '../components/Footer.vue';
+import io from 'socket.io-client'
 export default {
   name: 'Login',
   components: {
@@ -102,6 +103,7 @@ export default {
     Footer
   },
   data: () => ({
+    API_URL: '',
     passType: '',
     username: '',
     katasandi: '',
@@ -120,54 +122,61 @@ export default {
 		},
 	},
   computed: {
-    ...mapGetters(['cmssettings']),
+    ...mapGetters({
+      cmssettings: 'setting/cmssettings'
+    }),
     namaSekolah(){
-      console.log(this.cmssettings);
+      // console.log(this.cmssettings);
       return this.cmssettings ? this.cmssettings.namasekolah : null
     }
   },
   mounted() {
     if(localStorage.getItem('user_token')) return this.$router.push({name: "Dashboard"});
+    this.API_URL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_VIEW_PROD_API_URL : process.env.VUE_APP_VIEW_DEV_API_URL
     this.getCMSSettings()
   },
   methods: {
     ...mapActions({
-      fetchData: "fetchData",
-      getCMSSettings: "getCMSSettings",
-      AuthLogin: "auth/AuthLogin",
+      fetchData: 'fetchData',
+      getCMSSettings: 'setting/getCMSSettings',
     }),
-    async AutentificationLogin(){
+    AutentificationLogin(){
       const payload = {
         username: this.username,
         password: this.katasandi,
       }
-      await this.AuthLogin(payload)
+      this.$store.dispatch('auth/AuthLogin', payload)
       .then((res) => {
-        // console.log(res.data.message)
-        let data = res.data;
-        localStorage.setItem('user_token', data.result.accessToken);
-        localStorage.setItem('nama', data.result.nama);
-        localStorage.setItem('nama_role', data.result.namaRole);
-        localStorage.setItem('idLogin', data.result.idUser);
-        localStorage.setItem('roleID', data.result.consumerType);
-        localStorage.setItem('fotoProfil', data.result.fotoProfil);
-        if(data.result.consumerType === 3){
-          localStorage.setItem('jabatan_guru', data.result.jabatanGuru);
-          localStorage.setItem('mengajar_bidang', data.result.mengajarBidang);
-          localStorage.setItem('mengajar_kelas', data.result.mengajarKelas);
-          localStorage.setItem('wali_kelas', data.result.waliKelas ? data.result.waliKelas : '');
-        }else if(data.result.consumerType === 4){
-          localStorage.setItem('kelas', data.result.kelas);
+        let data = res.data.result;
+        localStorage.setItem('user_token', data.accessToken);
+        localStorage.setItem('nama', data.nama);
+        localStorage.setItem('nama_role', data.namaRole);
+        localStorage.setItem('idLogin', data.idUser);
+        localStorage.setItem('roleID', data.consumerType);
+        localStorage.setItem('fotoProfil', data.fotoProfil);
+        if(data.consumerType === 3){
+          localStorage.setItem('jabatan_guru', data.jabatanGuru);
+          localStorage.setItem('mengajar_bidang', data.mengajarBidang);
+          localStorage.setItem('mengajar_kelas', data.mengajarKelas);
+          localStorage.setItem('wali_kelas', data.waliKelas ? data.waliKelas : '');
+        }else if(data.consumerType === 4){
+          localStorage.setItem('kelas', data.kelas);
         }
-        this.notifikasi("success", data.message, "2")
-      }).catch((err) => {
+        const socket = io(this.API_URL);
+        socket.emit("dataonline");
+        this.notifikasi("success", res.data.message, "2")
+			})
+			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
-      })
+			});
     },
     goToProses() {
+      const socket = io(this.API_URL);
+      socket.emit("dataonline");
       this.dialogNotifikasi = false
       let roleID = localStorage.getItem('roleID')
       this.$router.push(roleID === '4' ? {name: "Profile"} : {name: "Dashboard"});
+      window.location.reload();
     },
     lupaSandi() {
       this.$router.push({name: 'ForgotPass', params: { siteLogin: 'Admin' }});

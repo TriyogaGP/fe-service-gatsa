@@ -1010,24 +1010,24 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'agamaOptions',
-			'hobiOptions',
-			'citacitaOptions',
-			'jenjangOptions',
-			'KabKotaOnlyOptions',
-			'pendidikanOptions',
-			'pekerjaanOptions',
-			'penghasilanOptions',
-			'statusorangtuaOptions',
-			'statustempattinggalOptions',
-			'jarakrumahOptions',
-			'transportasiOptions',
-			'ProvinsiOptions',
-			'KabKotaOptions',
-			'KecamatanOptions',
-			'KelurahanOptions',
-		]),
+		...mapState({
+			agamaOptions: store => store.setting.agamaOptions,
+			hobiOptions: store => store.setting.hobiOptions,
+			citacitaOptions: store => store.setting.citacitaOptions,
+			jenjangOptions: store => store.setting.jenjangOptions,
+			KabKotaOnlyOptions: store => store.setting.KabKotaOnlyOptions,
+			pendidikanOptions: store => store.setting.pendidikanOptions,
+			pekerjaanOptions: store => store.setting.pekerjaanOptions,
+			penghasilanOptions: store => store.setting.penghasilanOptions,
+			statusorangtuaOptions: store => store.setting.statusorangtuaOptions,
+			statustempattinggalOptions: store => store.setting.statustempattinggalOptions,
+			jarakrumahOptions: store => store.setting.jarakrumahOptions,
+			transportasiOptions: store => store.setting.transportasiOptions,
+			ProvinsiOptions: store => store.setting.ProvinsiOptions,
+			KabKotaOptions: store => store.setting.KabKotaOptions,
+			KecamatanOptions: store => store.setting.KecamatanOptions,
+			KelurahanOptions: store => store.setting.KelurahanOptions,
+		}),
 		agamaText(){
 			return this.agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
 		},
@@ -1122,7 +1122,21 @@ export default {
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
-		...mapActions(["fetchData", "getAgama", "getHobi", "getCitaCita", "getJenjangSekolah", "getPendidikan", "getPekerjaan", "getPenghasilan", "getStatusOrangTua", "getStatusTempatTinggal", "getJarakRumah", "getTransportasi", "getWilayah"]),
+		...mapActions({
+			fetchData: "fetchData", 
+			getAgama: "setting/getAgama", 
+			getHobi: "setting/getHobi", 
+			getCitaCita: "setting/getCitaCita", 
+			getJenjangSekolah: "setting/getJenjangSekolah", 
+			getPendidikan: "setting/getPendidikan", 
+			getPekerjaan: "setting/getPekerjaan", 
+			getPenghasilan: "setting/getPenghasilan", 
+			getStatusOrangTua: "setting/getStatusOrangTua", 
+			getStatusTempatTinggal: "setting/getStatusTempatTinggal", 
+			getJarakRumah: "setting/getJarakRumah", 
+			getTransportasi: "setting/getTransportasi", 
+			getWilayah: "setting/getWilayah",
+		}),
 		simpanData() {
       let bodyData = {
 				user: {
@@ -1205,18 +1219,28 @@ export default {
 					}
         }
       }
-      let payload = {
-				method: "post",
-				url: `user/siswasiswi`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postSiswaSiswi', bodyData)
+      .then((res) => {
+				if(localStorage.getItem('roleID') !== '1'){
+					let payload = {
+						jenis: 'CREATE',
+						idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+						type: 'Record',
+						judul: `${this.kondisi === 'ADD' ? 'Penambahan' : 'Perubahan'} data siswa/siswi`,
+						pesan: JSON.stringify({
+							message: `data siswa/siswi telah ${this.kondisi === 'ADD' ? 'ditambah' : 'diubah'} oleh <strong>${localStorage.getItem('nama')}</strong>`,
+							payload: bodyData,
+						}),
+						params: null,
+						dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+						createBy: localStorage.getItem('idLogin'),
+					}
+					this.$store.dispatch('setting/postNotifikasi', payload)
+				}
         this.notifikasi("success", res.data.message, "2")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
     goToProses(){

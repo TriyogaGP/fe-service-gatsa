@@ -114,7 +114,7 @@
               md="8"
               class="pt-2 font-weight-bold"
             >
-              : {{ tahunpelajaran }}
+              : {{ tahunPelajaran }}
             </v-col>
           </v-row>
           <v-row no-gutters>
@@ -239,7 +239,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataAkademis',
@@ -253,7 +253,6 @@ export default {
     mapel: '',
     DialogSiswaSiswi: false,
     dataSiswaSiswi: '',
-    DataNilai: [],
     tahunpelajaran: '',
 
     //notifikasi
@@ -271,8 +270,19 @@ export default {
 	},
   computed: {
     ...mapState({
-      mengajar: 'mengajarOptions',
+      mengajar: store => store.setting.mengajarOptions,
     }),
+    ...mapGetters({
+      cmssettings: 'setting/cmssettings',
+      siswasiswiBy: 'user/siswasiswiBy',
+      nilai: 'user/nilai',
+    }),
+    tahunPelajaran(){
+      return this.cmssettings ? this.cmssettings.tahunpelajaran.value : null
+    },
+    DataNilai(){
+      return this.nilai ? this.nilai : null
+    },
     mengajarOptions(){
       let result = []
       this.mengajar.map(str => {
@@ -282,6 +292,27 @@ export default {
 		},
   },
   watch: {
+    siswasiswiBy: {
+      deep: true,
+      handler(value) {
+        let jumlahTugas = this.DataNilai.jumlahTugas
+        let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === value.idUser)[0].nilai
+        let semester = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === value.idUser)[0].semester
+        let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === value.idUser)[0].kehadiran
+        let totalNilaiTugas = Number(nilai.tugas1) + Number(nilai.tugas2) + Number(nilai.tugas3) + Number(nilai.tugas4) + Number(nilai.tugas5) + Number(nilai.tugas6) + Number(nilai.tugas7) + Number(nilai.tugas8) + Number(nilai.tugas9) + Number(nilai.tugas10)
+        let rataRataTugas = totalNilaiTugas === 0 ? 0 : totalNilaiTugas / Number(jumlahTugas)
+        let rataRataNilai = (Number(rataRataTugas) + Number(nilai.uts) + Number(nilai.uas)) / 3
+        this.dataSiswaSiswi = {
+          ...value,
+          dataNilai: nilai,
+          semester: semester,
+          dataKehadiran: kehadiran,
+          totalNilaiTugas: rataRataTugas != 0 ? Math.ceil(rataRataTugas) : 0,
+          rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
+          hurufNilai: rataRataNilai <= 50 ? 'E' : rataRataNilai <= 65 ? 'D' : rataRataNilai <= 75 ? 'C' : rataRataNilai <= 85 ? 'B' : 'A',
+       }
+      }
+    }
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
@@ -290,75 +321,17 @@ export default {
 		this.getMengajar()
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-    getGeneralCMS(){
-      let payload = {
-        method: "get",
-				url: `settings/cmssetting`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.tahunpelajaran = resdata.tahunpelajaran ? resdata.tahunpelajaran.value : null
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    getSiswaSiswi(idUser, mapel) {
-      this.dataSiswaSiswi = ''
-			let payload = {
-        method: "get",
-				url: `user/siswasiswi/${idUser}?mapel=${mapel}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then(async (res) => {
-        let resdata = res.data.result
-        let jumlahTugas = this.DataNilai.jumlahTugas
-        let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].nilai
-        let semester = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].semester
-        let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === resdata.idUser)[0].kehadiran
-        let totalNilaiTugas = Number(nilai.tugas1) + Number(nilai.tugas2) + Number(nilai.tugas3) + Number(nilai.tugas4) + Number(nilai.tugas5) + Number(nilai.tugas6) + Number(nilai.tugas7) + Number(nilai.tugas8) + Number(nilai.tugas9) + Number(nilai.tugas10)
-        let rataRataTugas = totalNilaiTugas === 0 ? 0 : totalNilaiTugas / Number(jumlahTugas)
-        let rataRataNilai = (Number(rataRataTugas) + Number(nilai.uts) + Number(nilai.uas)) / 3
-        this.dataSiswaSiswi = {
-          ...resdata,
-          dataNilai: nilai,
-          semester: semester,
-          dataKehadiran: kehadiran,
-          totalNilaiTugas: rataRataTugas != 0 ? Math.ceil(rataRataTugas) : 0,
-          rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
-          hurufNilai: rataRataNilai <= 50 ? 'E' : rataRataNilai <= 65 ? 'D' : rataRataNilai <= 75 ? 'C' : rataRataNilai <= 85 ? 'B' : 'A',
-        }
-			})
-			.catch((err) => {
-        this.dataSiswaSiswi = ''
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    getNilai(idUser, kelas, mapel) {
-      this.DataNilai = []
-			let payload = {
-        method: "get",
-				url: `user/nilai?idUser=${idUser}&kelas=${kelas}&mapel=${mapel}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DataNilai = res.data.result        
-			})
-			.catch((err) => {
-        this.DataNilai = []
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
+		...mapActions({
+      getSiswaSiswibyUID: 'user/getSiswaSiswibyUID',
+      getNilai: 'user/getNilai',
+      getCMSSettings: 'setting/getCMSSettings',
+      getMengajar: 'setting/getMengajar',
+    }),
     openDetail(mapel) {
       this.mapel = mapel.replace('-', ' ')
-      this.getGeneralCMS()
-      this.getNilai(this.idLogin, this.kelas, this.mapel)
-      this.getSiswaSiswi(this.idLogin, this.mapel)
+      this.getCMSSettings()
+      this.getNilai({idUser: this.idLogin, kelas: this.kelas, mapel: this.mapel})
+      this.getSiswaSiswibyUID({uid: this.idLogin, mapel: this.mapel})
       this.DialogSiswaSiswi = true
     },
     gotoDetail(mapel) {

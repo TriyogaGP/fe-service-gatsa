@@ -296,13 +296,13 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'pendidikanOptions',
-			'jabatanOptions',
-			'mengajarOptions',
-			'kelasOptions',
-			'kelasUseOptions',
-		]),
+		...mapState({
+			pendidikanOptions: store => store.setting.pendidikanOptions,
+			jabatanOptions: store => store.setting.jabatanOptions,
+			mengajarOptions: store => store.setting.mengajarOptions,
+			kelasOptions: store => store.setting.kelasOptions,
+			kelasUseOptions: store => store.setting.kelasUseOptions,
+		}),
   },
 	watch: {
 		inputDataKelengkapan:{
@@ -348,20 +348,6 @@ export default {
 			}
 		},
 	},
-	// created() {
-	// 	this.inputDataKelengkapan = {
-	// 		id_user: this.dataStruktural ? this.dataStruktural.idUser : null,
-	// 		nomor_induk: this.dataStruktural ? this.dataStruktural.nomorInduk : null,
-	// 		pendidikan_guru: this.dataStruktural ? this.dataStruktural.pendidikanGuru.kode : null,
-	// 		jabatan_guru: this.dataStruktural ? this.dataStruktural.jabatanGuru : null,
-	// 		mengajar_bidang: this.dataStruktural ? this.dataStruktural.mengajarBidang : null,
-	// 		mengajar_kelas: this.dataStruktural ? this.dataStruktural.mengajarKelas.split(', ') : null,
-	// 		wali_kelas: this.dataStruktural ? this.dataStruktural.waliKelas : null,
-	// 	}
-	// 	if(this.inputDataKelengkapan.wali_kelas){
-	// 		this.getKelas({ kondisi: 'Use', walikelas: this.inputDataKelengkapan.wali_kelas })
-	// 	}
-	// },
 	mounted() {
 		this.inputDataKelengkapan.id_user = this.$route.params.uid;
 		this.getPendidikan()
@@ -371,7 +357,12 @@ export default {
 		this.getKelas({ kondisi: 'Use', walikelas: null })
 	},
 	methods: {
-		...mapActions(["fetchData", "getPendidikan", "getJabatan", "getMengajar", "getKelas"]),
+		...mapActions({
+			getPendidikan: 'setting/getPendidikan',
+			getJabatan: 'setting/getJabatan',
+			getMengajar: 'setting/getMengajar',
+			getKelas: 'setting/getKelas',
+		}),
 		wadahInput(){
 			let inputFormThree = {
 				nomorInduk: this.inputDataKelengkapan.nomor_induk,

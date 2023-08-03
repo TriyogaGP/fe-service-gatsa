@@ -25,7 +25,7 @@
 					dense
 					color="light-black darken-3"
 					clearable
-					@keyup.enter="getHakAkses(1, limit, searchData)"
+					@keyup.enter="getRole({page: 1, limit: limit, keyword: searchData})"
 				/>
 			</v-col>
     </v-row>
@@ -35,7 +35,7 @@
 				no-data-text="Tidak ada data yang tersedia"
 				no-results-text="Tidak ada catatan yang cocok ditemukan"
 				:headers="headers"
-				:loading="isLoading"
+				:loading="loadingtable"
 				:items="DataHakAkses"
 				:single-expand="singleExpand"
 				:expanded.sync="expanded"
@@ -46,8 +46,15 @@
 				:items-per-page="itemsPerPage"
 				@page-count="pageCount = $event"
 			>
+				<!-- <template v-slot:header="{ props }">
+					<thead class="v-data-table-header">
+						<tr>
+							<th v-for="header in props.headers" :key="header.text" style="font-weight: bold;">{{ header.text.toUpperCase() }}</th>
+						</tr>
+					</thead>
+				</template> -->
 				<template #[`item.number`]="{ item }">
-					{{ DataHakAkses.indexOf(item) + 1 }}
+					{{ page > 1 ? ((page - 1)*limit) + DataHakAkses.indexOf(item) + 1 : DataHakAkses.indexOf(item) + 1 }}
 				</template>
 				<template #[`item.status`]="{ item }">
 					<v-icon small v-if="item.status === true" color="green">check</v-icon>
@@ -61,48 +68,35 @@
 							:value="item.idRole"
 							color="#0bd369"
 							small
-							dark
 							dense
-							class="ma-2"
+							depressed
+							class="ma-2 white--text text--darken-2"
 							@click="bukaDialog(item, 1)"
 						>
 						<v-icon small>edit</v-icon>&nbsp;Ubah
 						</v-btn> 
 						<v-btn
-							v-if="item.status == false"
 							:value="item.idRole"
 							color="#0bd369"
 							small
-							dark
 							dense
-							class="ma-2"
-							@click="StatusRecord(item, 1)"
+							depressed
+							class="ma-2 white--text text--darken-2"
+							@click="postRecord(item, 'STATUSRECORD', !item.status)"
 						>
-						<v-icon small>visibility</v-icon>&nbsp;Active
-						</v-btn> 
-						<v-btn
-							v-else-if="item.status == true"
-							:value="item.idRole"
-							color="#0bd369"
-							small
-							dark
-							dense
-							class="ma-2"
-							@click="StatusRecord(item, 0)"
-						>
-						<v-icon small>visibility_off</v-icon>&nbsp;Non Active
+							<v-icon small>{{ item.status === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.status === false ? 'Active' : 'Non Active' }}
 						</v-btn> 
 						<v-btn
 							:value="item.idRole"
 							color="#bd3a07"
 							small
-							dark
 							dense
-							class="ma-2"
-							@click="HapusRecord(item)"
+							depressed
+							class="ma-2 white--text text--darken-2"
+							@click="postRecord(item, 'DELETE', null)"
 						>
-						<v-icon small>delete</v-icon>&nbsp;Hapus
-						</v-btn> 
+							<v-icon small>delete</v-icon>&nbsp;Hapus
+						</v-btn>
 						<v-divider />
 					</td>
 				</template>
@@ -137,7 +131,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataHakAkses.length ? pageSummary.page != 1 ? false : true : true"
-						@click="getHakAkses(pageSummary.page - 1, limit, searchData)"
+						@click="() => { page = pageSummary.page - 1 }"
 					>
 						keyboard_arrow_left
 					</v-icon>
@@ -145,7 +139,7 @@
 						style="cursor: pointer;"
 						large
 						:disabled="DataHakAkses.length ? pageSummary.page != pageSummary.totalPages ? false : true : true"
-						@click="getHakAkses(pageSummary.page + 1, limit, searchData)"
+						@click="() => { page = pageSummary.page + 1 }"
 					>
 						keyboard_arrow_right
 					</v-icon>
@@ -221,7 +215,7 @@
 								dense
 								depressed
 								:disabled="kondisiTombol"
-								@click="SimpanForm(0)"
+								@click="postRecord(null, 'ADD', null)"
 							>
 								Simpan Data
 							</v-btn> 
@@ -233,7 +227,7 @@
 								dense
 								depressed
 								:disabled="kondisiTombol"
-								@click="SimpanForm(1)"
+								@click="postRecord(null, 'EDIT', null)"
 							>
 								Ubah Data
 							</v-btn>
@@ -259,13 +253,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'HakAkses',
 	components: { PopUpNotifikasiVue },
   data: () => ({
-    isLoading: false,
 		DataHakAkses: [],
 		expanded: [],
     singleExpand: true,
@@ -290,8 +283,8 @@ export default {
 		headers: [
       { text: "No", value: "number", sortable: false, width: "7%" },
       { text: "#", value: "data-table-expand", sortable: false, width: "5%" },
-      { text: "Nama Role", value: "namaRole", sortable: false },
-      { text: "Status", value: "status", sortable: false },
+      { text: "NAMA ROLE", value: "namaRole", sortable: false },
+      { text: "STATUS ROLE", value: "status", sortable: false },
     ],
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
@@ -316,7 +309,27 @@ export default {
 			amp: true,
 		},
 	},
+	computed: {
+		...mapState({
+			loadingtable: store => store.setting.loadingtable,
+		}),
+		...mapGetters({
+			roleAll: 'setting/roleAll',
+		}),
+	},
 	watch: {
+		roleAll: {
+			deep: true,
+			handler(value) {
+				this.DataHakAkses = value.records
+				this.pageSummary = {
+					page: value.pageSummary.page,
+					limit: value.pageSummary.limit,
+					total: value.pageSummary.total,
+					totalPages: value.pageSummary.totalPages
+				}
+			}
+		},
     inputRole: {
       deep: true,
       handler(value){
@@ -328,57 +341,50 @@ export default {
         }
       }
     },
+		page: {
+			deep: true,
+			handler(value) {
+				this.getRole({page: value, limit: this.limit, keyword: this.searchData})
+			}
+		},
 		limit: {
 			deep: true,
 			handler(value) {
-				this.getHakAkses(1, value, this.searchData)
+				this.page = 1
+				this.getRole({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
   },
 	mounted() {
-		this.getHakAkses(1, this.limit, this.searchData);
+		this.getRole({page: 1, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getHakAkses(page = 1, limit, keyword) {
-			this.itemsPerPage = limit
-			this.isLoading = true
-			this.DataHakAkses = []
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-				method: "get",
-				url: `settings/Role?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				let resdata = res.data.result
-				this.DataHakAkses = resdata.records
-				this.pageSummary = {
-					page: resdata.pageSummary.page,
-					limit: resdata.pageSummary.limit,
-					total: resdata.pageSummary.total,
-					totalPages: resdata.pageSummary.totalPages
+		...mapActions({
+			getRole: 'setting/getRole',	
+		}),
+		postRecord(item, jenis, status) {
+      let bodyData = {
+				ADDEDIT: {
+					jenis: jenis,
+					id_role: jenis === 'ADD' ? '' : this.inputRole.id_role,
+					nama_role: this.inputRole.nama_role,
+				},
+				STATUSDELETE: {
+					jenis: jenis,
+					id_role: item.idRole,
+					status: status,
 				}
-				this.isLoading = false
+      }
+      this.$store.dispatch('setting/postRole', jenis === 'ADD' || jenis === 'EDIT' ? bodyData.ADDEDIT : bodyData.STATUSDELETE)
+      .then((res) => {
+        this.DialogRole = false
+        this.getRole({page: 1, limit: this.limit, keyword: this.searchData});
+        this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.isLoading = false
-				this.DataHakAkses = []
-				this.pageSummary = {
-					page: '',
-					limit: '',
-					total: '',
-					totalPages: ''
-				}
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
-		},
+    },
 		bukaDialog(item, index){
       this.editedIndex = index
       if(index == 0){
@@ -395,71 +401,6 @@ export default {
 			this.inputRole.nama_role = ''
 			this.DialogRole = false
 		},
-		SimpanForm(index) {
-      let bodyData = {
-        jenis: index == 0 ? 'ADD' : 'EDIT',
-        id_role: index == 0 ? '' : this.inputRole.id_role,
-        nama_role: this.inputRole.nama_role,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Role`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogRole = false
-        this.getHakAkses(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    HapusRecord(item) {
-      let bodyData = {
-        jenis: 'DELETE',
-        id_role: item.idRole,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Role`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogRole = false
-        this.getHakAkses(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    StatusRecord(item, status) {
-      let bodyData = {
-        jenis: 'STATUSRECORD',
-        id_role: item.idRole,
-        status: status,
-      }
-      let payload = {
-				method: "post",
-				url: `settings/Role`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DialogRole = false
-        this.getHakAkses(1, this.limit, this.searchData);
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
 		notifikasi(kode, text, proses){
       this.dialogNotifikasi = true
       this.notifikasiKode = kode

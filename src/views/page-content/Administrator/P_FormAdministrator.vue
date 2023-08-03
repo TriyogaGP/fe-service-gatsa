@@ -29,7 +29,7 @@
       <v-stepper-content step="1">
         <C_DataLogin 
           :stepper-val="stepperVal"
-          :data-administrator.sync="administrator"
+          :data-administrator.sync="administratorBy"
           @DataStepOne="DataStepOne"
           @StepOne="nextStep(1)"
           @BackToList="gotolist()"
@@ -39,7 +39,7 @@
       <v-stepper-content step="2">
         <C_DataAlamat 
           :stepper-val="stepperVal"
-          :data-administrator.sync="administrator"
+          :data-administrator.sync="administratorBy"
           @DataStepTwo="DataStepTwo"
           @backStep="backStep(2)"
           @StepTwo="nextStep(2)"
@@ -88,7 +88,9 @@ export default {
 		},
 	},
   computed: {
-		...mapGetters(['administrator']),
+		...mapGetters({
+      administratorBy: 'user/administratorBy',
+    }),
 	},
   watch: {
     stepperVal(n, o) {
@@ -106,11 +108,13 @@ export default {
   mounted() {
     // let uid = this.$route.params.uid;
     if(this.$route.params.kondisi === 'EDIT'){
-      this.getAdminbyUID(this.$route.params.uid)
+      this.getAdministratorbyUID(this.$route.params.uid)
 		}
   },
 	methods: {
-		...mapActions(["fetchData", "getAdminbyUID"]),
+		...mapActions({
+      getAdministratorbyUID: 'user/getAdministratorbyUID',
+    }),
     gotolist() {
       this.$router.push({name: "DataAdministrator"});
     },

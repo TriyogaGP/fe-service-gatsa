@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="ma-1" style="border: 1px solid #000; border-radius: 5px;">
-      <v-row class="ma-1">
+      <v-row class="ma-1 tampilView">
         <v-col cols="8" class="kotakleft">
           <v-tabs
             v-model="tab"
@@ -478,10 +478,10 @@
                   <v-btn
                     v-if="!kondisiForm"
                     color="#0bd369"
+                    class="white--text text--darken-2 mt-2"
                     small
                     dense
                     depressed
-                    class="white--text text--darken-2 mt-2"
                     @click="SimpanDataProfile()"
                   >
                     Simpan Data
@@ -2032,8 +2032,8 @@
                 </v-row>
                 <div class="text-right mt-2">
                   <v-btn
-                    color="light-black darken-3"
-                    class="white--text text--darken-2"
+                    color="#0bd369"
+                    class="white--text text--darken-2 mt-2"
                     small
                     dense
                     depressed
@@ -2332,7 +2332,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "./Layout/PopUpNotifikasi.vue";
 import PdfCetakan from './Layout/PdfCetakan.vue';
 import { Cropper, CircleStencil, RectangleStencil } from 'vue-advanced-cropper'
@@ -2545,17 +2545,157 @@ export default {
 		},
 	},
   computed: {
-    ...mapState([
-      'agamaOptions',
-      'pendidikanOptions',
-      'ProvinsiOptions',
-      'KabKotaOptions',
-      'KecamatanOptions',
-      'KelurahanOptions',
-    ]),
+    ...mapState({
+      agamaOptions: state => state.setting.agamaOptions,
+      pendidikanOptions: state => state.setting.pendidikanOptions,
+      ProvinsiOptions: state => state.setting.ProvinsiOptions,
+      KabKotaOptions: state => state.setting.KabKotaOptions,
+      KecamatanOptions: state => state.setting.KecamatanOptions,
+      KelurahanOptions: state => state.setting.KelurahanOptions,
+    }),
+    ...mapGetters({
+      dataprofile: 'auth/dataprofile',
+    }),
   },
   watch:{
+		dataprofile:{
+      deep: true,
+			handler(value){
+        if(this.roleID === '3'){
+          this.inputGuru = {
+            idUser: value.idUser,
+            nomorInduk: value.nomorInduk,
+            nama: this.uppercaseLetterFirst2(value.nama),
+            username: value.username,
+            email: value.email,
+            tempat: value.tempat,
+            tanggalLahir: value.tanggalLahir,
+            jenisKelamin: value.jenisKelamin,
+            agama: value.agama.kode,
+            telp: value.telp,
+            alamat: this.uppercaseLetterFirst2(value.alamat),
+            provinsi: value.provinsi.kode,
+            kabKota: value.kabKota.kode,
+            kecamatan: value.kecamatan.kode,
+            kelurahan: value.kelurahan.kode,
+            kodePos: value.kodePos,
+            pendidikanGuru: value.pendidikanGuru.kode,
+          }
+          this.getAgama()
+          this.getPendidikan()
+          this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+          this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputGuru.provinsi })
+          this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputGuru.kabKota })
+          this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputGuru.kecamatan })
+        }
+        if(this.roleID === '1' || this.roleID === '2'){
+          this.inputAdministrator = {
+            idUser: value.idUser,
+            nama: this.uppercaseLetterFirst2(value.nama),
+            username: value.username,
+            email: value.email,
+            tempat: value.tempat,
+            tanggalLahir: value.tanggalLahir,
+            jenisKelamin: value.jenisKelamin,
+            agama: value.agama.kode,
+            telp: value.telp,
+            alamat: value.alamat ? this.uppercaseLetterFirst2(value.alamat) : '-',
+            provinsi: value.provinsi.kode,
+            kabKota: value.kabKota.kode,
+            kecamatan: value.kecamatan.kode,
+            kelurahan: value.kelurahan.kode,
+            kodePos: value.kodePos,
+          }
+          this.getAgama()
+          this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
+          this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputAdministrator.provinsi })
+          this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputAdministrator.kabKota })
+          this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputAdministrator.kecamatan })
+        }
+        this.previewData = {
+          idUser: value.idUser,
+          namaRole: value.namaRole,
+          nama: this.uppercaseLetterFirst2(value.nama),
+          username: value.username,
+          email: value.email,
+          password: value.kataSandi,
+          nikSiswa: this.roleID === '4' ? value.nikSiswa ? value.nikSiswa : '-' : null,
+          nomorInduk: this.roleID === '4' || this.roleID === '3' ? value.nomorInduk : null,
+          tempat: value.tempat,
+          tanggalLahir: value.tanggalLahir,
+          jenisKelamin: value.jenisKelamin,
+          agama: value.agama.label,
+          anakKe: this.roleID === '4' ? value.anakKe ? value.anakKe : '-' : null,
+          jumlahSaudara: this.roleID === '4' ? value.jumlahSaudara ? value.jumlahSaudara : '-' : null,
+          hobi: this.roleID === '4' ? value.hobi ? value.hobi.label : '-' : null,
+          citaCita: this.roleID === '4' ? value.citaCita ? value.citaCita.label : '-' : null,
+          kelas: this.roleID === '4' ? value.kelas ? value.kelas : '-' : null,
+          jenjang: this.roleID === '4' ? value.dataSekolahSebelumnya.jenjang.label : null,
+          statusSekolah: this.roleID === '4' ? value.dataSekolahSebelumnya.statusSekolah.label : null,
+          namaSekolah: this.roleID === '4' ? value.dataSekolahSebelumnya.namaSekolah : null,
+          npsn: this.roleID === '4' ? value.dataSekolahSebelumnya.npsn ? value.dataSekolahSebelumnya.npsn : '-' : null,
+          alamatSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(value.dataSekolahSebelumnya.alamatSekolah) : null,
+          kabkotSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(value.dataSekolahSebelumnya.kabkotSekolah.nama) : null,
+          noPesertaUN: this.roleID === '4' ? value.dataSekolahSebelumnya.noPesertaUN ? value.dataSekolahSebelumnya.noPesertaUN : '-': null,
+          noSKHUN: this.roleID === '4' ? value.dataSekolahSebelumnya.noSKHUN ? value.dataSekolahSebelumnya.noSKHUN : '-' : null,
+          noIjazah: this.roleID === '4' ? value.dataSekolahSebelumnya.noIjazah ? value.dataSekolahSebelumnya.noSKHUN : '-' : null,
+          nilaiUN: this.roleID === '4' ? value.dataSekolahSebelumnya.nilaiUN ? value.dataSekolahSebelumnya.noSKHUN : '-' : null,
+          noKK: this.roleID === '4' ? value.noKK : null,
+          namaKK: this.roleID === '4' ? this.uppercaseLetterFirst2(value.namaKK) : null,
+          telp: this.roleID === '4' ? value.dataAlamatOrangtua.telp ? value.dataAlamatOrangtua.telp : '-' : value.telp ? value.telp : '-',
+          alamat: this.uppercaseLetterFirst2(this.roleID === '4' ? value.dataAlamatOrangtua.alamat ? value.dataAlamatOrangtua.alamat : '-' : value.alamat ? value.alamat : '-'),
+          provinsi: this.uppercaseLetterFirst2(this.roleID === '4' ? value.dataAlamatOrangtua.provinsi.nama : value.provinsi.nama),
+          kabKota: this.uppercaseLetterFirst2(this.roleID === '4' ? value.dataAlamatOrangtua.kabKota.nama : value.kabKota.nama),
+          kecamatan: this.uppercaseLetterFirst2(this.roleID === '4' ? value.dataAlamatOrangtua.kecamatan.nama : value.kecamatan.nama),
+          kelurahan: this.uppercaseLetterFirst2(this.roleID === '4' ? value.dataAlamatOrangtua.kelurahan.nama : value.kelurahan.nama),
+          kodePos: this.roleID === '4' ? value.dataAlamatOrangtua.kodePos : value.kodePos,
+          nikAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.nikAyah : null,
+          namaAyah: this.roleID === '4' ? this.uppercaseLetterFirst2(value.dataOrangtua.dataAyah.namaAyah) : null,
+          tahunAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.tahunAyah : null,
+          statusAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.statusAyah.label : null,
+          pendidikanAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.pendidikanAyah.label : null,
+          pekerjaanAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.pekerjaanAyah.label : null,
+          telpAyah: this.roleID === '4' ? value.dataOrangtua.dataAyah.telpAyah : null,
+          nikIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.nikIbu : null,
+          namaIbu: this.roleID === '4' ? this.uppercaseLetterFirst2(value.dataOrangtua.dataIbu.namaIbu) : null,
+          tahunIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.tahunIbu : null,
+          statusIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.statusIbu.label : null,
+          pendidikanIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.pendidikanIbu.label : null,
+          pekerjaanIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.pekerjaanIbu.label : null,
+          telpIbu: this.roleID === '4' ? value.dataOrangtua.dataIbu.telpIbu : null,
+          nikWali: this.roleID === '4' ? value.dataOrangtua.dataWali.nikWali ? value.dataOrangtua.dataWali.nikWali : '-' : null,
+          namaWali: this.roleID === '4' ? value.dataOrangtua.dataWali.namaWali ? this.uppercaseLetterFirst2(value.dataOrangtua.dataWali.namaWali) : '-' : null,
+          tahunWali: this.roleID === '4' ? value.dataOrangtua.dataWali.tahunWali ? value.dataOrangtua.dataWali.tahunWali : '-' : null,
+          pendidikanWali: this.roleID === '4' ? value.dataOrangtua.dataWali.pendidikanWali ? value.dataOrangtua.dataWali.pendidikanWali.label : '-' : null,
+          pekerjaanWali: this.roleID === '4' ? value.dataOrangtua.dataWali.pekerjaanWali ? value.dataOrangtua.dataWali.pekerjaanWali.label : '-' : null,
+          telpWali: this.roleID === '4' ? value.dataOrangtua.dataWali.telpWali ? value.dataOrangtua.dataWali.telpWali : '-' : null,
+          penghasilan: this.roleID === '4' ? value.penghasilan ? value.penghasilan.label : '-' : null,
+          statusTempatTinggal: this.roleID === '4' ? value.dataLainnya.statusTempatTinggal ? value.dataLainnya.statusTempatTinggal.label : '-' : null,
+          jarakRumah: this.roleID === '4' ? value.dataLainnya.jarakRumah ? value.dataLainnya.jarakRumah.label : '-' : null,
+          transportasi: this.roleID === '4' ? value.dataLainnya.transportasi ? value.dataLainnya.transportasi.label : '-' : null,
+          pendidikanGuru: this.roleID === '3' ? value.pendidikanGuru.label : null,
+          jabatanGuru: this.roleID === '3' ? value.jabatanGuru.map(str => { return str.label; }).sort().join(', ') : null,
+          mengajarBidang: this.roleID === '3' ? value.mengajarBidang.map(str => { return str.label; }).sort().join(', ') : null,
+          mengajarKelas: this.roleID === '3' ? value.mengajarKelas : null,
+          waliKelas: this.roleID === '3' ? value.waliKelas : null,
+          fotoProfil: value.fotoProfil,
+          fcIjazah: this.roleID === '4' ? value.berkas.fcIjazah : null,
+          fcSKHUN: this.roleID === '4' ? value.berkas.fcSKHUN : null,
+          fcKK: this.roleID === '4' ? value.berkas.fcKK : null,
+          fcKTPOrtu: this.roleID === '4' ? value.berkas.fcKTPOrtu : null,
+          fcAktaLahir: this.roleID === '4' ? value.berkas.fcAktaLahir : null,
+          fcSKL: this.roleID === '4' ? value.berkas.fcSKl : null,
+        }
+        this.arrayData = {
+          jabatanGuru: this.roleID === '3' ? value.jabatanGuru.map(str => { return str.label; }).sort() : null,
+          mengajarBidang: this.roleID === '3' ? value.mengajarBidang.map(str => { return str.label; }).sort() : null,
+          mengajarKelas: this.roleID === '3' ? value.mengajarKelas.split(', ') : null,
+        }
+        localStorage.setItem('fotoProfil', this.previewData.fotoProfil)
+			}
+		},
 		tab:{
+      deep: true,
 			handler(value){
 				if (value == '1') {
           this.getProfile(localStorage.getItem("idLogin"))
@@ -2615,200 +2755,95 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchData: "fetchData",
-      uploadFiles: "upload/uploadFiles",
-      getAgama: 'getAgama',
-      getPendidikan: 'getPendidikan',
-      getWilayah: 'getWilayah',
+      fetchData: 'fetchData',
+      uploadFiles: 'upload/uploadFiles',
+      getAgama: 'setting/getAgama',
+      getPendidikan: 'setting/getPendidikan',
+      getWilayah: 'setting/getWilayah',
+      getProfile: 'auth/getProfile',
     }),
-		getProfile(id) {
-			let payload = {
-				method: "put",
-				url: `auth/profile/${id}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-				let data = res.data.result;
-        if(this.roleID === '3'){
-          this.inputGuru = {
-            idUser: data.idUser,
-            nomorInduk: data.nomorInduk,
-            nama: this.uppercaseLetterFirst2(data.nama),
-            username: data.username,
-            email: data.email,
-            tempat: data.tempat,
-            tanggalLahir: data.tanggalLahir,
-            jenisKelamin: data.jenisKelamin,
-            agama: data.agama.kode,
-            telp: data.telp,
-            alamat: this.uppercaseLetterFirst2(data.alamat),
-            provinsi: data.provinsi.kode,
-            kabKota: data.kabKota.kode,
-            kecamatan: data.kecamatan.kode,
-            kelurahan: data.kelurahan.kode,
-            kodePos: data.kodePos,
-            pendidikanGuru: data.pendidikanGuru.kode,
-          }
-          this.getAgama()
-          this.getPendidikan()
-		      this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
-		      this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputGuru.provinsi })
-		      this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputGuru.kabKota })
-		      this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputGuru.kecamatan })
-        }
-        if(this.roleID === '1' || this.roleID === '2'){
-          this.inputAdministrator = {
-            idUser: data.idUser,
-            nama: this.uppercaseLetterFirst2(data.nama),
-            username: data.username,
-            email: data.email,
-            tempat: data.tempat,
-            tanggalLahir: data.tanggalLahir,
-            jenisKelamin: data.jenisKelamin,
-            agama: data.agama.kode,
-            telp: data.telp,
-            alamat: data.alamat ? this.uppercaseLetterFirst2(data.alamat) : '-',
-            provinsi: data.provinsi.kode,
-            kabKota: data.kabKota.kode,
-            kecamatan: data.kecamatan.kode,
-            kelurahan: data.kelurahan.kode,
-            kodePos: data.kodePos,
-          }
-          this.getAgama()
-		      this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
-		      this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputAdministrator.provinsi })
-		      this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputAdministrator.kabKota })
-		      this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputAdministrator.kecamatan })
-        }
-        this.previewData = {
-          idUser: data.idUser,
-          namaRole: data.namaRole,
-          nama: this.uppercaseLetterFirst2(data.nama),
-          username: data.username,
-          email: data.email,
-          password: data.kataSandi,
-          nikSiswa: this.roleID === '4' ? data.nikSiswa ? data.nikSiswa : '-' : null,
-          nomorInduk: this.roleID === '4' || this.roleID === '3' ? data.nomorInduk : null,
-          tempat: data.tempat,
-          tanggalLahir: data.tanggalLahir,
-          jenisKelamin: data.jenisKelamin,
-          agama: data.agama.label,
-          anakKe: this.roleID === '4' ? data.anakKe ? data.anakKe : '-' : null,
-          jumlahSaudara: this.roleID === '4' ? data.jumlahSaudara ? data.jumlahSaudara : '-' : null,
-          hobi: this.roleID === '4' ? data.hobi ? data.hobi.label : '-' : null,
-          citaCita: this.roleID === '4' ? data.citaCita ? data.citaCita.label : '-' : null,
-          kelas: this.roleID === '4' ? data.kelas ? data.kelas : '-' : null,
-          jenjang: this.roleID === '4' ? data.dataSekolahSebelumnya.jenjang.label : null,
-          statusSekolah: this.roleID === '4' ? data.dataSekolahSebelumnya.statusSekolah.label : null,
-          namaSekolah: this.roleID === '4' ? data.dataSekolahSebelumnya.namaSekolah : null,
-          npsn: this.roleID === '4' ? data.dataSekolahSebelumnya.npsn ? data.dataSekolahSebelumnya.npsn : '-' : null,
-          alamatSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataSekolahSebelumnya.alamatSekolah) : null,
-          kabkotSekolah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataSekolahSebelumnya.kabkotSekolah.nama) : null,
-          noPesertaUN: this.roleID === '4' ? data.dataSekolahSebelumnya.noPesertaUN ? data.dataSekolahSebelumnya.noPesertaUN : '-': null,
-          noSKHUN: this.roleID === '4' ? data.dataSekolahSebelumnya.noSKHUN ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
-          noIjazah: this.roleID === '4' ? data.dataSekolahSebelumnya.noIjazah ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
-          nilaiUN: this.roleID === '4' ? data.dataSekolahSebelumnya.nilaiUN ? data.dataSekolahSebelumnya.noSKHUN : '-' : null,
-          noKK: this.roleID === '4' ? data.noKK : null,
-          namaKK: this.roleID === '4' ? this.uppercaseLetterFirst2(data.namaKK) : null,
-          telp: this.roleID === '4' ? data.dataAlamatOrangtua.telp ? data.dataAlamatOrangtua.telp : '-' : data.telp ? data.telp : '-',
-          alamat: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.alamat ? data.dataAlamatOrangtua.alamat : '-' : data.alamat ? data.alamat : '-'),
-          provinsi: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.provinsi.nama : data.provinsi.nama),
-          kabKota: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kabKota.nama : data.kabKota.nama),
-          kecamatan: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kecamatan.nama : data.kecamatan.nama),
-          kelurahan: this.uppercaseLetterFirst2(this.roleID === '4' ? data.dataAlamatOrangtua.kelurahan.nama : data.kelurahan.nama),
-          kodePos: this.roleID === '4' ? data.dataAlamatOrangtua.kodePos : data.kodePos,
-          nikAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.nikAyah : null,
-          namaAyah: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataOrangtua.dataAyah.namaAyah) : null,
-          tahunAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.tahunAyah : null,
-          statusAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.statusAyah.label : null,
-          pendidikanAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.pendidikanAyah.label : null,
-          pekerjaanAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.pekerjaanAyah.label : null,
-          telpAyah: this.roleID === '4' ? data.dataOrangtua.dataAyah.telpAyah : null,
-          nikIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.nikIbu : null,
-          namaIbu: this.roleID === '4' ? this.uppercaseLetterFirst2(data.dataOrangtua.dataIbu.namaIbu) : null,
-          tahunIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.tahunIbu : null,
-          statusIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.statusIbu.label : null,
-          pendidikanIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.pendidikanIbu.label : null,
-          pekerjaanIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.pekerjaanIbu.label : null,
-          telpIbu: this.roleID === '4' ? data.dataOrangtua.dataIbu.telpIbu : null,
-          nikWali: this.roleID === '4' ? data.dataOrangtua.dataWali.nikWali ? data.dataOrangtua.dataWali.nikWali : '-' : null,
-          namaWali: this.roleID === '4' ? data.dataOrangtua.dataWali.namaWali ? this.uppercaseLetterFirst2(data.dataOrangtua.dataWali.namaWali) : '-' : null,
-          tahunWali: this.roleID === '4' ? data.dataOrangtua.dataWali.tahunWali ? data.dataOrangtua.dataWali.tahunWali : '-' : null,
-          pendidikanWali: this.roleID === '4' ? data.dataOrangtua.dataWali.pendidikanWali ? data.dataOrangtua.dataWali.pendidikanWali.label : '-' : null,
-          pekerjaanWali: this.roleID === '4' ? data.dataOrangtua.dataWali.pekerjaanWali ? data.dataOrangtua.dataWali.pekerjaanWali.label : '-' : null,
-          telpWali: this.roleID === '4' ? data.dataOrangtua.dataWali.telpWali ? data.dataOrangtua.dataWali.telpWali : '-' : null,
-          penghasilan: this.roleID === '4' ? data.penghasilan ? data.penghasilan.label : '-' : null,
-          statusTempatTinggal: this.roleID === '4' ? data.dataLainnya.statusTempatTinggal ? data.dataLainnya.statusTempatTinggal.label : '-' : null,
-          jarakRumah: this.roleID === '4' ? data.dataLainnya.jarakRumah ? data.dataLainnya.jarakRumah.label : '-' : null,
-          transportasi: this.roleID === '4' ? data.dataLainnya.transportasi ? data.dataLainnya.transportasi.label : '-' : null,
-          pendidikanGuru: this.roleID === '3' ? data.pendidikanGuru.label : null,
-          jabatanGuru: this.roleID === '3' ? data.jabatanGuru.map(str => { return str.label; }).sort().join(', ') : null,
-          mengajarBidang: this.roleID === '3' ? data.mengajarBidang.map(str => { return str.label; }).sort().join(', ') : null,
-          mengajarKelas: this.roleID === '3' ? data.mengajarKelas : null,
-          waliKelas: this.roleID === '3' ? data.waliKelas : null,
-          fotoProfil: data.fotoProfil,
-          fcIjazah: this.roleID === '4' ? data.berkas.fcIjazah : null,
-          fcSKHUN: this.roleID === '4' ? data.berkas.fcSKHUN : null,
-          fcKK: this.roleID === '4' ? data.berkas.fcKK : null,
-          fcKTPOrtu: this.roleID === '4' ? data.berkas.fcKTPOrtu : null,
-          fcAktaLahir: this.roleID === '4' ? data.berkas.fcAktaLahir : null,
-          fcSKL: this.roleID === '4' ? data.berkas.fcSKl : null,
-        }
-        this.arrayData = {
-          jabatanGuru: this.roleID === '3' ? data.jabatanGuru.map(str => { return str.label; }).sort() : null,
-          mengajarBidang: this.roleID === '3' ? data.mengajarBidang.map(str => { return str.label; }).sort() : null,
-          mengajarKelas: this.roleID === '3' ? data.mengajarKelas.split(', ') : null,
-        }
-        localStorage.setItem('fotoProfil', this.previewData.fotoProfil)
-			})
-			.catch((err) => {
-				console.log(err)
-			});
-		},
     wilayah(kondisi, e){
 			if(kondisi === 'provinsi'){
 				if(e){
-					this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
-					this.inputGuru.kabKota = ''
-					this.inputGuru.kecamatan = ''
-					this.inputGuru.kelurahan = ''
-					this.inputGuru.kodePos = ''
+          this.getWilayah({ bagian: 'kabkota', KodeWilayah: e })
+          if(this.roleID === '1' || this.roleID === '2'){
+            this.inputAdministrator.kabKota = ''
+            this.inputAdministrator.kecamatan = ''
+            this.inputAdministrator.kelurahan = ''
+            this.inputAdministrator.kodePos = ''
+          }else if(this.roleID === '3'){
+            this.inputGuru.kabKota = ''
+            this.inputGuru.kecamatan = ''
+            this.inputGuru.kelurahan = ''
+            this.inputGuru.kodePos = ''
+          }
 				}
 			}else if(kondisi === 'kabkota'){
 				if(e){
 					this.getWilayah({ bagian: 'kecamatan', KodeWilayah: e })
-					if(e !== this.inputGuru.kecamatan) {
-						this.inputGuru.kelurahan = ''
-						this.inputGuru.kodePos = ''	
-					}
+          if(this.roleID === '1' || this.roleID === '2'){
+            if(e !== this.inputAdministrator.kecamatan) {
+              this.inputAdministrator.kelurahan = ''
+              this.inputAdministrator.kodePos = ''	
+            }
+          }else if(this.roleID === '3'){
+            if(e !== this.inputGuru.kecamatan) {
+              this.inputGuru.kelurahan = ''
+              this.inputGuru.kodePos = ''	
+            }
+          }
 				}else{
-					this.inputGuru.kecamatan = ''
-					this.inputGuru.kelurahan = ''
-					this.inputGuru.kodePos = ''
+					if(this.roleID === '1' || this.roleID === '2'){
+            this.inputAdministrator.kecamatan = ''
+            this.inputAdministrator.kelurahan = ''
+            this.inputAdministrator.kodePos = ''
+          }else if(this.roleID === '3'){
+            this.inputGuru.kecamatan = ''
+            this.inputGuru.kelurahan = ''
+            this.inputGuru.kodePos = ''
+          }
 				}
 			}else if(kondisi === 'kecamatan'){
 				if(e){
 					this.getWilayah({ bagian: 'kelurahan', KodeWilayah: e })
-					if(e !== this.inputGuru.kelurahan) {
-						this.inputGuru.kodePos = ''	
-					}
+          if(this.roleID === '1' || this.roleID === '2'){
+            if(e !== this.inputAdministrator.kelurahan) {
+              this.inputAdministrator.kodePos = ''	
+            }
+          }else if(this.roleID === '3'){
+            if(e !== this.inputGuru.kelurahan) {
+              this.inputGuru.kodePos = ''	
+            }
+          }
 				}else{
-					this.inputGuru.kelurahan = ''
-					this.inputGuru.kodePos = ''
+					if(this.roleID === '1' || this.roleID === '2'){
+            this.inputAdministrator.kelurahan = ''
+            this.inputAdministrator.kodePos = ''
+          }else if(this.roleID === '3'){
+            this.inputGuru.kelurahan = ''
+            this.inputGuru.kodePos = ''
+          }
 				}
 			}else if(kondisi === 'kelurahan'){
 				if(e){
 					let data = this.KelurahanOptions.filter(str => str.value === e)
-          this.inputGuru.kodePos = data[0].kodePos
+          if(this.roleID === '1' || this.roleID === '2'){
+            this.inputAdministrator.kodePos = data[0].kodePos
+          }else if(this.roleID === '3'){
+            this.inputGuru.kodePos = data[0].kodePos
+          }
 				}else{
-					this.inputGuru.kodePos = ''
+					if(this.roleID === '1' || this.roleID === '2'){
+            this.inputAdministrator.kodePos = ''
+          }else if(this.roleID === '3'){
+            this.inputGuru.kodePos = ''
+          }
 				}
 			}
 		},
     SimpanDataProfile(){
-      if(this.roleID === '3'){
-        let bodyData = {
+      let bodyData = {
+        GURU: {
           idUser: localStorage.getItem('idLogin'),
           role: this.roleID,
           nomorInduk: this.inputGuru.nomorInduk,
@@ -2827,26 +2862,8 @@ export default {
           kelurahan: this.inputGuru.kelurahan,
           kodePos: this.inputGuru.kodePos,
           pendidikanGuru: this.inputGuru.pendidikanGuru,
-        }
-        let payload = {
-          method: "post",
-          url: `auth/ubah-profile`,
-          body: bodyData,
-          authToken: localStorage.getItem('user_token')
-        };
-        this.fetchData(payload)
-        .then(async (res) => {
-          this.kondisiForm = true
-          this.clearForm()
-          this.getProfile(localStorage.getItem('idLogin'))
-          this.notifikasi("success", res.data.message, "1")
-        })
-        .catch((err) => {
-          this.notifikasi("error", err.response.data.message, "1")
-        });
-      }
-      if(this.roleID === '1' || this.roleID === '2'){
-        let bodyData = {
+        },
+        ADMIN: {
           idUser: localStorage.getItem('idLogin'),
           role: this.roleID,
           nama: this.inputAdministrator.nama,
@@ -2863,47 +2880,35 @@ export default {
           kecamatan: this.inputAdministrator.kecamatan,
           kelurahan: this.inputAdministrator.kelurahan,
           kodePos: this.inputAdministrator.kodePos,
-        }
-        let payload = {
-          method: "post",
-          url: `auth/ubah-profile`,
-          body: bodyData,
-          authToken: localStorage.getItem('user_token')
-        };
-        this.fetchData(payload)
-        .then(async (res) => {
-          this.kondisiForm = true
-          this.clearForm()
-          this.getProfile(localStorage.getItem('idLogin'))
-          this.notifikasi("success", res.data.message, "1")
-        })
-        .catch((err) => {
-          this.notifikasi("error", err.response.data.message, "1")
-        });
+        },
       }
+      this.$store.dispatch('auth/postProfile', this.roleID === '1' || this.roleID === '2' ? bodyData.ADMIN : bodyData.GURU)
+      .then((res) => {
+        this.kondisiForm = true
+        this.clearForm()
+        this.getProfile(localStorage.getItem('idLogin'))
+        this.notifikasi("success", res.data.message, "1")
+			})
+			.catch((err) => {
+        this.notifikasi("error", err.response.data.message, "1")
+			});
     },
     UbahKataSandi() {
-      // console.log(this.authData);
       let bodyData = {
         idUser: localStorage.getItem('idLogin'),
         passwordLama: this.authData.passwordLama,
         passwordBaru: this.authData.passwordBaru,
         passwordConfBaru: this.authData.passwordConfBaru,
       }
-      let payload = {
-				method: "post",
-				url: `auth/ubah-katasandi`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then(async (res) => {
-				this.clearForm()
+      this.$store.dispatch('auth/postKataSandi', bodyData)
+      .then((res) => {
+        this.kondisiForm = true
+        this.clearForm()
         this.getProfile(localStorage.getItem('idLogin'))
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     pdfCreate(berkas, jenis) {
@@ -3092,16 +3097,20 @@ export default {
 }
 </style>
 <style scoped>
+.tampilView{
+  height: 500px;
+}
 .kotakleft {
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
-  border-right: 3px solid #4CAF50;
 }
 .kotakright {
+  border-left: 3px solid #4CAF50;
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
   padding: 10px;
   background-color: #272727;
+  height: 100%;
 }
 .kotak {
 	border: 2px dashed #000;
@@ -3171,7 +3180,7 @@ export default {
 }
 .customScrollLeft {
   width: 100%;
-  height: 500px;
+  height: 430px;
   background: #fff;
   overflow-y: auto;
   overflow-x: hidden;
@@ -3197,7 +3206,7 @@ export default {
 }
 .customScrollRight {
   width: 100%;
-  height: 270px;
+  height: 200px;
   background: #272727;
   overflow-y: auto;
   overflow-x: hidden;
@@ -3217,5 +3226,16 @@ export default {
   right: -3rem;
   top: -50rem;
   /* background: transparent; */
+}
+@media screen and (min-width: 1920px) {
+  .tampilView {
+    height: 800px;
+  }
+  .customScrollLeft {
+    height: 730px;
+  }
+  .customScrollRight {
+    height: 500px;
+  }
 }
 </style>

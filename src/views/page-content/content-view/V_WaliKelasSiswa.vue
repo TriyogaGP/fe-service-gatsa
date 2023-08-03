@@ -454,19 +454,16 @@
         <v-card-actions />
       </v-card>
     </v-dialog>
-    <v-dialog
-			v-model="isLoadingProses"
-			transition="dialog-bottom-transition"
-			persistent
-			width="500px"
-		>
-			<v-progress-linear
-				class="pa-3"
-				indeterminate
-				color="black darken-3"
-			/>
-			<h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses update data, harap menunggu ...</h4>
-		</v-dialog>
+    <v-overlay :value="isLoadingProses" z-index="500">
+      <div style="width: 550px;">
+        <v-progress-linear
+          class="pa-3"
+          indeterminate
+          color="black darken-3"
+        />
+        <h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses update data, harap menunggu ...</h4>
+      </div>
+    </v-overlay>
     <v-dialog
       v-model="dialogNotifikasi"
       transition="dialog-bottom-transition"
@@ -484,7 +481,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 import PdfCetakan from '../../Layout/PdfCetakan.vue';
 
@@ -535,48 +532,46 @@ export default {
 		},
 	},
   computed: {
+    ...mapGetters({
+      kelasSiswa: 'kelas/kelasSiswa', 
+      waliKelas: 'user/waliKelas',
+    }),
   },
   watch: {
-    page: {
-			deep: true,
+    waliKelas: {
+      deep: true,
 			handler(value) {
-        this.getWaliKelas(value, this.kelas)
-			}
-		},
-  },
-  mounted() {
-    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
-    this.roleID = localStorage.getItem('roleID')
-    if(this.roleID === '1' || this.roleID === '2') {
-      this.getKelasSiswa()
-    }else if(this.roleID === '3'){
-      this.kelas = localStorage.getItem('wali_kelas')
-      this.getWaliKelas(1, this.kelas)
-    }
-  },
-	methods: {
-		...mapActions(["fetchData"]),
-    getKelasSiswa() {
-      this.DataKelas = []
-			let payload = {
-        method: "get",
-				url: `kelas/kelassiswa`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
+        this.dataSiswaSiswi = value.records
+        this.dataNilai = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].dataNilai : []
+        this.NilaiAkhir = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].hasilAkhir : 0
+        let ratarata = 0
+        this.dataNilai.map(str => {
+          ratarata += str.nilai
+        })
+        this.penilaian.rataRataNilai = Math.ceil(ratarata / 16)
+        this.penilaian.nilaiHuruf = this.penilaian.rataRataNilai <= 50 ? 'E' : this.penilaian.rataRataNilai <= 65 ? 'D' : this.penilaian.rataRataNilai <= 75 ? 'C' : this.penilaian.rataRataNilai <= 85 ? 'B' : 'A'
+        this.pageSummary = {
+					page: this.dataSiswaSiswi.length ? value.pageSummary.page : 0,
+					limit: this.dataSiswaSiswi.length ? value.pageSummary.limit : 0,
+					total: this.dataSiswaSiswi.length ? value.pageSummary.total : 0,
+					totalPages: this.dataSiswaSiswi.length ? value.pageSummary.totalPages : 0
+				}
+      }
+    },
+    kelasSiswa: {
+      deep: true,
+			handler(value) {
         let result = [
           { kategori: '7'},
           { kategori: '8'},
           { kategori: '9'},
         ]
 
-        this.kelasJoin = resdata.filter(str => str.jumlah > 0).map(str => str.kelas).join(', ')
+        this.kelasJoin = value.filter(str => str.jumlah > 0).map(str => str.kelas).join(', ')
 
         result.map(async val => {
           let hasil = []
-          await resdata.map(str => {
+          await value.map(str => {
             let split = str.kelas.split('-')
             if(split[0] === val.kategori){
               hasil.push({
@@ -591,69 +586,39 @@ export default {
             dataKelas: hasil,
           })
         })
-        // console.log(this.kelasJoin);
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    getWaliKelas(page, kelas) {
-      this.dataSiswaSiswi = []
-      this.pageSummary = {
-        page: '',
-        limit: '',
-        total: '',
-        totalPages: ''
       }
-			let payload = {
-        method: "get",
-				url: `user/walikelas?page=${page}&kelas=${kelas}&roleID=${this.roleID}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.dataSiswaSiswi = resdata.records
-        this.dataNilai = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].dataNilai : []
-        this.NilaiAkhir = this.dataSiswaSiswi.length ? this.dataSiswaSiswi[0].hasilAkhir : 0
-        let ratarata = 0
-        this.dataNilai.map(str => {
-          ratarata += str.nilai
-        })
-        this.penilaian.rataRataNilai = Math.ceil(ratarata / 16)
-        this.penilaian.nilaiHuruf = this.penilaian.rataRataNilai <= 50 ? 'E' : this.penilaian.rataRataNilai <= 65 ? 'D' : this.penilaian.rataRataNilai <= 75 ? 'C' : this.penilaian.rataRataNilai <= 85 ? 'B' : 'A'
-        this.pageSummary = {
-					page: this.dataSiswaSiswi.length ? resdata.pageSummary.page : 0,
-					limit: this.dataSiswaSiswi.length ? resdata.pageSummary.limit : 0,
-					total: this.dataSiswaSiswi.length ? resdata.pageSummary.total : 0,
-					totalPages: this.dataSiswaSiswi.length ? resdata.pageSummary.totalPages : 0
-				}
-			})
-			.catch((err) => {
-        this.dataSiswaSiswi = []
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.notifikasi("error", err.response.data.message, "1")
-			});
+    },
+    page: {
+			deep: true,
+			handler(value) {
+        this.getWaliKelas({page: value, kelas: this.kelas, roleID: this.roleID})
+			}
 		},
-    updatePeringkat(item) {
+  },
+  mounted() {
+    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
+    this.roleID = localStorage.getItem('roleID')
+    if(this.roleID === '1' || this.roleID === '2') {
+      this.getKelasSiswa({kelas: null, roleID: this.roleID})
+    }else if(this.roleID === '3'){
+      this.kelas = localStorage.getItem('wali_kelas')
+      this.getWaliKelas({page: 1, kelas: this.kelas, roleID: this.roleID})
+    }
+  },
+	methods: {
+		...mapActions({
+      getKelasSiswa: 'kelas/getKelasSiswa', 
+      getWaliKelas: 'user/getWaliKelas',
+    }),
+    updatePeringkat(kelas) {
       this.isLoadingProses = true
-      let payload = {
-        method: "get",
-				url: `user/update-peringkat?kelas=${item}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/updatePeringkat', kelas)
+      .then((res) => {
         this.isLoadingProses = false
         if(this.roleID === '1' || this.roleID === '2') {
-          this.getKelasSiswa()
+          this.getKelasSiswa({kelas: null, roleID: this.roleID})
         }else if(this.roleID === '3'){
-          this.getWaliKelas(1, this.kelas)
+          this.getWaliKelas({page: 1, kelas: this.kelas, roleID: this.roleID})
         }
         this.notifikasi("success", "Sukses update peringkat", "1")
 			})
@@ -684,7 +649,7 @@ export default {
     },
     openDialog(kelas){
       this.kelas = kelas
-      this.getWaliKelas(1, this.kelas)
+      this.getWaliKelas({page: 1, kelas: this.kelas, roleID: this.roleID})
       this.DialogDetail = true
     },
     warningNotif(){

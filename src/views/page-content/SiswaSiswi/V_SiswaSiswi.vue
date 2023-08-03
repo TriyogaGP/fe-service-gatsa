@@ -11,7 +11,7 @@
             dense
             depressed
             class="ma-2 white--text text--darken-2"
-            @click="gotoForm()"
+            @click="getUID()"
           >
             <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
@@ -53,9 +53,9 @@
                 class="SelectedMenu"
                 active-class="SelectedMenu-active"
               >
-                <v-icon left>fa-solid fa-file-export</v-icon>
+                <v-icon small>fa-solid fa-file-export</v-icon>
                 <v-list-item-title>
-                  <span>Export Data Full</span>
+                  <span>&nbsp;Export Data Full</span>
                 </v-list-item-title>
               </v-list-item>
               <v-list-item
@@ -63,9 +63,9 @@
                 class="SelectedMenu"
                 active-class="SelectedMenu-active"
               >
-                <v-icon left>fa-solid fa-file-export</v-icon>
+                <v-icon small>fa-solid fa-file-export</v-icon>
                 <v-list-item-title>
-                  <span>Export Data Emis</span>
+                  <span>&nbsp;Export Data Emis</span>
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -94,7 +94,8 @@
                 dense
                 color="light-black darken-3"
                 clearable
-                @keyup.enter="getSiswaSiswi(1, limit, searchData)"
+                @keyup.enter="getSiswaSiswi(roleID === '1' || roleID === '2' ? {page: 1, limit: limit, keyword: searchData} : {page: 1, limit: limit, keyword: searchData, kelas: mengajarKelas})"
+                
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -104,7 +105,8 @@
                 item-text="value"
                 item-value="value"
                 label="Page"
-                outlined
+                single-line
+                solo
                 dense
                 color="light-black darken-3"
                 hide-details
@@ -120,7 +122,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataSiswaSiswi"
           :item-class= "row_classes"
           :single-expand="singleExpand"
@@ -132,6 +134,7 @@
           class="elevation-1"
           :items-per-page="itemsPerPage"
           @page-count="pageCount = $event"
+          @click:row="klikRow()"
         >
           <!-- header -->
           <template v-slot:header="{ props }">
@@ -185,7 +188,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.mutasiAkun == true"
-                @click="ProsesRecord(item, 'STATUSRECORD', !item.statusAktif)"
+                @click="postRecord(item, 'STATUSRECORD', !item.statusAktif)"
               >
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn>
@@ -198,7 +201,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.mutasiAkun == true || item.statusAktif == false"
-                @click="HapusRecord(item)"
+                @click="postRecord(item, 'DELETE', null)"
               >
                 <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn>
@@ -211,7 +214,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.mutasiAkun == true || item.statusAktif == false"
-                @click="ProsesRecord(item, 'VALIDASIAKUN', !item.validasiAkun)"
+                @click="postRecord(item, 'VALIDASIAKUN', !item.validasiAkun)"
               >
                 <v-icon small>{{ item.validasiAkun === false ? 'check' : 'clear' }}</v-icon>&nbsp;{{ item.validasiAkun === false ? 'Validate' : 'Not Validate' }}
               </v-btn>
@@ -223,8 +226,7 @@
                 dense
                 depressed
                 class="ma-2 white--text text--darken-2"
-                :disabled="item.statusAktif == false || (roleID !== '4' && item.mutasiAkun === true)"
-                @click="ProsesRecord(item, 'MUTASIAKUN', !item.mutasiAkun)"
+                @click="postRecord(item, 'MUTASIAKUN', !item.mutasiAkun)"
               >
                 <v-icon small>fa-person-circle-exclamation</v-icon>&nbsp;Mutasi Akun
               </v-btn>
@@ -281,8 +283,9 @@
 						item-text="value"
 						item-value="value"
             label="Limit"
-						outlined
-						dense
+						single-line
+            solo
+            dense
             color="light-black darken-3"
 						hide-details
 						:disabled="DataSiswaSiswi.length ? false : true"
@@ -1822,19 +1825,16 @@
         <v-card-actions />
       </v-card>
     </v-dialog>
-    <v-dialog
-			v-model="isLoadingExport"
-			transition="dialog-bottom-transition"
-			persistent
-			width="500px"
-		>
-			<v-progress-linear
-				class="pa-3"
-				indeterminate
-				color="black darken-3"
-			/>
-			<h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses export data, harap menunggu ...</h4>
-		</v-dialog>
+    <v-overlay :value="isLoadingExport" z-index="500">
+      <div style="width: 550px;">
+        <v-progress-linear
+          class="pa-3"
+          indeterminate
+          color="black darken-3"
+        />
+        <h4 style="color: #000; text-align: center; background-color: #FFF;">Sedang proses export data, harap menunggu ...</h4>
+      </div>
+    </v-overlay>
     <v-dialog
       v-model="dialogNotifikasi"
       transition="dialog-bottom-transition"
@@ -1852,10 +1852,9 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 import PdfCetakan from '../../Layout/PdfCetakan.vue';
-
 export default {
   name: 'DataSiswaSiswi',
   components: {
@@ -1863,7 +1862,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
     isLoadingbtnPDF: false,
     isLoadingbtnPDF1: false,
     isLoadingbtnPDF2: false,
@@ -1911,6 +1909,7 @@ export default {
     rowsPerPageItems: { "items-per-page-options": [5, 10, 25, 50] },
     totalItems: 0,
     roleID: '',
+    mengajarKelas: '',
     previewData: {
       idUser: '',
       namaRole: '',
@@ -2012,8 +2011,14 @@ export default {
 	},
   computed: {
     ...mapState({
-      jabatan: 'jabatanOptions',
-      kelas: 'kelasOptions',
+      jabatan: store => store.setting.jabatanOptions,
+      kelas: store => store.setting.kelasOptions,
+      loadingtable: store => store.user.loadingtable,
+    }),
+    ...mapGetters({
+      siswasiswiAll: 'user/siswasiswiAll',
+      kelasSiswa: 'kelas/kelasSiswa',
+      UID: 'setting/userUID',
     }),
     kelasOptions(){
 			return this.kelas
@@ -2031,97 +2036,15 @@ export default {
     }
   },
   watch: {
-    page: {
-			deep: true,
+    UID: {
+      deep: true,
 			handler(value) {
-				this.getSiswaSiswi(value, this.limit, this.searchData)
-			}
-		},
-    limit: {
-			deep: true,
+        this.$router.push({name: "FormulirSiswaSiswi", params: { kondisi: 'ADD', uid: value }});
+      }
+    },
+    kelasSiswa: {
+      deep: true,
 			handler(value) {
-				this.getSiswaSiswi(1, value, this.searchData)
-			}
-		},
-    jabatanOptions: {
-			deep: true,
-			handler(value) {
-				if(this.roleID === '3'){
-					if(value.includes('Kepala Sekolah')){
-						this.kondisiKepalaSekolah = true
-					}
-				}
-			}
-		}
-  },
-  mounted() {
-    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
-    this.roleID = localStorage.getItem('roleID')
-		this.getSiswaSiswi(this.page, this.limit, this.searchData);
-    this.$store.dispatch('getKelas', { kondisi: 'All' })
-	},
-	methods: {
-		...mapActions({
-      fetchData: "fetchData",
-      uploadFiles: "upload/uploadFiles",
-    }),
-		getSiswaSiswi(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataSiswaSiswi = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/siswasiswi?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataSiswaSiswi = resdata.records
-				this.pageSummary = {
-					page: this.DataSiswaSiswi.length ? resdata.pageSummary.page : 0,
-					limit: this.DataSiswaSiswi.length ? resdata.pageSummary.limit : 0,
-					total: this.DataSiswaSiswi.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataSiswaSiswi.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataSiswaSiswi = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    getKelasSiswa() {
-      this.DataKelas = []
-			let payload = {
-        method: "get",
-				url: `kelas/kelassiswa`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
         let result = [
           { kategori: '7'},
           { kategori: '8'},
@@ -2130,7 +2053,7 @@ export default {
 
         result.map(async val => {
           let hasil = []
-          await resdata.map(str => {
+          await value.map(str => {
             let split = str.kelas.split('-')
             if(split[0] === val.kategori){
               hasil.push({
@@ -2145,35 +2068,64 @@ export default {
             dataKelas: hasil,
           })
         })
-			})
-			.catch((err) => {
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    HapusRecord(item) {
-      let bodyData = {
-        user: {
-          jenis: 'DELETE',
-          idUser: item.idUser,
-        },
-        userdetail: {}
       }
-      let payload = {
-				method: "post",
-				url: `user/siswasiswi`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getSiswaSiswi(1, this.limit, this.searchData)
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
     },
-    ProsesRecord(item, jenis, kondisi) {
+    siswasiswiAll: {
+			deep: true,
+			handler(value) {
+        this.DataSiswaSiswi = value.records
+				this.pageSummary = {
+					page: this.DataSiswaSiswi.length ? value.pageSummary.page : 0,
+					limit: this.DataSiswaSiswi.length ? value.pageSummary.limit : 0,
+					total: this.DataSiswaSiswi.length ? value.pageSummary.total : 0,
+					totalPages: this.DataSiswaSiswi.length ? value.pageSummary.totalPages : 0
+				}
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+      }
+		},
+    page: {
+			deep: true,
+			handler(value) {
+				this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: value, limit: this.limit, keyword: this.searchData} : {page: value, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas})
+			}
+		},
+    limit: {
+			deep: true,
+			handler(value) {
+				this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: 1, limit: value, keyword: this.searchData} : {page: 1, limit: value, keyword: this.searchData, kelas: this.mengajarKelas})
+			}
+		},
+    jabatanOptions: {
+			deep: true,
+			handler(value) {
+				if(this.roleID === '3'){
+					if(value.includes('Kepala Sekolah')){
+						this.kondisiKepalaSekolah = true
+        		this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: this.page, limit: this.limit, keyword: this.searchData} : {page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas});
+					}
+				}
+			}
+		}
+  },
+  mounted() {
+    this.BASEURL = process.env.VUE_APP_NODE_ENV === "production" ? process.env.VUE_APP_PROD_API_URL : process.env.VUE_APP_DEV_API_URL
+    this.roleID = localStorage.getItem('roleID')
+    this.mengajarKelas = localStorage.getItem('mengajar_kelas')
+		this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: this.page, limit: this.limit, keyword: this.searchData} : {page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas});
+		this.getKelas({kondisi: 'All'});
+	},
+	methods: {
+		...mapActions({
+      fetchData: 'fetchData',
+      uploadFiles: 'upload/uploadFiles',
+      getSiswaSiswi: 'user/getSiswaSiswi',
+      getKelasSiswa: 'kelas/getKelasSiswa',
+      getKelas: 'setting/getKelas',
+      getUID: 'setting/getUID',
+    }),
+    postRecord(item, jenis, kondisi) {
       let bodyData = {
         user: {
           jenis: jenis,
@@ -2182,31 +2134,26 @@ export default {
         },
         userdetail: {}
       }
-      let payload = {
-				method: "post",
-				url: `user/siswasiswi`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getSiswaSiswi(1, this.limit, this.searchData)
+      this.$store.dispatch('user/postSiswaSiswi', bodyData)
+      .then((res) => {
+        if(localStorage.getItem('roleID') !== '1'){
+					let payload = {
+						jenis: 'CREATE',
+						idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+						type: 'Record',
+						judul: `${jenis === 'STATUSRECORD' || jenis === 'DELETE' ? 'Status Record' : jenis === 'MUTASIAKUN' ? 'Mutasi Akun' : 'Validasi Akun'} data siswa/siswa`,
+						pesan: JSON.stringify({
+							message: `data siswa/siswa telah diubah ${jenis === 'STATUSRECORD' || jenis === 'DELETE' ? 'status record' : jenis === 'MUTASIAKUN' ? 'mutasi akun' : 'validasi akun'} oleh <strong>${localStorage.getItem('nama')}</strong>`,
+							payload: bodyData,
+						}),
+						params: null,
+            dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+            createBy: localStorage.getItem('idLogin'),
+					}
+					this.$store.dispatch('setting/postNotifikasi', payload)
+				}
+        this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: 1, limit: this.limit, keyword: this.searchData} : {page: 1, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas})
         this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    gotoForm(){
-      let payload = {
-        method: "get",
-				url: `settings/getUID`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.$router.push({name: "FormulirSiswaSiswi", params: { kondisi: 'ADD', uid: resdata }});
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")
@@ -2322,7 +2269,7 @@ export default {
           this.notifikasi("success", 'Sukses Export Excel', "1")
         })
       }else if(kategori === 'emis'){
-        this.getKelasSiswa()
+        this.getKelasSiswa({kelas: null, roleID: this.roleID})
         this.DialogKelasExport = true
       }
 		},
@@ -2340,7 +2287,7 @@ export default {
         // console.log(response)
         this.isLoadingExport = false
         let blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-        this.downloadBlob(blob,`Data Siswa Siswi (EMIS).xlsx`)
+        this.downloadBlob(blob,`Data Siswa Siswi ${kelas} (EMIS).xlsx`)
         this.notifikasi("success", 'Sukses Export Excel', "1")
       })
 		},
@@ -2507,8 +2454,24 @@ export default {
     async prosesUpload(jenis, dataUpload) {
       let uploadDataBerkas = await this.uploadLampiran(this.previewData.idUser, jenis, dataUpload)
       if(uploadDataBerkas != undefined){ 
+        if(localStorage.getItem('roleID') !== '1'){
+					let payload = {
+						jenis: 'CREATE',
+						idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+						type: 'Record',
+						judul: `Upload berkas data siswa/siswa`,
+						pesan: JSON.stringify({
+							message: `data siswa/siswa telah diupload berkasnya oleh <strong>${localStorage.getItem('nama')}</strong>`,
+							payload: null,
+						}),
+						params: null,
+            dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+            createBy: localStorage.getItem('idLogin'),
+					}
+					this.$store.dispatch('setting/postNotifikasi', payload)
+				}
         this.clearFile(jenis)
-        this.getSiswaSiswi(this.page, this.limit, this.searchData)
+        this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: this.page, limit: this.limit, keyword: this.searchData} : {page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas});
         this.notifikasi("success", `Berhasil upload berkas ${jenis === 'ijazah' ? 'Ijazah' : jenis === 'skhun' ? 'SKHUN' : jenis === 'kk' ? 'Kartu Keluarga' : jenis === 'ktp' ? 'KTP Orangtua' : jenis === 'aktalahir' ? 'Akta Lahir' : 'SKL'}`, "1")
       }else{ 
         this.componentKey++;
@@ -2573,7 +2536,23 @@ export default {
           files = ''
           this.isLoadingExport = false
           this.$refs.inputExcel.value = null
-          this.getSiswaSiswi(this.page, this.limit, this.searchData)
+          if(localStorage.getItem('roleID') !== '1'){
+            let payload = {
+              jenis: 'CREATE',
+              idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+              type: 'Record',
+              judul: `Import data siswa/siswa`,
+              pesan: JSON.stringify({
+                message: `data siswa/siswa telah diimport oleh <strong>${localStorage.getItem('nama')}</strong>`,
+                payload: null,
+              }),
+              params: null,
+              dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+              createBy: localStorage.getItem('idLogin'),
+            }
+            this.$store.dispatch('setting/postNotifikasi', payload)
+          }
+          this.getSiswaSiswi(this.roleID === '1' || this.roleID === '2' || (this.roleID === '3' && this.kondisiKepalaSekolah) ? {page: this.page, limit: this.limit, keyword: this.searchData} : {page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.mengajarKelas});
 					this.notifikasi("success", "Berhasil Import Data Siswa Siswi", "1")
 				} catch (err) {
           this.isLoadingExport = false
@@ -2591,7 +2570,6 @@ export default {
       }  
     },
     row_classes(item) {
-      console.log(item.condition);
       if (item.condition) {
         return "myclass";
       } 
@@ -2620,6 +2598,9 @@ export default {
       this.notifikasiKode = kode
       this.notifikasiText = text
       this.notifikasiButton = proses
+    },
+    klikRow(value){
+      console.log(value);
     },
 	}
 }

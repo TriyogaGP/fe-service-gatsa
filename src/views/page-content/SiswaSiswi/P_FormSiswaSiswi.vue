@@ -41,7 +41,7 @@
       <v-stepper-content step="1">
         <C_DataLogin 
           :stepper-val="stepperVal"
-          :data-siswa-siswi.sync="siswasiswi"
+          :data-siswa-siswi.sync="siswasiswiBy"
           @DataStepOne="DataStepOne"
           @StepOne="nextStep(1)"
           @BackToList="gotolist()"
@@ -51,7 +51,7 @@
       <v-stepper-content step="2">
         <C_DataSiswa 
           :stepper-val="stepperVal"
-          :data-siswa-siswi.sync="siswasiswi"
+          :data-siswa-siswi.sync="siswasiswiBy"
           @DataStepTwo="DataStepTwo"
           @backStep="backStep(2)"
           @StepTwo="nextStep(2)"
@@ -61,7 +61,7 @@
       <v-stepper-content step="3">
         <C_DataSekolahSebelum 
           :stepper-val="stepperVal"
-          :data-siswa-siswi.sync="siswasiswi"
+          :data-siswa-siswi.sync="siswasiswiBy"
           @DataStepThree="DataStepThree"
           @backStep="backStep(3)"
           @StepThree="nextStep(3)"
@@ -71,7 +71,7 @@
       <v-stepper-content step="4">
         <C_DataDetailOrangtua 
           :stepper-val="stepperVal"
-          :data-siswa-siswi.sync="siswasiswi"
+          :data-siswa-siswi.sync="siswasiswiBy"
           @DataStepFour="DataStepFour"
           @backStep="backStep(4)"
           @StepFour="nextStep(4)"
@@ -102,7 +102,7 @@ import C_DataSiswa from "./content/C_DataSiswa.vue";
 import C_DataSekolahSebelum from "./content/C_DataSekolahSebelum.vue";
 import C_DataDetailOrangtua from "./content/C_DataDetailOrangtua.vue";
 import C_PreviewFormulir from './content/C_PreviewFormulir.vue';
-import { siswasiswi } from "../../../core/services/store/getters";
+
 export default {
   name: 'FormulirSiswaSiswi',
   components: {
@@ -129,7 +129,9 @@ export default {
 		},
 	},
   computed: {
-    ...mapGetters(['siswasiswi'])
+    ...mapGetters({
+      siswasiswiBy: 'user/siswasiswiBy',
+    })
   },
   watch: {
     stepperVal(n, o) {
@@ -147,11 +149,13 @@ export default {
   mounted() {
     // let uid = this.$route.params.uid;
     if(this.$route.params.kondisi === 'EDIT'){
-			this.getSiswaSiswibyUID(this.$route.params.uid)
+			this.getSiswaSiswibyUID({uid: this.$route.params.uid, mapel: null})
 		}
   },
 	methods: {
-		...mapActions(["fetchData", "getSiswaSiswibyUID"]),
+		...mapActions({
+      getSiswaSiswibyUID: 'user/getSiswaSiswibyUID',
+    }),
     gotolist() {
       this.$router.push({name: "DataSiswaSiswi"});
     },

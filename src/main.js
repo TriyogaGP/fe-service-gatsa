@@ -13,6 +13,7 @@ import VuetifyMoney from 'vuetify-money';
 import VueDatePickerUi from 'vue-datepicker-ui';
 import 'vue-datepicker-ui/lib/vuedatepickerui.css'
 // import JwtService from '@/core/services/jwt.service';
+import { VueQueryPlugin } from '@tanstack/vue-query';
 
 
 Vue.config.productionTip = false
@@ -28,6 +29,7 @@ Vue.use(InlineSvgPlugin);
 Vue.use(VueGeolocation);
 Vue.use(VueMask);
 Vue.use(VuetifyMoney);
+Vue.use(VueQueryPlugin);
 Vue.component('DatePicker', VueDatePickerUi);
 // API service init
 ApiService.init();

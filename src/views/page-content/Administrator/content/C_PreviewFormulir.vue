@@ -314,13 +314,13 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'agamaOptions',
-			'ProvinsiOptions',
-			'KabKotaOptions',
-			'KecamatanOptions',
-			'KelurahanOptions',
-		]),
+		...mapState({
+      agamaOptions: state => state.setting.agamaOptions,
+      ProvinsiOptions: state => state.setting.ProvinsiOptions,
+      KabKotaOptions: state => state.setting.KabKotaOptions,
+      KecamatanOptions: state => state.setting.KecamatanOptions,
+      KelurahanOptions: state => state.setting.KelurahanOptions,
+    }),
 		agamaText(){
 			return this.agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
 		},
@@ -356,7 +356,11 @@ export default {
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
-		...mapActions(["fetchData", "getAgama", "getWilayah"]),
+		...mapActions({
+			fetchData: 'fetchData',
+			getAgama: 'setting/getAgama',
+			getWilayah: 'setting/getWilayah',
+		}),
 		simpanData() {
       let bodyData = {
         user: {
@@ -382,14 +386,8 @@ export default {
           kodePos: this.dataStepTwo.kodePos,
         }
       }
-      let payload = {
-				method: "post",
-				url: `user/admin`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postAdministrator', bodyData)
+      .then((res) => {
         this.notifikasi("success", res.data.message, "2")
 			})
 			.catch((err) => {

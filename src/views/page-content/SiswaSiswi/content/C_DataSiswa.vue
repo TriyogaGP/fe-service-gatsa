@@ -382,12 +382,12 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'agamaOptions',
-			'hobiOptions',
-			'citacitaOptions',
-			'kelasOptions',
-		]),
+		...mapState({
+			agamaOptions: store => store.setting.agamaOptions,
+			hobiOptions: store => store.setting.hobiOptions,
+			citacitaOptions: store => store.setting.citacitaOptions,
+			kelasOptions: store => store.setting.kelasOptions,
+		}),
   },
 	watch: {
 		inputDataSiswaSiswi:{
@@ -421,31 +421,20 @@ export default {
 			}
 		},
 	},
-	// created() {
-	// 	this.inputDataSiswaSiswi = {
-	// 		id_user: this.dataSiswaSiswi ? this.dataSiswaSiswi.idUser : null,
-	// 		nik_siswa: this.dataSiswaSiswi ? this.dataSiswaSiswi.nikSiswa : null,
-	// 		nomor_induk: this.dataSiswaSiswi ? this.dataSiswaSiswi.nomorInduk : null,
-	// 		tempat: this.dataSiswaSiswi ? this.dataSiswaSiswi.tempat : null,
-	// 		tanggal_lahir: this.dataSiswaSiswi ? this.dataSiswaSiswi.tanggalLahir : null,
-	// 		jenis_kelamin: this.dataSiswaSiswi ? this.dataSiswaSiswi.jenisKelamin : null,
-	// 		agama: this.dataSiswaSiswi ? this.dataSiswaSiswi.agama.kode : null,
-	// 		anakke: this.dataSiswaSiswi ? this.dataSiswaSiswi.anakKe : null,
-	// 		jumlah_saudara: this.dataSiswaSiswi ? this.dataSiswaSiswi.jumlahSaudara : null,
-	// 		hobi: this.dataSiswaSiswi ? this.dataSiswaSiswi.hobi.kode : null,
-	// 		cita_cita: this.dataSiswaSiswi ? this.dataSiswaSiswi.citaCita.kode : null,
-	// 		kelas: this.dataSiswaSiswi ? this.dataSiswaSiswi.kelas : null,
-	// 	}
-	// },
 	mounted() {
 		this.inputDataSiswaSiswi.id_user = this.$route.params.uid;
 		this.getAgama()
 		this.getHobi()
 		this.getCitaCita()
-		this.getKelas({ kondisi: 'All' })
+		this.getKelas({kondisi: 'All'})
 	},
 	methods: {
-		...mapActions(["fetchData", "getAgama", "getHobi", "getCitaCita", "getKelas"]),
+		...mapActions({
+			getAgama: 'setting/getAgama',
+			getHobi: 'setting/getHobi',
+			getCitaCita: 'setting/getCitaCita',
+			getKelas: 'setting/getKelas',
+		}),
 		wadahInput(){
 			let inputFormTwo = {
 				nikSiswa: this.inputDataSiswaSiswi.nik_siswa,

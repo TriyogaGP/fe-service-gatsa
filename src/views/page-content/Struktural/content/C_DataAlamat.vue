@@ -392,13 +392,13 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			'agamaOptions',
-			'ProvinsiOptions',
-			'KabKotaOptions',
-			'KecamatanOptions',
-			'KelurahanOptions',
-		]),
+		...mapState({
+			agamaOptions: store => store.setting.agamaOptions,
+			ProvinsiOptions: store => store.setting.ProvinsiOptions,
+			KabKotaOptions: store => store.setting.KabKotaOptions,
+			KecamatanOptions: store => store.setting.KecamatanOptions,
+			KelurahanOptions: store => store.setting.KelurahanOptions,
+		}),
   },
 	watch: {
 		inputDataAlamat:{
@@ -443,32 +443,16 @@ export default {
 			}
 		},
 	},
-	// created() {
-	// 	this.inputDataAlamat = {
-	// 		id_user: this.dataStruktural ? this.dataStruktural.idUser : null,
-	// 		tempat: this.dataStruktural ? this.dataStruktural.tempat : null,
-	// 		tanggal_lahir: this.dataStruktural ? this.dataStruktural.tanggalLahir : null,
-	// 		jenis_kelamin: this.dataStruktural ? this.dataStruktural.jenisKelamin : null,
-	// 		agama: this.dataStruktural ? this.dataStruktural.agama.kode : null,
-	// 		telp: this.dataStruktural ? this.dataStruktural.telp : null,
-	// 		alamat: this.dataStruktural ? this.dataStruktural.alamat : null,
-	// 		provinsi: this.dataStruktural ? this.dataStruktural.provinsi.kode : null,
-	// 		kabkota: this.dataStruktural ? this.dataStruktural.kabKota.kode : null,
-	// 		kecamatan: this.dataStruktural ? this.dataStruktural.kecamatan.kode : null,
-	// 		kelurahan: this.dataStruktural ? this.dataStruktural.kelurahan.kode : null,
-	// 		kode_pos: this.dataStruktural ? this.dataStruktural.kodePos : null,
-	// 	}
-	// 	this.getWilayah({ bagian: 'kabkota', KodeWilayah: this.inputDataAlamat.provinsi })
-	// 	this.getWilayah({ bagian: 'kecamatan', KodeWilayah: this.inputDataAlamat.kabkota })
-	// 	this.getWilayah({ bagian: 'kelurahan', KodeWilayah: this.inputDataAlamat.kecamatan })
-	// },
 	mounted() {
 		this.inputDataAlamat.id_user = this.$route.params.uid;
 		this.getAgama()
 		this.getWilayah({ bagian: 'provinsi', KodeWilayah: null })
 	},
 	methods: {
-		...mapActions(["fetchData", "getAgama", "getWilayah"]),
+		...mapActions({
+			getAgama: 'setting/getAgama',
+			getWilayah: 'setting/getWilayah',
+		}),
 		wadahInput(){
 			let inputFormTwo = {
 				tempat: this.inputDataAlamat.tempat,

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="subheading grey--text">Data Struktural</h1>
+    <h1 class="subheading grey--text">Data {{ roleID === '4' || roleID === '3' ? 'Guru' : 'Struktural' }}</h1>
     <v-card class="mt-2 mb-2 pa-1" outlined elevation="0">
       <v-row no-gutters class="pa-2">
         <v-col cols="12" md="6">
@@ -11,7 +11,7 @@
             dense
             depressed
             class="ma-2 white--text text--darken-2"
-            @click="gotoForm()"
+            @click="getUID()"
           >
             <v-icon small>add</v-icon>&nbsp;Tambah
           </v-btn>
@@ -29,7 +29,7 @@
                 dense
                 color="light-black darken-3"
                 clearable
-                @keyup.enter="getStruktural(1, limit, searchData)"
+                @keyup.enter="getStruktural({page: 1, limit: limit, keyword: searchData})"
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -39,7 +39,8 @@
                 item-text="value"
                 item-value="value"
                 label="Page"
-                outlined
+                single-line
+                solo
                 dense
                 color="light-black darken-3"
                 hide-details
@@ -55,7 +56,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataStruktural"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -112,7 +113,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.mutasiAkun == true"
-                @click="ProsesRecord(item, 'STATUSRECORD', !item.statusAktif)"
+                @click="postRecord(item, 'STATUSRECORD', !item.statusAktif)"
               >
                 <v-icon small>{{ item.statusAktif === false ? 'visibility' : 'visibility_off' }}</v-icon>&nbsp;{{ item.statusAktif === false ? 'Active' : 'Non Active' }}
               </v-btn> 
@@ -125,7 +126,7 @@
                 depressed
                 class="ma-2 white--text text--darken-2"
                 :disabled="item.statusAktif == false"
-                @click="HapusRecord(item)"
+                @click="postRecord(item, 'DELETE', null)"
               >
                 <v-icon small>delete</v-icon>&nbsp;Hapus
               </v-btn> 
@@ -157,8 +158,9 @@
 						item-text="value"
 						item-value="value"
             label="Limit"
-						outlined
-						dense
+						single-line
+            solo
+            dense
             color="light-black darken-3"
 						hide-details
 						:disabled="DataStruktural.length ? false : true"
@@ -580,7 +582,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataStruktural',
@@ -588,7 +590,6 @@ export default {
     PopUpNotifikasiVue
   },
   data: () => ({
-    isLoading: false,
 		DataStruktural: [],
     expanded: [],
     singleExpand: true,
@@ -671,8 +672,13 @@ export default {
 	},
   computed: {
 		...mapState({
-			jabatan: 'jabatanOptions',
+			jabatan: store => store.setting.jabatanOptions,
+			loadingtable: store => store.user.loadingtable,
 		}),
+    ...mapGetters({
+      strukturalAll: 'user/strukturalAll',
+      UID: 'setting/userUID',
+    }),
 		jabatanOptions(){
 			if(this.roleID === '3'){
 				let jabatan_guru = localStorage.getItem('jabatan_guru').split(', ')
@@ -686,16 +692,38 @@ export default {
 		}
   },
   watch: {
+    UID: {
+      deep: true,
+			handler(value) {
+        this.$router.push({name: "FormulirStruktural", params: { kondisi: 'ADD', uid: value }});
+      }
+    },
+    strukturalAll: {
+			deep: true,
+			handler(value) {
+        this.DataStruktural = value.records
+				this.pageSummary = {
+					page: this.DataStruktural.length ? value.pageSummary.page : 0,
+					limit: this.DataStruktural.length ? value.pageSummary.limit : 0,
+					total: this.DataStruktural.length ? value.pageSummary.total : 0,
+					totalPages: this.DataStruktural.length ? value.pageSummary.totalPages : 0
+				}
+        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
+          this.pageOptions.push({ value: index })
+        }
+      }
+		},
     page: {
 			deep: true,
 			handler(value) {
-				this.getStruktural(value, this.limit, this.searchData)
+				this.getStruktural({page: value, limit: this.limit, keyword: this.searchData})
 			}
 		},
     limit: {
 			deep: true,
 			handler(value) {
-				this.getStruktural(1, value, this.searchData)
+        this.page = 1
+				this.getStruktural({page: 1, limit: value, keyword: this.searchData})
 			}
 		},
     jabatanOptions: {
@@ -711,81 +739,15 @@ export default {
   },
   mounted() {
     this.roleID = localStorage.getItem('roleID')
-		this.getStruktural(this.page, this.limit, this.searchData);
+		this.getStruktural({page: this.page, limit: this.limit, keyword: this.searchData});
 	},
 	methods: {
-		...mapActions(["fetchData"]),
-		getStruktural(page = 1, limit, keyword) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataStruktural = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/struktural?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-				this.DataStruktural = resdata.records
-				this.pageSummary = {
-					page: this.DataStruktural.length ? resdata.pageSummary.page : 0,
-					limit: this.DataStruktural.length ? resdata.pageSummary.limit : 0,
-					total: this.DataStruktural.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataStruktural.length ? resdata.pageSummary.totalPages : 0
-				}
-        for (let index = 1; index <= this.pageSummary.totalPages; index++) {
-          this.pageOptions.push({ value: index })
-        }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataStruktural = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
-        }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
-		},
-    HapusRecord(item) {
-      let bodyData = {
-        user: {
-          jenis: 'DELETE',
-          idUser: item.idUser,
-        },
-        userdetail: {}
-      }
-      let payload = {
-				method: "post",
-				url: `user/struktural`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getStruktural(1, this.limit, this.searchData)
-        this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    ProsesRecord(item, jenis, kondisi) {
+		...mapActions({
+      fetchData: 'fetchData',
+      getStruktural: 'user/getStruktural',
+      getUID: 'setting/getUID',
+    }),
+		postRecord(item, jenis, kondisi) {
       let bodyData = {
         user: {
           jenis: jenis,
@@ -794,31 +756,26 @@ export default {
         },
         userdetail: {}
       }
-      let payload = {
-				method: "post",
-				url: `user/struktural`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.getStruktural(1, this.limit, this.searchData)
+      this.$store.dispatch('user/postStruktural', bodyData)
+      .then((res) => {
+        if(localStorage.getItem('roleID') !== '1'){
+					let payload = {
+						jenis: 'CREATE',
+						idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+						type: 'Record',
+						judul: 'Status Record data struktural',
+						pesan: JSON.stringify({
+							message: `data struktural telah diubah status <strong>${localStorage.getItem('nama')}</strong>`,
+							payload: bodyData,
+						}),
+						params: null,
+            dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+            createBy: localStorage.getItem('idLogin'),
+					}
+					this.$store.dispatch('setting/postNotifikasi', payload)
+				}
+        this.getStruktural({page: 1, limit: this.limit, keyword: this.searchData})
         this.notifikasi("success", res.data.message, "1")
-			})
-			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
-			});
-    },
-    gotoForm(){
-      let payload = {
-        method: "get",
-				url: `settings/getUID`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        let resdata = res.data.result
-        this.$router.push({name: "FormulirStruktural", params: { kondisi: 'ADD', uid: resdata }});
 			})
 			.catch((err) => {
         this.notifikasi("error", err.response.data.message, "1")

@@ -88,9 +88,11 @@ export default {
     notifikasiButton: '',
   }),
   computed: {
-    ...mapGetters(['cmssettings']),
+    ...mapGetters({
+      cmssettings: 'setting/cmssettings',
+    }),
     namaSekolah(){
-      console.log(this.cmssettings);
+      // console.log(this.cmssettings);
       return this.cmssettings ? this.cmssettings.namasekolah : null
     }
   },
@@ -105,7 +107,10 @@ export default {
     this.getCMSSettings()
   },
   methods: {
-    ...mapActions(["fetchData", "getCMSSettings"]),
+    ...mapActions({
+      fetchData: 'fetchData',
+      getCMSSettings: 'setting/getCMSSettings',
+    }),
     LupaKataSandi() {
     let bodyData = {
       email: this.email,

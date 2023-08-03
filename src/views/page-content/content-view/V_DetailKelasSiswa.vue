@@ -1,20 +1,20 @@
 <template>
   <div>
-    <h1 class="subheading grey--text">Data Siswa Siswi Kelas {{ kelasText }}</h1>
+    <h1 class="subheading grey--text">Data Siswa Siswi Kelas {{ kelas }}</h1>
     <div v-if="kondisi === 'view'" class="text-right wadah">
-      <span @click="gotolist('view', kelasText.split('-')[0])" class="link">Data Kelas Siswa {{ kelasText.split('-')[0] }}</span>
+      <span @click="gotolist('view', kelas.split('-')[0])" class="link">Data Kelas Siswa {{ kelas.split('-')[0] }}</span>
       <v-icon small class="iconstyle">fa-solid fa-chevron-right</v-icon>
-      <span>Data Siswa Siswi Kelas {{ kelasText }}</span>
+      <span>Data Siswa Siswi Kelas {{ kelas }}</span>
     </div>
     <div v-if="kondisi === 'penilaian'" class="text-right wadah">
       <span v-if="roleID === '1' || roleID === '2'" @click="gotolist('penilaian')" class="link">Data Akademis</span>
       <v-icon v-if="roleID === '1' || roleID === '2'" small class="iconstyle">fa-solid fa-chevron-right</v-icon>
-      <span @click="gotolist2(mapelText)" class="link">Data Akademis ({{ mapelText }})</span>
+      <span @click="gotolist2(mapel)" class="link">Data Akademis ({{ mapel }})</span>
       <v-icon small class="iconstyle">fa-solid fa-chevron-right</v-icon>
-      <span>Data Siswa Siswi Kelas {{ kelasText }}</span>
+      <span>Data Siswa Siswi Kelas {{ kelas }}</span>
     </div>
     <v-card class="mt-2 mb-2 pa-1" outlined elevation="0">
-      <h4 v-if="kondisi === 'penilaian'">Mata Pelajaran: {{ mapelText }}</h4>
+      <h4 v-if="kondisi === 'penilaian'">Mata Pelajaran: {{ mapel }}</h4>
       <v-row no-gutters class="pa-2">
         <v-col cols="12" md="6">
           <v-btn
@@ -42,7 +42,7 @@
                 dense
                 color="light-black darken-3"
                 clearable
-                @keyup.enter="getSiswaSiswi(1, limit, searchData, kelas)"
+                @keyup.enter="getSiswaSiswi({page: 1, limit: limit, keyword: searchData, kelas: kelas})"
               />
             </v-col>
             <v-col cols="12" md="3" class="pl-2 d-flex justify-end align-center">
@@ -68,7 +68,7 @@
           no-data-text="Tidak ada data yang tersedia"
           no-results-text="Tidak ada catatan yang cocok ditemukan"
           :headers="headers"
-          :loading="isLoading"
+          :loading="loadingtable"
           :items="DataSiswaSiswi"
           :single-expand="singleExpand"
           :expanded.sync="expanded"
@@ -1448,7 +1448,7 @@
               no-data-text="Tidak ada data yang tersedia"
               no-results-text="Tidak ada catatan yang cocok ditemukan"
               :headers="headersTask"
-              :loading="isLoading"
+              :loading="loadingtable"
               :items="DataSiswaSiswi"
               item-key="idUser"
               hide-default-header
@@ -1927,7 +1927,7 @@
                 dense
                 depressed
                 :disabled="jumlahTugas === '0' || kkm === '0' ? true : false"
-                @click="ubahJumlahTask(kelasText, mapelText)"
+                @click="ubahJumlahTask(kelasText, mapel)"
               >
                 Ubah Tugas & KKM
               </v-btn>
@@ -1953,7 +1953,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import PopUpNotifikasiVue from "../../Layout/PopUpNotifikasi.vue";
 export default {
   name: 'DataKelasSiswa',
@@ -1964,9 +1964,7 @@ export default {
     kondisi: '',
     mapel: '',
     kelas: '',
-    isLoading: false,
 		DataSiswaSiswi: [],
-		DataNilai: [],
 		searchData: '',
     expanded: [],
     singleExpand: true,
@@ -2128,74 +2126,35 @@ export default {
 		},
 	},
   computed: {
-    kelasText() {
-      this.kelas = this.$route.params.kelas
-      this.mapel = this.$route.query.mapel
-      this.kondisi = this.$route.params.kondisi
-      if(this.kondisi == 'penilaian'){
-        this.getNilai(this.kelas, this.mapel)
-      }
-      this.getSiswaSiswi(1, 20, '', this.kelas)
-      this.headerKondisi(this.kondisi)
-      return this.kelas
+    ...mapState({
+      loadingtable: store => store.user.loadingtable
+    }),
+    ...mapGetters({
+      siswasiswiAll: 'user/siswasiswiAll', 
+      nilai: 'user/nilai',
+    }),
+    // kelasText() {
+    //   this.kelas = this.$route.params.kelas
+    //   return this.kelas
+    // },
+    // mapelText() {
+    //   this.mapel = this.$route.query.mapel
+    //   return this.mapel
+    // },
+    DataNilai(){
+      return this.nilai ? this.nilai : null
     },
-    mapelText() {
-      this.mapel = this.$route.query.mapel
-      return this.mapel
-    }
   },
   watch: {
-    page: {
+    siswasiswiAll: {
 			deep: true,
 			handler(value) {
+        this.DataSiswaSiswi = []
         if(this.kondisi == 'penilaian'){
-          this.getNilai(this.kelas, this.mapel)
-        }
-				this.getSiswaSiswi(value, this.limit, this.searchData, this.kelas)
-        this.headerKondisi(this.kondisi)
-			}
-		},
-    limit: {
-			deep: true,
-			handler(value) {
-        if(this.kondisi == 'penilaian'){
-          this.getNilai(this.kelas, this.mapel)
-        }
-				this.getSiswaSiswi(1, value, this.searchData, this.kelas)
-        this.headerKondisi(this.kondisi)
-			}
-		},
-  },
-  mounted() {
-    this.roleID = localStorage.getItem('roleID')
-	},
-	methods: {
-		...mapActions(["fetchData"]),
-    getSiswaSiswi(page = 1, limit, keyword, kelas) {
-      this.itemsPerPage = limit
-      this.page = page
-			this.isLoading = true
-      this.DataSiswaSiswi = []
-      this.pageOptions = [{ value: 1 }]
-			this.pageSummary = {
-				page: '',
-				limit: '',
-				total: '',
-				totalPages: ''
-			}
-			let payload = {
-        method: "get",
-				url: `user/siswasiswi?page=${page}&limit=${limit}${keyword ? `&keyword=${keyword}` : ''}${kelas ? `&kelas=${kelas}` : ''}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then(async (res) => {
-        let resdata = res.data.result
-        if(this.kondisi == 'penilaian'){
-          let kumpul = resdata.records
+          let kumpul = value.records
           this.jumlahTugas = this.DataNilai.jumlahTugas
           this.kkm = this.DataNilai.kkm
-          await kumpul.map(str => {
+          kumpul.map(str => {
             let nilai = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].nilai
             let semester = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].semester
             let kehadiran = this.DataNilai.dataSiswaSiswi.filter(val => val.idUser === str.idUser)[0].kehadiran
@@ -2211,53 +2170,60 @@ export default {
               rataRataNilai: rataRataNilai != 0 ? Math.ceil(rataRataNilai) : 0,
               hurufNilai: rataRataNilai <= 50 ? 'E' : rataRataNilai <= 65 ? 'D' : rataRataNilai <= 75 ? 'C' : rataRataNilai <= 85 ? 'B' : 'A',
             })
-            // console.log(totalNilaiTugas, rataRataTugas, this.jumlahTugas);
           })
         }else if(this.kondisi == 'view'){
-          this.DataSiswaSiswi = resdata.records
+          this.DataSiswaSiswi = value.records
         }
 				this.pageSummary = {
-					page: this.DataSiswaSiswi.length ? resdata.pageSummary.page : 0,
-					limit: this.DataSiswaSiswi.length ? resdata.pageSummary.limit : 0,
-					total: this.DataSiswaSiswi.length ? resdata.pageSummary.total : 0,
-					totalPages: this.DataSiswaSiswi.length ? resdata.pageSummary.totalPages : 0
+					page: this.DataSiswaSiswi.length ? value.pageSummary.page : 0,
+					limit: this.DataSiswaSiswi.length ? value.pageSummary.limit : 0,
+					total: this.DataSiswaSiswi.length ? value.pageSummary.total : 0,
+					totalPages: this.DataSiswaSiswi.length ? value.pageSummary.totalPages : 0
 				}
         for (let index = 1; index <= this.pageSummary.totalPages; index++) {
           this.pageOptions.push({ value: index })
         }
-        this.isLoading = false
-			})
-			.catch((err) => {
-        this.itemsPerPage = limit
-        this.page = page
-        this.DataSiswaSiswi = []
-        this.pageOptions = [{ value: 1 }]
-        this.pageSummary = {
-          page: '',
-          limit: '',
-          total: '',
-          totalPages: ''
+      }
+		},
+    page: {
+			deep: true,
+			handler(value) {
+        if(this.kondisi == 'penilaian'){
+          this.getNilai({kelas: this.kelas, mapel: this.mapel})
         }
-        this.isLoading = false
-        this.notifikasi("error", err.response.data.message, "1")
-			});
+				this.getSiswaSiswi({page: value, limit: this.limit, keyword: this.searchData, kelas: this.kelas})
+        this.headerKondisi(this.kondisi)
+			}
 		},
-    getNilai(kelas, mapel) {
-      this.DataNilai = []
-			let payload = {
-        method: "get",
-				url: `user/nilai?kelas=${kelas}&mapel=${mapel}`,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.DataNilai = res.data.result        
-			})
-			.catch((err) => {
-        this.DataNilai = []
-        this.notifikasi("error", err.response.data.message, "1")
-			});
+    limit: {
+			deep: true,
+			handler(value) {
+        this.page = 1
+        if(this.kondisi == 'penilaian'){
+          this.getNilai({kelas: this.kelas, mapel: this.mapel})
+        }
+				this.getSiswaSiswi({page: 1, limit: value, keyword: this.searchData, kelas: this.kelas})
+        this.headerKondisi(this.kondisi)
+			}
 		},
+  },
+  mounted() {
+    this.roleID = localStorage.getItem('roleID')
+    this.kelas = this.$route.params.kelas
+    this.mapel = this.$route.query.mapel
+    this.kondisi = this.$route.params.kondisi
+    if(this.kondisi == 'penilaian'){
+      this.getNilai({kelas: this.kelas, mapel: this.mapel})
+    }
+    this.getSiswaSiswi({page: 1, limit: 20, keyword: '', kelas: this.kelas})
+    this.headerKondisi(this.kondisi)
+	},
+	methods: {
+		...mapActions({
+      fetchData: "fetchData", 
+      getSiswaSiswi: "user/getSiswaSiswi", 
+      getNilai: "user/getNilai",
+    }),
     headerKondisi(kondisi) {
       this.headers = []
       if(kondisi === 'view'){
@@ -2313,27 +2279,19 @@ export default {
           }
         ]
       }
-      // return console.log(bodyData);
-      let payload = {
-				method: "post",
-				url: `user/nilai`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postNilai', bodyData)
+      .then((res) => {
         this.DialogTask = false
         if(this.kondisi == 'penilaian'){
-          this.getNilai(this.kelas, this.mapel)
+          this.getNilai({kelas: this.kelas, mapel: this.mapel})
         }
-        this.getSiswaSiswi(1, 20, this.searchData, this.kelas)
+        this.getSiswaSiswi({page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.kelas})
         if(posisi === 'dalam'){
           this.taskDialog(this.DataSiswaSiswi)
         }
-        // this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     ubahJumlahTask(kelas, mapel) {
@@ -2344,22 +2302,16 @@ export default {
         jumlahTugas: this.jumlahTugas,
         kkm: this.kkm,
       }
-      let payload = {
-				method: "post",
-				url: `user/nilai`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postNilai', bodyData)
+      .then((res) => {
         if(this.kondisi == 'penilaian'){
-          this.getNilai(this.kelas, this.mapel)
+          this.getNilai({kelas: this.kelas, mapel: this.mapel})
         }
-        this.getSiswaSiswi(1, 20, this.searchData, this.kelas)
+        this.getSiswaSiswi({page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.kelas})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     openDialog(item){
@@ -2585,22 +2537,16 @@ export default {
           }
         ]
       }
-      let payload = {
-				method: "post",
-				url: `user/nilai`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
+      this.$store.dispatch('user/postNilai', bodyData)
+      .then((res) => {
         if(this.kondisi == 'penilaian'){
-          this.getNilai(this.kelas, this.mapel)
+          this.getNilai({kelas: this.kelas, mapel: this.mapel})
         }
-        this.getSiswaSiswi(1, 20, this.searchData, this.kelas)
+        this.getSiswaSiswi({page: this.page, limit: this.limit, keyword: this.searchData, kelas: this.kelas})
         this.notifikasi("success", res.data.message, "1")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
     },
     gotolist(kondisi, param = null) {

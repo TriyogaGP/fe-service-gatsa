@@ -409,16 +409,16 @@ export default {
     notifikasiButton: '',
 	}),
 	computed: {
-		...mapState([
-			"agamaOptions",
-			"pendidikanOptions",
-			"jabatanOptions",
-			"mengajarOptions",
-			'ProvinsiOptions',
-			'KabKotaOptions',
-			'KecamatanOptions',
-			'KelurahanOptions',
-		]),
+		...mapState({
+			agamaOptions: store => store.setting.agamaOptions,
+			pendidikanOptions: store => store.setting.pendidikanOptions,
+			jabatanOptions: store => store.setting.jabatanOptions,
+			mengajarOptions: store => store.setting.mengajarOptions,
+			ProvinsiOptions: store => store.setting.ProvinsiOptions,
+			KabKotaOptions: store => store.setting.KabKotaOptions,
+			KecamatanOptions: store => store.setting.KecamatanOptions,
+			KelurahanOptions: store => store.setting.KelurahanOptions,
+		}),
 		agamaText(){
 			return this.agamaOptions.filter(str => str.kode === this.dataStepTwo.agama)[0].label
 		},
@@ -477,7 +477,14 @@ export default {
     this.endecryptData(this.kondisi, this.dataStepOne.password)
 	},
 	methods: {
-		...mapActions(["fetchData", "getAgama", "getPendidikan", "getJabatan", "getMengajar", "getWilayah"]),
+		...mapActions({
+			fetchData: "fetchData",
+			getAgama: "setting/getAgama",
+			getPendidikan: "setting/getPendidikan",
+			getJabatan: "setting/getJabatan",
+			getMengajar: "setting/getMengajar",
+			getWilayah: "setting/getWilayah",
+		}),
 		simpanData() {
       let bodyData = {
         user: {
@@ -509,18 +516,28 @@ export default {
           waliKelas: this.dataStepThree.waliKelas ? this.dataStepThree.waliKelas : null,
         }
       }
-      let payload = {
-				method: "post",
-				url: `user/struktural`,
-        body: bodyData,
-				authToken: localStorage.getItem('user_token')
-			};
-			this.fetchData(payload)
-			.then((res) => {
-        this.notifikasi("success", res.data.message, "2")
+      this.$store.dispatch('user/postStruktural', bodyData)
+      .then((res) => {
+				if(localStorage.getItem('roleID') !== '1'){
+					let payload = {
+						jenis: 'CREATE',
+						idUser: '2MMOu7xFdkbe4YFRjpp71fRkV26',
+						type: 'Record',
+						judul: `${this.kondisi === 'ADD' ? 'Penambahan' : 'Perubahan'} data struktural`,
+						pesan: JSON.stringify({
+							message: `data struktural telah ${this.kondisi === 'ADD' ? 'ditambah' : 'diubah'} oleh <strong>${localStorage.getItem('nama')}</strong>`,
+							payload: bodyData,
+						}),
+						params: null,
+						dikirim: `dikirim oleh <strong>${localStorage.getItem('nama')}</strong>`,
+						createBy: localStorage.getItem('idLogin'),
+					}
+					this.$store.dispatch('setting/postNotifikasi', payload)
+				}
+				this.notifikasi("success", res.data.message, "2")
 			})
 			.catch((err) => {
-				this.notifikasi("error", err.response.data.message, "1")
+        this.notifikasi("error", err.response.data.message, "1")
 			});
 		},
     goToProses(){

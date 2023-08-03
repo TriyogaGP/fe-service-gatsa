@@ -141,7 +141,7 @@
 							<v-icon
 								color="light-black darken-3"
 								tabindex="-1"
-								@click="endecryptData('endecryptType')"
+								@click="endecryptData('endecryptType', kondisi)"
 								>{{ endecryptType ? 'lock' : 'lock_open' }}</v-icon
 							>
 						</template>
@@ -216,6 +216,7 @@ export default {
 		],
     passType: '',
     endecryptType: '',
+    kondisi: '',
     kondisiTombol: true,
     rules: {
 			emailRules: value => {
@@ -256,21 +257,12 @@ export default {
 			}
 		},
 	},
-	// created() {
-	// 	this.inputDataLogIn = {
-	// 		id_user: this.dataAdministrator ? this.dataAdministrator.idUser : null,
-	// 		level: this.dataAdministrator ? this.dataAdministrator.consumerType : null,
-	// 		nama_lengkap: this.dataAdministrator ? this.dataAdministrator.nama : null,
-	// 		username: this.dataAdministrator ? this.dataAdministrator.username : null,
-	// 		email: this.dataAdministrator ? this.dataAdministrator.email : null,
-	// 		password: this.dataAdministrator ? this.dataAdministrator.kataSandi : null,
-	// 	}
-	// },
 	mounted() {
 		this.inputDataLogIn.id_user = this.$route.params.uid;
+		this.kondisi = this.$route.params.kondisi;
 	},
 	methods: {
-		...mapActions(["fetchData"]),
+		...mapActions(['fetchData']),
 		wadahInput(){
 			let inputFormOne = {
 				idUser: this.inputDataLogIn.id_user,
@@ -285,9 +277,9 @@ export default {
 		onClickVisible(d) {
       this[d] = !this[d]
     },
-    endecryptData(d) {
+    endecryptData(d, kondisi) {
       this[d] = !this[d]
-      let url = this[d] ? 'decryptPass' : 'encryptPass' 
+      let url = kondisi === 'EDIT' ? this[d] ? 'decryptPass' : 'encryptPass' : this[d] ? 'encryptPass' : 'decryptPass' 
       let payload = {
 				method: "get",
 				url: `settings/${url}?kata=${this.inputDataLogIn.password}`,
